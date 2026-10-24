@@ -1,6 +1,7 @@
 using Provodnik.Core.IO;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Modpack;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Features.ModOrganizer
 {
@@ -21,7 +22,7 @@ namespace Provodnik.Features.ModOrganizer
 
       var modList = Path.Combine(layout.Definition(metadata.FolderName), metadata.ModOrganizerModList.Replace('/', Path.DirectorySeparatorChar));
       if (!File.Exists(modList))
-        throw new FileNotFoundException($"O modlist.txt da definição não está em {modList}");
+        throw new FileNotFoundException(L.T("features.profile.noModList", modList));
       var folders = Directory.Exists(layout.Mods) ? Directory.GetDirectories(layout.Mods).Select(Path.GetFileName).OfType<string>().ToList() : [];
       var text = ModListNames.Repair(File.ReadAllText(modList), folders, fixes ?? []);
       File.WriteAllText(Path.Combine(profile, "modlist.txt"), text);

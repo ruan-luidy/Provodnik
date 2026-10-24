@@ -1,4 +1,5 @@
 using Provodnik.Core.IO;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Features.Install
 {
@@ -40,7 +41,7 @@ namespace Provodnik.Features.Install
         {
           // o autor renomeou a pasta e a lista do GAMMA não acompanhou ("Spawn Options\No Bloodsuckers" virou
           // "Spawn - No Bloodsuckers"): o original deixava o mod vazio; aqui usa a única pasta que termina igual
-          warn($"a pasta \"{instruction}\" não existe no arquivo; usando \"{Path.GetRelativePath(root, renamed)}\", que é a mesma opção com outro nome");
+          warn(L.T("features.instructions.renamed", instruction, Path.GetRelativePath(root, renamed)));
           FileTree.MoveContents(renamed, root);
           continue;
         }
@@ -51,11 +52,11 @@ namespace Provodnik.Features.Install
         {
           missing = true;
           if (!rescue)
-            warn($"a pasta \"{instruction}\" não existe no arquivo");
+            warn(L.T("features.instructions.missing", instruction));
           continue;
         }
         if (!FileTree.MoveContents(source, gamedata))
-          warn($"a pasta \"{instruction}\" não pode ir pra dentro dela mesma");
+          warn(L.T("features.instructions.intoItself", instruction));
       }
 
       foreach (var folder in Directory.EnumerateDirectories(root))

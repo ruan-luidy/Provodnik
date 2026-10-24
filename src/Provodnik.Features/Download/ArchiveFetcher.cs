@@ -2,6 +2,7 @@ using Provodnik.Core.Downloads;
 using Provodnik.Core.Install;
 using Provodnik.Core.IO;
 using Provodnik.Core.Modpack;
+using Provodnik.Core.Text;
 using Provodnik.Features.Verify;
 
 namespace Provodnik.Features.Download
@@ -52,7 +53,7 @@ namespace Provodnik.Features.Download
           var local = await HashAsync(path, report, cancellationToken).ConfigureAwait(false);
           if (local == spec.Md5)
             return new ArchiveOutcome(path, local, null);
-          report(ModStatus.Downloading, detail: "md5 do arquivo baixado não bate, baixando de novo");
+          report(ModStatus.Downloading, detail: L.T("features.fetch.md5Redownload"));
         }
         else
         {
@@ -68,7 +69,7 @@ namespace Provodnik.Features.Download
       {
         // não deu pra atualizar, mas tem o de antes: segue com ele
         var md5 = await HashAsync(path, report, cancellationToken).ConfigureAwait(false);
-        return new ArchiveOutcome(path, md5, $"não deu pra atualizar ({ex.Message}); usando o arquivo que já estava em downloads");
+        return new ArchiveOutcome(path, md5, L.T("features.fetch.keptOld", ex.Message));
       }
     }
 
@@ -90,12 +91,12 @@ namespace Provodnik.Features.Download
           if (spec.Kind == ModKind.ModDb)
           {
             // o link vem da fila cadenciada do ModDB; o download depois corre solto no CDN
-            report(ModStatus.Pending, detail: "na fila do ModDB");
+            report(ModStatus.Pending, detail: L.T("features.fetch.modDbQueue"));
             url = await pacer.ResolveAsync(spec.Url, message => report(ModStatus.Resolving, detail: message), cancellationToken).ConfigureAwait(false);
           }
           resolving = false;
 
-          report(ModStatus.Pending, detail: "na fila de download");
+          report(ModStatus.Pending, detail: L.T("features.fetch.downloadQueue"));
           await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
           try
           {
@@ -103,7 +104,7 @@ namespace Provodnik.Features.Download
             if (spec.Kind == ModKind.GitHub)
               TryDelete(part);
 
-            report(ModStatus.Downloading, detail: attempt > 1 ? $"tentativa {attempt} de {options.Attempts}" : null);
+            report(ModStatus.Downloading, detail: attempt > 1 ? L.T("features.fetch.attempt", attempt, options.Attempts) : null);
             var result = await downloader.DownloadAsync(
               new DownloadRequest(url, part, Impersonate: spec.Kind == ModKind.ModDb, ETag: etag),
               new Progress<TransferProgress>(p => report(ModStatus.Downloading, p)),
@@ -115,7 +116,7 @@ namespace Provodnik.Features.Download
               return new ArchiveOutcome(path, await HashAsync(path, report, cancellationToken).ConfigureAwait(false), null);
             }
 
-            report(ModStatus.Verifying, detail: "conferindo o md5");
+            report(ModStatus.Verifying, detail: L.T("features.fetch.checkingMd5"));
             var md5 = await Md5.HashAsync(part, cancellationToken).ConfigureAwait(false);
             string? warning = null;
             // GitHub de branch muda sempre: o md5 da lista só serve pra decidir se baixa, não pra recusar
@@ -125,9 +126,9 @@ namespace Provodnik.Features.Download
               {
                 lastBadMd5 = md5;
                 TryDelete(part);
-                throw new DownloadException($"md5 não bate (veio {md5[..8]}…, a lista diz {expected[..8]}…)");
+                throw new DownloadException(L.T("features.fetch.md5Mismatch", md5[..8], expected[..8]));
               }
-              warning = "o md5 não bate com a lista, mas veio igual duas vezes: o arquivo deve ter sido atualizado no ModDB";
+              warning = L.T("features.fetch.md5Accepted");
             }
 
             File.Move(part, path, overwrite: true);
@@ -152,7 +153,7 @@ namespace Provodnik.Features.Download
             if (++throttles <= 8)
             {
               attempt--;
-              report(ModStatus.Retrying, detail: "o ModDB pediu calma; volta pra fila");
+              report(ModStatus.Retrying, detail: L.T("features.fetch.throttled"));
               continue;
             }
           }
@@ -160,16 +161,16 @@ namespace Provodnik.Features.Download
             break;
 
           var wait = TimeSpan.FromSeconds(Math.Min(60, 5 * Math.Pow(2.2, attempt - 1)) + Random.Shared.NextDouble() * 2);
-          report(ModStatus.Retrying, detail: $"{ex.Message} · de novo em {wait.TotalSeconds:0} s");
+          report(ModStatus.Retrying, detail: L.T("features.fetch.retryIn", ex.Message, wait.TotalSeconds));
           await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
         }
       }
-      throw new DownloadException(last?.Message ?? "o download falhou", last);
+      throw new DownloadException(last?.Message ?? L.T("features.fetch.failed"), last);
     }
 
     private async Task<string> HashAsync(string path, ArchiveReport report, CancellationToken cancellationToken)
     {
-      report(ModStatus.Verifying, detail: "conferindo o md5");
+      report(ModStatus.Verifying, detail: L.T("features.fetch.checkingMd5"));
       await hashGate.WaitAsync(cancellationToken).ConfigureAwait(false);
       try
       {

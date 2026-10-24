@@ -1,4 +1,5 @@
 using Provodnik.Core.Downloads;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Features.Download
 {
@@ -35,13 +36,13 @@ namespace Provodnik.Features.Download
         if (wait > TimeSpan.Zero)
         {
           if (wait > TimeSpan.FromSeconds(5))
-            waiting($"o ModDB pediu calma: esperando {wait.TotalSeconds:0} s");
+            waiting(L.T("features.pacer.waiting", wait.TotalSeconds));
           await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
         }
 
         try
         {
-          waiting("pedindo o link ao ModDB");
+          waiting(L.T("features.pacer.requesting"));
           var link = await resolver.ResolveAsync(addonUrl, cancellationToken).ConfigureAwait(false);
           // deu certo: a espera volta a encolher
           _cooldown = _cooldown > TimeSpan.Zero ? TimeSpan.FromTicks(_cooldown.Ticks / 2) : TimeSpan.Zero;
@@ -74,9 +75,12 @@ namespace Provodnik.Features.Download
 
     internal static bool IsThrottle(Exception ex)
     {
+      // as frases do Проводник vêm nos três idiomas (infra.modDb.noLink, infra.modDb.timeout e o bloqueio do navegador)
       var text = ex.Message.ToLowerInvariant();
       return text.Contains("403") || text.Contains("429") || text.Contains("cloudflare") || text.Contains("challenge")
-        || text.Contains("too many") || text.Contains("temporarily") || text.Contains("bloqueou") || text.Contains("não devolveu o link") || text.Contains("não respondeu a tempo");
+        || text.Contains("too many") || text.Contains("temporarily") || text.Contains("bloqueou") || text.Contains("заблокировал")
+        || text.Contains("não devolveu o link") || text.Contains("didn't return the download link") || text.Contains("не вернул ссылку")
+        || text.Contains("não respondeu a tempo") || text.Contains("didn't respond in time") || text.Contains("не ответил вовремя");
     }
   }
 }

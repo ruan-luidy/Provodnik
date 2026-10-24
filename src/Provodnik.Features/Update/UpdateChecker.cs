@@ -1,5 +1,6 @@
 using Provodnik.Core.Layout;
 using Provodnik.Core.Remote;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Features.Update
 {
@@ -29,7 +30,7 @@ namespace Provodnik.Features.Update
       }
       catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException && !cancellationToken.IsCancellationRequested)
       {
-        errors.Add($"versão: {ex.Message}");
+        errors.Add(L.T("features.update.versionError", ex.Message));
       }
 
       try
@@ -40,7 +41,7 @@ namespace Provodnik.Features.Update
       }
       catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException && !cancellationToken.IsCancellationRequested)
       {
-        errors.Add($"lista de mods: {ex.Message}");
+        errors.Add(L.T("features.update.modListError", ex.Message));
       }
 
       return new UpdateStatus(installed, online, changed, errors.Count > 0 ? string.Join(" · ", errors) : null);

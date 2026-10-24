@@ -1,4 +1,5 @@
 using Provodnik.Core.Remote;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Infrastructure.Http
 {
@@ -16,7 +17,7 @@ namespace Provodnik.Infrastructure.Http
     {
       var text = await GetWithRetryAsync(ModListUrl + Uri.EscapeDataString(key.Replace(" ", string.Empty)), cancellationToken).ConfigureAwait(false);
       if (text.TrimStart().StartsWith('<') || !text.Contains('\t'))
-        throw new HttpRequestException("A lista de mods veio num formato estranho (o site pode estar fora do ar).");
+        throw new HttpRequestException(L.T("infra.gammaApi.badList"));
       return text;
     }
 

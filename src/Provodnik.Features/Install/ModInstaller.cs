@@ -3,6 +3,7 @@ using Provodnik.Core.Archives;
 using Provodnik.Core.IO;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Modpack;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Features.Install
 {
@@ -23,7 +24,7 @@ namespace Provodnik.Features.Install
       {
         await extractor.ExtractAsync(archive, staging, progress, cancellationToken).ConfigureAwait(false);
         if (!Directory.EnumerateFileSystemEntries(staging).Any())
-          throw new ArchiveException("o arquivo abriu vazio");
+          throw new ArchiveException(L.T("features.install.emptyArchive"));
 
         if (mod.Instructions.Count > 0 && InstructionApplier.Apply(staging, mod.Instructions, warn) && !FileTree.HasContent(staging))
         {

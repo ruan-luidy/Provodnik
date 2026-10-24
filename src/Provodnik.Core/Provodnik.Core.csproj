@@ -16,7 +16,8 @@
 
   <!--  Os textos em português, inglês e russo (Provodnik.Core.Text.L lê os que terminam em .pt/.en/.ru.json)  -->
   <ItemGroup>
-    <EmbeddedResource Include="Localization\*.json" />
+    <!-- WithCulture=false: senão o .pt/.en/.ru do nome vira assembly satélite e some do assembly principal -->
+    <EmbeddedResource Include="Localization\*.json" WithCulture="false" />
   </ItemGroup>
 
 </Project>

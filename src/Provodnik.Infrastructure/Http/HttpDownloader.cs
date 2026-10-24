@@ -1,3 +1,4 @@
+using Provodnik.Core.Text;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
@@ -29,7 +30,7 @@ namespace Provodnik.Infrastructure.Http
       {
         // o .part já estava inteiro (ou maior que o arquivo novo): começa do zero na próxima tentativa
         File.Delete(request.Destination);
-        throw new DownloadException("O arquivo parcial não bate com o do servidor; vai baixar de novo.");
+        throw new DownloadException(L.T("infra.http.partialMismatch"));
       }
       if (!response.IsSuccessStatusCode)
         throw new DownloadException($"HTTP {(int)response.StatusCode} {response.ReasonPhrase}");
@@ -72,7 +73,7 @@ namespace Provodnik.Infrastructure.Http
         progress?.Report(new TransferProgress(received, total ?? received, speed));
 
         if (total is { } expected && received != expected)
-          throw new DownloadException($"O download veio cortado ({received} de {expected} bytes).");
+          throw new DownloadException(L.T("infra.http.cutShort", received, expected));
       }
 
       return new DownloadResult(NotModified: false, response.Headers.ETag?.ToString());

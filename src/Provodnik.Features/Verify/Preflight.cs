@@ -36,7 +36,7 @@ namespace Provodnik.Features.Verify
       var checks = new List<PreflightCheck>();
       if (!layout.Exists)
       {
-        checks.Add(new("Pasta do GAMMA", CheckLevel.Failed, $"{layout.Root} não tem o ModOrganizer.exe ou a pasta {GammaLayout.InstallerFolderName}."));
+        checks.Add(new(L.T("features.preflight.folder.title"), CheckLevel.Failed, L.T("features.preflight.folder.invalid", layout.Root, GammaLayout.InstallerFolderName)));
         return checks;
       }
 
@@ -54,14 +54,14 @@ namespace Provodnik.Features.Verify
     {
       var denied = new[] { layout.Root, layout.Installer, layout.Mods, layout.Downloads }.FirstOrDefault(d => !CanWrite(d));
       if (denied is null)
-        return new("Permissão nas pastas", CheckLevel.Ok, system.IsElevated ? "Gravando normalmente (rodando como administrador)." : "Gravando normalmente, sem precisar de administrador.");
+        return new(L.T("features.preflight.writable.title"), CheckLevel.Ok, system.IsElevated ? L.T("features.preflight.writable.okAdmin") : L.T("features.preflight.writable.ok"));
 
       return new(
-        "Permissão nas pastas",
+        L.T("features.preflight.writable.title"),
         CheckLevel.Failed,
         system.IsElevated
-          ? $"Nem como administrador dá pra gravar em {denied}. Feche o MO2 e o jogo e confira o antivírus (Acesso controlado a pastas)."
-          : $"Sem permissão pra gravar em {denied}. Reabra como administrador ou mova o GAMMA pra uma pasta sua, como C:\\GAMMA.",
+          ? L.T("features.preflight.writable.deniedAdmin", denied)
+          : L.T("features.preflight.writable.denied", denied),
         system.IsElevated ? CheckFix.None : CheckFix.RunAsAdmin);
     }
 
@@ -69,30 +69,31 @@ namespace Provodnik.Features.Verify
     {
       var anomaly = Mo2Config.Load(layout.ModOrganizerIni).GamePath;
       if (anomaly is null || !Directory.Exists(Path.Combine(anomaly, "bin")))
-        return new("Anomaly", CheckLevel.Warning, "O MO2 ainda não sabe onde está o Anomaly: abra o MO2 uma vez e escolha a pasta (os patches do fim precisam dela).");
+        return new("Anomaly", CheckLevel.Warning, L.T("features.preflight.anomaly.unknown"));
       if (!CanWrite(Path.Combine(anomaly, "bin")))
-        return new("Anomaly", CheckLevel.Failed, $"Sem permissão pra gravar em {anomaly} (os exes do GAMMA vão pra lá).", system.IsElevated ? CheckFix.None : CheckFix.RunAsAdmin);
+        return new("Anomaly", CheckLevel.Failed, L.T("features.preflight.anomaly.denied", anomaly), system.IsElevated ? CheckFix.None : CheckFix.RunAsAdmin);
       return new("Anomaly", CheckLevel.Ok, anomaly);
     }
 
     private static PreflightCheck Running()
     {
       if (GameLauncher.IsGameRunning())
-        return new("Jogo e MO2 fechados", CheckLevel.Failed, "O Anomaly está aberto. Feche o jogo antes de instalar.");
+        return new(L.T("features.preflight.running.title"), CheckLevel.Failed, L.T("features.preflight.running.game"));
       if (GameLauncher.IsModOrganizerRunning())
-        return new("Jogo e MO2 fechados", CheckLevel.Failed, "O Mod Organizer está aberto e segura os arquivos dos mods. Feche ele antes de instalar.");
-      return new("Jogo e MO2 fechados", CheckLevel.Ok, "Nada segurando os arquivos.");
+        return new(L.T("features.preflight.running.title"), CheckLevel.Failed, L.T("features.preflight.running.mo2"));
+      return new(L.T("features.preflight.running.title"), CheckLevel.Ok, L.T("features.preflight.running.ok"));
     }
 
     private static PreflightCheck Space(GammaLayout layout)
     {
       var free = new DriveInfo(Path.GetPathRoot(layout.Root)!).AvailableFreeSpace;
-      var text = $"{ByteSize.Format(free)} livres em {Path.GetPathRoot(layout.Root)}";
+      var title = L.T("features.preflight.space.title");
+      var text = L.T("features.preflight.space.free", ByteSize.Format(free), Path.GetPathRoot(layout.Root));
       return free switch
       {
-        < 5 * Gigabyte => new("Espaço em disco", CheckLevel.Failed, $"{text}. Precisa de bem mais: uma instalação do zero ocupa uns 150 GB."),
-        < 40 * Gigabyte => new("Espaço em disco", CheckLevel.Warning, $"{text}. Dá pra atualizar, mas uma instalação do zero precisa de uns 150 GB."),
-        _ => new("Espaço em disco", CheckLevel.Ok, text),
+        < 5 * Gigabyte => new(title, CheckLevel.Failed, L.T("features.preflight.space.tooLow", text)),
+        < 40 * Gigabyte => new(title, CheckLevel.Warning, L.T("features.preflight.space.low", text)),
+        _ => new(title, CheckLevel.Ok, text),
       };
     }
 
@@ -101,28 +102,28 @@ namespace Provodnik.Features.Verify
       var tools = new[] { layout.SevenZip, layout.Curl, layout.CurlConfig, layout.Git };
       var missing = tools.Where(t => !File.Exists(t)).Select(Path.GetFileName).ToList();
       return missing.Count == 0
-        ? new("Ferramentas do GAMMA", CheckLevel.Ok, "7-Zip, curl-impersonate e Git no lugar.")
-        : new("Ferramentas do GAMMA", missing.SequenceEqual(["git.exe"]) ? CheckLevel.Warning : CheckLevel.Failed,
-          $"Faltam em resources\\: {string.Join(", ", missing)}. Quase sempre é o antivírus: restaure da quarentena, coloque a pasta do GAMMA nas exclusões ou baixe o instalador do GAMMA de novo.");
+        ? new(L.T("features.preflight.tools.title"), CheckLevel.Ok, L.T("features.preflight.tools.ok"))
+        : new(L.T("features.preflight.tools.title"), missing.SequenceEqual(["git.exe"]) ? CheckLevel.Warning : CheckLevel.Failed,
+          L.T("features.preflight.tools.missing", string.Join(", ", missing)));
     }
 
     /// <summary>O ModDB agora exige navegador de verdade pra passar pelo Cloudflare: sem o WebView2 sobra o dl-cli do GAMMA, que está falhando.</summary>
     private static PreflightCheck Browser(GammaLayout layout, ISystemInfo system)
     {
       if (system.WebView2Version is { } version)
-        return new("Navegador do ModDB", CheckLevel.Ok, $"WebView2 {version}: passa pelo Cloudflare do ModDB.");
-      return new("Navegador do ModDB", CheckLevel.Warning, File.Exists(layout.ModDbCli)
-        ? "Sem o WebView2 Runtime: os links do ModDB vão pelo stalker-gamma-dl-cli, que hoje está falhando. Instale o WebView2 Runtime da Microsoft."
-        : "Sem o WebView2 Runtime e sem o stalker-gamma-dl-cli: os mods do ModDB não vão baixar. Instale o WebView2 Runtime da Microsoft.");
+        return new(L.T("features.preflight.browser.title"), CheckLevel.Ok, L.T("features.preflight.browser.ok", version));
+      return new(L.T("features.preflight.browser.title"), CheckLevel.Warning, File.Exists(layout.ModDbCli)
+        ? L.T("features.preflight.browser.dlCliOnly")
+        : L.T("features.preflight.browser.none"));
     }
 
     private static PreflightCheck LongPaths(GammaLayout layout, ISystemInfo system)
     {
       if (system.LongPathsEnabled == false)
-        return new("Caminhos longos", CheckLevel.Warning, "Desligados no Windows: alguns addons têm caminhos compridos e podem falhar ao extrair ou no jogo.", CheckFix.EnableLongPaths);
+        return new(L.T("features.preflight.longPaths.title"), CheckLevel.Warning, L.T("features.preflight.longPaths.off"), CheckFix.EnableLongPaths);
       if (layout.Root.Length > 40)
-        return new("Caminhos longos", CheckLevel.Warning, $"A pasta do GAMMA tem um caminho comprido ({layout.Root.Length} letras). O guia do GAMMA recomenda algo curto, como C:\\GAMMA.");
-      return new("Caminhos longos", CheckLevel.Ok, system.LongPathsEnabled == true ? "Ligados no Windows." : "Caminho curto.");
+        return new(L.T("features.preflight.longPaths.title"), CheckLevel.Warning, L.T("features.preflight.longPaths.longRoot", layout.Root.Length));
+      return new(L.T("features.preflight.longPaths.title"), CheckLevel.Ok, system.LongPathsEnabled == true ? L.T("features.preflight.longPaths.on") : L.T("features.preflight.longPaths.short"));
     }
 
     private static bool CanWrite(string directory)

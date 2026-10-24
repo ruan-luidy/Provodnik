@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Provodnik.Core.Desktop;
 using Provodnik.Core.Layout;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Features.Launch
 {
@@ -27,7 +28,7 @@ namespace Provodnik.Features.Launch
     private static void Start(GammaLayout layout, string? arguments, IShortcutWriter? unelevated)
     {
       if (!File.Exists(layout.ModOrganizerExe))
-        throw new FileNotFoundException($"ModOrganizer.exe não encontrado em {layout.Root}");
+        throw new FileNotFoundException(L.T("features.launch.noModOrganizer", layout.Root));
 
       if (unelevated is not null)
       {
