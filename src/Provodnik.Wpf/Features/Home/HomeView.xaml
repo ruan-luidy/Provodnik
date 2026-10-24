@@ -199,11 +199,11 @@
               VerticalAlignment="Center"
               DockPanel.Dock="Right"
               Orientation="Horizontal">
-              <hc:ComboBox
+              <controls:SelectField
                 Width="190"
                 Margin="0,0,8,0"
-                hc:InfoElement.Placeholder="Executável"
                 ItemsSource="{Binding Executables}"
+                Placeholder="Executável"
                 SelectedItem="{Binding SelectedExecutable}"
                 ToolTip="Qual executável do MO2 o Jogar abre (DX11-AVX é o recomendado)" />
               <Button

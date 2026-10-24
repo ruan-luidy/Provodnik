@@ -1,0 +1,191 @@
+<UserControl
+  x:Class="Provodnik.Wpf.Shared.Controls.SelectField"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  x:Name="Root"
+  Height="30"
+  mc:Ignorable="d">
+
+  <UserControl.Resources>
+    <!--
+      A caixa fechada: o mesmo jeito dos botões do lado (sem borda, fundo translúcido, mais claro no hover); aberta
+      fica no azul suave do accent, como o botão de ícone ligado
+    -->
+    <Style x:Key="SelectToggle" TargetType="ToggleButton">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ToggleButton">
+            <Border
+              x:Name="Box"
+              Padding="10,0"
+              Background="{DynamicResource Button.BackgroundBrush}"
+              CornerRadius="{StaticResource Radius.Sm}">
+              <ContentPresenter VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Box" Property="Background" Value="{DynamicResource Button.HoverBrush}" />
+              </Trigger>
+              <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="Box" Property="Background" Value="{DynamicResource Accent.SoftBrush}" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!--
+      A lista aberta (o menu do Windows 11): linha com o realce fraco no hover; a escolhida no azul suave com o check
+      do Phosphor na ponta, cantos Md
+    -->
+    <Style x:Key="SelectItem" TargetType="ListBoxItem">
+      <Setter Property="Padding" Value="10,7" />
+      <!--  Respiro entre as linhas: o destaque da escolhida e o do hover não encostam um no outro  -->
+      <Setter Property="Margin" Value="0,1" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Border
+              x:Name="Row"
+              Padding="{TemplateBinding Padding}"
+              Background="Transparent"
+              CornerRadius="{StaticResource Radius.Md}">
+              <DockPanel>
+                <Path
+                  x:Name="Check"
+                  Width="11"
+                  Height="11"
+                  Margin="12,0,0,0"
+                  VerticalAlignment="Center"
+                  Data="{icons:Phosphor CheckBold}"
+                  DockPanel.Dock="Right"
+                  Fill="{DynamicResource PrimaryBrush}"
+                  Stretch="Uniform"
+                  Visibility="Hidden" />
+                <ContentPresenter VerticalAlignment="Center" />
+              </DockPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Nav.SelectedBrush}" />
+              </Trigger>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Accent.SoftBrush}" />
+                <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Resources>
+
+  <Grid>
+    <ToggleButton
+      x:Name="Toggle"
+      IsHitTestVisible="{Binding IsOpen, ElementName=DropDown, Converter={StaticResource Boolean2BooleanReConverter}}"
+      Style="{StaticResource SelectToggle}">
+      <DockPanel>
+        <!--  O caret gira pra cima enquanto a lista está aberta (e volta ao fechar)  -->
+        <Path
+          Width="11"
+          Height="11"
+          Margin="8,0,0,0"
+          VerticalAlignment="Center"
+          Data="{icons:Phosphor CaretDownBold}"
+          DockPanel.Dock="Right"
+          Fill="{DynamicResource SecondaryTextBrush}"
+          RenderTransformOrigin="0.5,0.5"
+          Stretch="Uniform">
+          <Path.RenderTransform>
+            <RotateTransform />
+          </Path.RenderTransform>
+          <Path.Style>
+            <Style TargetType="Path">
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked, ElementName=Toggle}" Value="True">
+                  <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation
+                          Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                          To="180"
+                          Duration="0:0:0.15" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </DataTrigger.EnterActions>
+                  <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation
+                          Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                          To="0"
+                          Duration="0:0:0.15" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </DataTrigger.ExitActions>
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Path.Style>
+        </Path>
+        <TextBlock
+          x:Name="Label"
+          VerticalAlignment="Center"
+          TextTrimming="CharacterEllipsis" />
+      </DockPanel>
+    </ToggleButton>
+
+    <Popup
+      x:Name="DropDown"
+      AllowsTransparency="True"
+      IsOpen="{Binding IsChecked, ElementName=Toggle}"
+      Placement="Custom"
+      PlacementTarget="{Binding ElementName=Toggle}"
+      Opened="DropDown_Opened"
+      StaysOpen="False">
+      <!--
+        O cartão do menu do Windows 11: um degrau mais claro que a janela, borda fraca, raio Lg e a sombra numa borda
+        atrás (com margem pra ela caber, ver PopupShadow). Abre com o zoom e o fade do menu de botão direito.
+      -->
+      <Grid
+        x:Name="Card"
+        MinWidth="{Binding ActualWidth, ElementName=Toggle}"
+        Margin="{StaticResource PopupShadowRoom}"
+        RenderTransformOrigin="0.5,0">
+        <Grid.RenderTransform>
+          <ScaleTransform />
+        </Grid.RenderTransform>
+        <Border
+          Background="{DynamicResource Flyout.BackgroundBrush}"
+          CornerRadius="{StaticResource Radius.Lg}"
+          Effect="{StaticResource Shadow.Popup}" />
+        <Border
+          Padding="4,3"
+          Background="{DynamicResource Flyout.BackgroundBrush}"
+          BorderBrush="{DynamicResource Flyout.BorderBrush}"
+          BorderThickness="1"
+          CornerRadius="{StaticResource Radius.Lg}">
+          <ListBox
+            x:Name="Items"
+            MaxHeight="300"
+            Background="Transparent"
+            BorderThickness="0"
+            ItemContainerStyle="{StaticResource SelectItem}"
+            SelectionChanged="Items_SelectionChanged" />
+        </Border>
+      </Grid>
+    </Popup>
+  </Grid>
+</UserControl>

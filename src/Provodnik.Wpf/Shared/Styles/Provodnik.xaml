@@ -662,6 +662,9 @@
   <!--  As linhas da tabela, um degrau abaixo da divisória: são muitas, então bem fracas  -->
   <SolidColorBrush x:Key="Grid.DividerBrush" Color="#0DFFFFFF" />
   <SolidColorBrush x:Key="Progress.TrackBrush" Color="#1AFFFFFF" />
+  <!--  Menu que abre por cima (a lista do SelectField): o cinza do menu do Windows 11, um degrau acima da janela  -->
+  <SolidColorBrush x:Key="Flyout.BackgroundBrush" Color="#2B2B2E" />
+  <SolidColorBrush x:Key="Flyout.BorderBrush" Color="#1FFFFFFF" />
   <!--  Botão sem borda: fundo translúcido sobre a camada, mais claro no hover, mais apagado apertado  -->
   <SolidColorBrush x:Key="Button.BackgroundBrush" Color="#17FFFFFF" />
   <SolidColorBrush x:Key="Button.HoverBrush" Color="#24FFFFFF" />
