@@ -22,5 +22,6 @@
   "about.links.data": "Data folder",
   "about.links.dataTip": "Logs, install state and cache (.provodnik inside the GAMMA installer folder)",
   "about.disclaimer": "Fan-made, not an official G.A.M.M.A. tool. The modpack, the mod list and the original launcher belong to Grok and the GAMMA team.",
-  "about.close": "Close"
+  "about.close": "Close",
+  "about.iconCredit": "Atom icon by Icons8 (icons8.com)."
 }

@@ -22,5 +22,6 @@
   "about.links.data": "Pasta de dados",
   "about.links.dataTip": "Logs, estado da instalação e cache (.provodnik dentro do instalador do GAMMA)",
   "about.disclaimer": "Feito por fã, não é oficial do G.A.M.M.A. O modpack, a lista de mods e o launcher original são do Grok e da equipe do GAMMA.",
-  "about.close": "Fechar"
+  "about.close": "Fechar",
+  "about.iconCredit": "Ícone do átomo: Icons8 (icons8.com)."
 }

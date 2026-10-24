@@ -95,3 +95,5 @@ python tools\build_tool.py --gamma C:\GAMMA    # the single exe straight into a 
 
 Translations live in `Localization/*.{pt,en,ru}.json` inside each project. Pull requests with fixes or new languages
 are welcome.
+
+Atom icon by [Icons8](https://icons8.com).

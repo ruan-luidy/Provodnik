@@ -22,5 +22,6 @@
   "about.links.data": "Папка данных",
   "about.links.dataTip": "Логи, состояние установки и кэш (.provodnik в папке установщика GAMMA)",
   "about.disclaimer": "Сделано фанатом, не официальный инструмент G.A.M.M.A. Модпак, список модов и оригинальный лаунчер принадлежат Grok и команде GAMMA.",
-  "about.close": "Закрыть"
+  "about.close": "Закрыть",
+  "about.iconCredit": "Иконка атома: Icons8 (icons8.com)."
 }

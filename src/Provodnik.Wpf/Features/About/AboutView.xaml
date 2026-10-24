@@ -134,6 +134,10 @@
         Text="{loc:Tr about.disclaimer}"
         TextTrimming="None"
         TextWrapping="Wrap" />
+      <TextBlock
+        Margin="2,4,0,0"
+        Style="{StaticResource CaptionText}"
+        Text="{loc:Tr about.iconCredit}" />
     </StackPanel>
 
     <controls:DialogFrame.Footer>
