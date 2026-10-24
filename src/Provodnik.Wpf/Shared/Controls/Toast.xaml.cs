@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using MahApps.Metro.IconPacks;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Icons;
 
 namespace Provodnik.Wpf.Shared.Controls
@@ -49,7 +50,7 @@ namespace Provodnik.Wpf.Shared.Controls
 
       // Erro sem ação própria ganha o "OK" embaixo, como no Negativo (o botão só fecha)
       if (actionText is null && kind == DialogKind.Error)
-        actionText = "OK";
+        actionText = L.T("shared.ok");
       _action = action;
       ActionsBar.Visibility = actionText is null ? Visibility.Collapsed : Visibility.Visible;
       ActionText.Text = actionText;

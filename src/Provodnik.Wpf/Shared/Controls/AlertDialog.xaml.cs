@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using MahApps.Metro.IconPacks;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Icons;
 using Provodnik.Wpf.Shared.Services;
 
@@ -87,7 +88,7 @@ namespace Provodnik.Wpf.Shared.Controls
       var open = DetailsBox.Visibility != Visibility.Visible;
       DetailsBox.Text = _details;
       DetailsBox.Visibility = CopyButton.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
-      DetailsLinkText.Text = open ? "esconder detalhes" : "ver detalhes";
+      DetailsLinkText.Text = L.T(open ? "shared.details.hide" : "shared.details.show");
       Width = open ? 560 : 380;
     }
 
@@ -97,7 +98,7 @@ namespace Provodnik.Wpf.Shared.Controls
         return;
 
       Clipboard.SetText(_details);
-      ToastService.Success("Detalhes copiados pra área de transferência");
+      ToastService.Success(L.T("shared.details.copied"));
     }
 
     private void PrimaryButton_Click(object sender, RoutedEventArgs e) => PrimaryClicked?.Invoke(this, EventArgs.Empty);

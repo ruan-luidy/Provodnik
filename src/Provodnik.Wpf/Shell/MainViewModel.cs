@@ -73,7 +73,7 @@ namespace Provodnik.Wpf.Shell
     /// <summary>A simulação (--demo): a barra de título avisa que nada ali é de verdade.</summary>
     public bool IsDemo { get; }
 
-    public string Title => _session.Layout is null ? "Проводник" : $"Проводник · {_session.Metadata.Name}";
+    public string Title => _session.Layout is null ? L.T("shell.appName") : $"{L.T("shell.appName")} · {_session.Metadata.Name}";
 
     public async Task StartAsync() => await Current.ShowAsync();
 

@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using Microsoft.Win32;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Services;
 
 namespace Provodnik.Wpf.Shared.Behaviors
@@ -36,9 +37,9 @@ namespace Provodnik.Wpf.Shared.Behaviors
       if (d is not DataGrid grid || e.NewValue is not true)
         return;
 
-      var copy = new MenuItem { Header = "Copiar tabela" };
+      var copy = new MenuItem { Header = L.T("shared.grid.copy") };
       copy.Click += (_, _) => Copy(grid);
-      var export = new MenuItem { Header = "Exportar CSV…" };
+      var export = new MenuItem { Header = L.T("shared.grid.export") };
       export.Click += (_, _) => Export(grid);
 
       // O filtro do cabeçalho (DataGridFilterBehavior) já pode ter criado o menu com o "Limpar todos os filtros":
@@ -61,7 +62,7 @@ namespace Provodnik.Wpf.Shared.Behaviors
         text.AppendLine(string.Join('\t', row.Select(v => v.Replace('\t', ' '))));
 
       Clipboard.SetText(text.ToString());
-      ToastService.Success($"{rows.Count} linhas copiadas");
+      ToastService.Success(L.T("shared.lines.copied", rows.Count));
     }
 
     private static void Export(DataGrid grid)
@@ -83,7 +84,7 @@ namespace Provodnik.Wpf.Shared.Behaviors
         csv.AppendLine(string.Join(';', row.Select(Quote)));
 
       File.WriteAllText(dialog.FileName, csv.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
-      ToastService.Success($"{rows.Count} linhas em {Path.GetFileName(dialog.FileName)}");
+      ToastService.Success(L.T("shared.grid.exported", rows.Count, Path.GetFileName(dialog.FileName)));
     }
 
     private static string Quote(string value) =>

@@ -75,9 +75,12 @@
     <ProjectReference Include="..\Provodnik.Infrastructure\Provodnik.Infrastructure.csproj" />
   </ItemGroup>
 
-  <!--  Os textos em português, inglês e russo (Provodnik.Core.Text.L lê os que terminam em .pt/.en/.ru.json)  -->
+  <!--
+    Os textos em português, inglês e russo (Provodnik.Core.Text.L lê os que terminam em .pt/.en/.ru.json). Sem o
+    WithCulture="false" o MSBuild lê o .en/.ru/.pt do nome como cultura e manda o catálogo pra um assembly satélite.
+  -->
   <ItemGroup>
-    <EmbeddedResource Include="Localization\*.json" />
+    <EmbeddedResource Include="Localization\*.json" WithCulture="false" />
   </ItemGroup>
 
 </Project>

@@ -5,7 +5,8 @@
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
   xmlns:install="clr-namespace:Provodnik.Wpf.Features.Install"
-  Title="Console · Проводник"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
+  Title="{loc:Tr install.consoleWindow.title}"
   Width="900"
   Height="480"
   MinWidth="500"
@@ -30,13 +31,13 @@
         hc:IconSwitchElement.GeometrySelected="{icons:Phosphor PushPinFill}"
         Checked="Pin_Changed"
         Style="{StaticResource Action.Toggle.Icon}"
-        ToolTip="Sempre por cima"
+        ToolTip="{loc:Tr install.consoleWindow.pin}"
         Unchecked="Pin_Changed" />
       <Button
         hc:IconElement.Geometry="{icons:Phosphor CopyBold}"
         Click="Copy_Click"
         Style="{StaticResource Action.Icon.Small}"
-        ToolTip="Copiar tudo" />
+        ToolTip="{loc:Tr install.consoleWindow.copyAll}" />
     </StackPanel>
   </hc:Window.NonClientAreaContent>
 

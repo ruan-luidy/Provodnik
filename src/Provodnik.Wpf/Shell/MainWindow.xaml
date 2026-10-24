@@ -7,6 +7,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:services="clr-namespace:Provodnik.Wpf.Shared.Services"
   xmlns:shell="clr-namespace:Provodnik.Wpf.Shell"
@@ -43,13 +44,13 @@
         VerticalAlignment="Center"
         Background="{DynamicResource PrimaryBrush}"
         CornerRadius="{StaticResource Radius.Sm}"
-        ToolTip="Simulação: GAMMA de mentira em %TEMP%\provodnik-demo, ferramentas falsas, tempo acelerado"
+        ToolTip="{loc:Tr shell.demo.tip}"
         Visibility="{Binding IsDemo, Converter={StaticResource Boolean2VisibilityConverter}}">
         <TextBlock
           FontSize="{StaticResource FontSize.XS}"
           FontWeight="Bold"
           Foreground="White"
-          Text="SIMULAÇÃO" />
+          Text="{loc:Tr shell.demo.badge}" />
       </Border>
       <!--  Etiqueta ADMIN encostada no nome do app, só quando elevado  -->
       <Border
@@ -59,13 +60,13 @@
         VerticalAlignment="Center"
         Background="{DynamicResource WarningBrush}"
         CornerRadius="{StaticResource Radius.Sm}"
-        ToolTip="Rodando como administrador. O MO2 e o jogo abrem sem administrador mesmo assim."
+        ToolTip="{loc:Tr shell.admin.tip}"
         Visibility="{Binding IsElevated, Converter={StaticResource Boolean2VisibilityConverter}}">
         <TextBlock
           FontSize="{StaticResource FontSize.XS}"
           FontWeight="Bold"
           Foreground="Black"
-          Text="ADMIN" />
+          Text="{loc:Tr shell.admin.badge}" />
       </Border>
       <!--
         A instalação rodando, no molde do botão de usuário do Windfinder: sem fundo (só no hover), o carregando, o
@@ -81,7 +82,7 @@
         BorderThickness="0"
         Command="{Binding GoInstallCommand}"
         Cursor="Hand"
-        ToolTip="Ver a instalação"
+        ToolTip="{loc:Tr shell.installing.tip}"
         Visibility="{Binding Install.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
         <Button.Template>
           <ControlTemplate TargetType="Button">
@@ -108,7 +109,7 @@
             IsIndeterminate="True"
             Style="{StaticResource BusyCircle}" />
           <TextBlock VerticalAlignment="Center" FontSize="{StaticResource FontSize.Sm}">
-            <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="Instalando" /><Run Text=" " /><Run
+            <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{loc:Tr shell.installing}" /><Run Text=" " /><Run
               FontFamily="{StaticResource FontFamily.Numbers}"
               FontWeight="SemiBold"
               Foreground="{DynamicResource PrimaryTextBrush}"
@@ -160,12 +161,12 @@
           <StackPanel>
             <Button
               Command="{Binding OpenAboutCommand}"
-              Content="Sobre"
+              Content="{loc:Tr shell.nav.about}"
               Style="{StaticResource SideNavButton}"
               Tag="{icons:Phosphor InfoBold}" />
             <Button
               Command="{Binding OpenSettingsCommand}"
-              Content="Configurações"
+              Content="{loc:Tr shell.nav.settings}"
               Style="{StaticResource SideNavButton}"
               Tag="{icons:Phosphor GearSixBold}" />
           </StackPanel>
@@ -177,9 +178,9 @@
             hc:IconElement.Geometry="{icons:Phosphor ListBold}"
             Command="{Binding TogglePaneCommand}"
             Style="{StaticResource PaneToggle}"
-            ToolTip="Recolher ou abrir o painel" />
+            ToolTip="{loc:Tr shell.pane.toggle}" />
           <RadioButton
-            Content="Início"
+            Content="{loc:Tr shell.nav.home}"
             GroupName="Nav"
             IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Home}}"
             Style="{StaticResource SideNavItem}"
@@ -187,19 +188,19 @@
           <RadioButton
             controls:NavBadge.Count="{Binding Install.Failures.Count}"
             controls:NavBadge.IsAlert="True"
-            Content="Instalar"
+            Content="{loc:Tr shell.nav.install}"
             GroupName="Nav"
             IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Install}}"
             Style="{StaticResource SideNavItem}"
             Tag="{icons:Phosphor DownloadSimpleBold}" />
           <RadioButton
-            Content="Mods"
+            Content="{loc:Tr shell.nav.mods}"
             GroupName="Nav"
             IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Mods}}"
             Style="{StaticResource SideNavItem}"
             Tag="{icons:Phosphor PackageBold}" />
           <RadioButton
-            Content="Registro"
+            Content="{loc:Tr shell.nav.logs}"
             GroupName="Nav"
             IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Logs}}"
             Style="{StaticResource SideNavItem}"

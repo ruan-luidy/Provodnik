@@ -26,7 +26,7 @@ namespace Provodnik.Wpf.Features.Install
 
     public int Index { get; } = index;
 
-    public string Title { get; } = entry?.Title ?? title ?? $"Mod {index}";
+    public string Title { get; } = entry?.Title ?? title ?? L.T("install.mod.fallbackTitle", index);
 
     public string Author { get; } = entry?.Author ?? string.Empty;
 
@@ -54,17 +54,17 @@ namespace Provodnik.Wpf.Features.Install
 
     public string StatusText => Status switch
     {
-      ModStatus.Pending => "Na fila",
-      ModStatus.Checking => "Conferindo",
-      ModStatus.Resolving => "Pedindo o link",
-      ModStatus.Downloading => "Baixando",
-      ModStatus.Retrying => "Tentando de novo",
-      ModStatus.Verifying => "Conferindo md5",
-      ModStatus.WaitingExtraction => "Esperando",
-      ModStatus.Extracting => "Extraindo",
-      ModStatus.Installed => "Instalado",
-      ModStatus.UpToDate => "Em dia",
-      ModStatus.Failed => "Falhou",
+      ModStatus.Pending => L.T("install.status.pending"),
+      ModStatus.Checking => L.T("install.status.checking"),
+      ModStatus.Resolving => L.T("install.status.resolving"),
+      ModStatus.Downloading => L.T("install.status.downloading"),
+      ModStatus.Retrying => L.T("install.status.retrying"),
+      ModStatus.Verifying => L.T("install.status.verifying"),
+      ModStatus.WaitingExtraction => L.T("install.status.waiting"),
+      ModStatus.Extracting => L.T("install.status.extracting"),
+      ModStatus.Installed => L.T("install.status.installed"),
+      ModStatus.UpToDate => L.T("install.status.upToDate"),
+      ModStatus.Failed => L.T("install.status.failed"),
       _ => string.Empty,
     };
 
@@ -92,7 +92,7 @@ namespace Provodnik.Wpf.Features.Install
       SpeedText = progress.Status == ModStatus.Downloading ? ByteSize.FormatSpeed(progress.BytesPerSecond) : string.Empty;
       ProgressText = progress.Status switch
       {
-        ModStatus.Downloading when progress.Total is { } total => $"{ByteSize.Format(progress.Received)} de {ByteSize.Format(total)}",
+        ModStatus.Downloading when progress.Total is { } total => L.T("install.progress.of", ByteSize.Format(progress.Received), ByteSize.Format(total)),
         ModStatus.Downloading when progress.Received > 0 => ByteSize.Format(progress.Received),
         ModStatus.Extracting when progress.Fraction is { } f => $"{f:P0}",
         _ => string.Empty,

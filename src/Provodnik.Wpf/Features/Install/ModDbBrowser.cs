@@ -5,6 +5,7 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Provodnik.Core.Diagnostics;
 using Provodnik.Core.Downloads;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Services;
 
 namespace Provodnik.Wpf.Features.Install
@@ -73,7 +74,7 @@ namespace Provodnik.Wpf.Features.Install
       await EnsureAsync();
       var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
       _pending = pending;
-      console.Write("moddb", $"pedindo o link de {addonUrl}");
+      console.Write("moddb", L.T("install.moddb.requesting", addonUrl));
       _core!.Navigate(addonUrl);
 
       using var cancel = cancellationToken.Register(() => pending.TrySetCanceled(cancellationToken));
@@ -88,7 +89,7 @@ namespace Provodnik.Wpf.Features.Install
         if (waited > Patience && !IsVisibleToUser)
           Reveal();
         if (waited > Limit)
-          pending.TrySetException(new DownloadException("O ModDB não respondeu a tempo (o desafio do Cloudflare não foi resolvido)."));
+          pending.TrySetException(new DownloadException(L.T("install.moddb.timeout")));
       }
 
       Conceal();
@@ -104,7 +105,7 @@ namespace Provodnik.Wpf.Features.Install
       _web = new WebView2();
       _window = new Window
       {
-        Title = "ModDB · confirme que você é humano",
+        Title = L.T("install.moddb.windowTitle"),
         Width = 900,
         Height = 650,
         ShowInTaskbar = false,
@@ -142,7 +143,7 @@ namespace Provodnik.Wpf.Features.Install
       {
         if (e.Response.StatusCode == 429)
         {
-          pending.TrySetException(new DownloadException("O ModDB bloqueou temporariamente (429 too many requests)."));
+          pending.TrySetException(new DownloadException(L.T("install.moddb.tooManyRequests")));
           return;
         }
         if (e.Response.StatusCode != 200)
@@ -154,7 +155,7 @@ namespace Provodnik.Wpf.Features.Install
         var html = await new StreamReader(stream).ReadToEndAsync();
         if (html.Contains("temporarily blocked", StringComparison.OrdinalIgnoreCase))
         {
-          pending.TrySetException(new DownloadException("O ModDB bloqueou temporariamente este IP (temporarily blocked, 429)."));
+          pending.TrySetException(new DownloadException(L.T("install.moddb.blockedIp")));
           return;
         }
         if (MirrorLink().Match(html) is { Success: true } mirror)
@@ -181,8 +182,8 @@ namespace Provodnik.Wpf.Features.Install
     {
       if (_window is null)
         return;
-      console.Write("moddb", "o Cloudflare do ModDB quer confirmar que você é humano: clique na caixa da janela que abriu");
-      ToastService.Warning("O ModDB quer confirmar que você é humano. Clique na caixa da janela que abriu; depois disso segue sozinho.", "ModDB");
+      console.Write("moddb", L.T("install.moddb.challenge.console"));
+      ToastService.Warning(L.T("install.moddb.challenge.toast"), "ModDB");
       var area = SystemParameters.WorkArea;
       _window.Left = area.Left + (area.Width - _window.Width) / 2;
       _window.Top = area.Top + (area.Height - _window.Height) / 2;

@@ -6,6 +6,7 @@ using Provodnik.Core.Diagnostics;
 using Provodnik.Core.Downloads;
 using Provodnik.Core.Remote;
 using Provodnik.Core.Repos;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Wpf.Features.Demo
 {
@@ -75,12 +76,12 @@ namespace Provodnik.Wpf.Features.Demo
       public async Task<string> ResolveAsync(string addonUrl, CancellationToken cancellationToken)
       {
         var call = _calls.AddOrUpdate(addonUrl, 1, (_, n) => n + 1);
-        console.Write("moddb", $"pedindo o link de {addonUrl}");
+        console.Write("moddb", L.T("install.moddb.requesting", addonUrl));
         await Task.Delay(150 + DemoWorld.Dice(addonUrl) % 450, cancellationToken);
 
         // um em ~45 leva o bloqueio do ModDB na primeira vez (a fila inteira esfria)
         if (call == 1 && DemoWorld.Dice(addonUrl, 1) % 45 == 0)
-          throw new DownloadException("O ModDB bloqueou temporariamente este IP (temporarily blocked, 429).");
+          throw new DownloadException(L.T("install.moddb.blockedIp"));
 
         var link = $"https://fmt{1 + DemoWorld.Dice(addonUrl, 2) % 6}.dl.dbolical.com/dl/demo/{addonUrl.Split('/')[^1]}?st=demo";
         console.Write("moddb", $"link: {link}");
@@ -100,7 +101,7 @@ namespace Provodnik.Wpf.Features.Demo
         var size = (long)(2 + dice % 900) * 1024 * 1024 / (dice % 7 == 0 ? 1 : 3);
         var speed = (6 + DemoWorld.Dice(archive, 3) % 22) * 1024d * 1024;
         var tool = request.Impersonate ? "curl" : "http";
-        console.Write(tool, $"baixando {request.Url}");
+        console.Write(tool, L.T("install.demo.downloading", request.Url));
 
         // um em ~31 cai no meio da primeira vez e volta na segunda; um em ~110 falha sempre (404)
         var dropsAt = call == 1 && DemoWorld.Dice(archive, 4) % 31 == 0 ? size / 2 : long.MaxValue;
@@ -115,12 +116,12 @@ namespace Provodnik.Wpf.Features.Demo
           if (broken && received > size / 5)
           {
             console.Write(tool, "curl: (22) The requested URL returned error: 404");
-            throw new DownloadException("curl 22: o servidor respondeu com erro HTTP. The requested URL returned error: 404");
+            throw new DownloadException(L.T("install.demo.http404"));
           }
           if (received >= dropsAt)
           {
             console.Write(tool, "curl: (56) Recv failure: Connection was reset");
-            throw new DownloadException("curl 56: a conexão caiu no meio. Recv failure: Connection was reset");
+            throw new DownloadException(L.T("install.demo.connectionReset"));
           }
         }
 
@@ -135,7 +136,7 @@ namespace Provodnik.Wpf.Features.Demo
       public async Task ExtractAsync(string archive, string destination, IProgress<double>? progress, CancellationToken cancellationToken)
       {
         var name = Path.GetFileName(archive);
-        console.Write("7z", $"extraindo {name}");
+        console.Write("7z", L.T("install.demo.extracting", name));
         var steps = 3 + DemoWorld.Dice(name, 6) % 10;
         for (var step = 1; step <= steps; step++)
         {
@@ -145,7 +146,7 @@ namespace Provodnik.Wpf.Features.Demo
           if (step == steps / 2 && DemoWorld.Dice(name, 7) % 90 == 0)
           {
             console.Write("7z", $"ERROR: Headers Error : {archive}");
-            throw new ArchiveException("7-Zip parou com código 2: ERROR: Headers Error");
+            throw new ArchiveException(L.T("install.demo.headersError"));
           }
         }
 

@@ -41,7 +41,7 @@ namespace Provodnik.Wpf.Features.Install
     [ObservableProperty] private int _downloading;
     [ObservableProperty] private int _extracting;
     [ObservableProperty] private string _speedText = "—";
-    [ObservableProperty] private string _headline = "Pronto pra instalar";
+    [ObservableProperty] private string _headline = L.T("install.headline.ready");
 
     /// <summary>De 0 a 1, pra barra grande e pra barra de tarefas.</summary>
     [ObservableProperty] private double _overall;
@@ -99,7 +99,7 @@ namespace Provodnik.Wpf.Features.Install
       if (!IsRunning || _cancel is null)
         return;
       IsCancelling = true;
-      Headline = "Cancelando...";
+      Headline = L.T("install.headline.cancelling");
       _cancel.Cancel();
     }
 
@@ -119,7 +119,7 @@ namespace Provodnik.Wpf.Features.Install
       _pipeline.LauncherPath = Environment.ProcessPath;
       KeepAwake(true);
       _console.RecordTo(Path.Combine(layout.LogsDir, $"console-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log"));
-      _console.Write("provodnik", $"instalação começou em {layout.Root}");
+      _console.Write("provodnik", L.T("install.console.started", layout.Root));
       _timer.Start();
 
       InstallReport report;
@@ -149,7 +149,7 @@ namespace Provodnik.Wpf.Features.Install
       foreach (var stage in Stages.Where(s => s.State == StageState.Running))
       {
         stage.State = report.Cancelled ? StageState.Pending : StageState.Warning;
-        stage.Detail = report.Cancelled ? "cancelada" : stage.Detail;
+        stage.Detail = report.Cancelled ? L.T("install.stage.cancelled") : stage.Detail;
       }
       Active.Clear();
       Downloading = 0;
@@ -166,9 +166,9 @@ namespace Provodnik.Wpf.Features.Install
       Overall = report.Cancelled ? Overall : 1;
       Headline = report switch
       {
-        { Cancelled: true } => "Cancelada",
-        { Succeeded: true } => $"Pronto: {report.Installed} instalados, {report.UpToDate} em dia",
-        _ => $"Terminou com {report.Failures.Count} falha(s)",
+        { Cancelled: true } => L.T("install.headline.cancelled"),
+        { Succeeded: true } => L.T("install.headline.done", report.Installed, report.UpToDate),
+        _ => L.T("install.headline.failed", report.Failures.Count),
       };
       Finished?.Invoke(this, report);
       return report;
@@ -193,7 +193,7 @@ namespace Provodnik.Wpf.Features.Install
       Overall = 0;
       SpeedText = "—";
       Total = options.OnlyMods?.Count ?? _session.ModList?.Mods.Count ?? 0;
-      Headline = "Começando...";
+      Headline = L.T("install.headline.starting");
     }
 
     /// <summary>O lote da vez: etapas, a última posição de cada mod que mudou e os totais.</summary>

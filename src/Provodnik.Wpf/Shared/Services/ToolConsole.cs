@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using Provodnik.Core.Diagnostics;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Wpf.Shared.Services
 {
@@ -91,7 +92,7 @@ namespace Provodnik.Wpf.Shared.Services
           continue;
         _lastHint = explanation;
         _lastHintAt = line.Time;
-        Add(new ConsoleLine(line.Time, "dica", $"{explanation.Meaning} {explanation.Hint}", ConsoleKind.Hint));
+        Add(new ConsoleLine(line.Time, L.T("shared.console.hint"), $"{explanation.Meaning} {explanation.Hint}", ConsoleKind.Hint));
       }
 
       while (Lines.Count > Limit)

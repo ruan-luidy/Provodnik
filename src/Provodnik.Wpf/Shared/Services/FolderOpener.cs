@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Wpf.Shared.Services
 {
@@ -18,7 +19,7 @@ namespace Provodnik.Wpf.Shared.Services
       if (Directory.Exists(path))
         Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
       else
-        ToastService.Warning($"{path} não existe.");
+        ToastService.Warning(L.T("shared.folder.missing", path));
     }
 
     public static void Browse(string? url)

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Wpf.Shared
 {
@@ -40,7 +41,7 @@ namespace Provodnik.Wpf.Shared
       }
       catch (Exception ex)
       {
-        Error = $"Não deu pra carregar: {ex.Message}";
+        Error = L.T("shared.load.failed", ex.Message);
       }
       finally
       {
