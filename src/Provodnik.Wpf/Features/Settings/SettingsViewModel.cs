@@ -1,17 +1,27 @@
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Provodnik.Core.Text;
 using Microsoft.Win32;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Services;
 
 namespace Provodnik.Wpf.Features.Settings
 {
   /// <summary>
-  /// Configurações: a pasta do GAMMA (quando o exe não mora nela), quantos downloads e extrações ao mesmo tempo e as
-  /// opções que o launcher original tinha como caixinhas (md5, GitHub, Reshade), mais os atalhos.
+  /// Configurações: a pasta do GAMMA (quando o exe não mora nela), quantos downloads e extrações ao mesmo tempo, as
+  /// opções que o launcher original tinha como caixinhas (md5, GitHub, Reshade), os atalhos, o idioma e a aparência.
+  /// Cada opção vale na hora em que muda, como na Связь; só a pasta do GAMMA, que precisa ser conferida, vale no
+  /// Pronto. O idioma novo pede pra reabrir o app (<see cref="LanguageSwitchRequested"/>).
   /// </summary>
   public sealed partial class SettingsViewModel : ObservableObject
   {
+    // o que grava assim que muda
+    private static readonly HashSet<string> Live =
+    [
+      nameof(ModDbParallel), nameof(HttpParallel), nameof(ExtractParallel), nameof(CheckMd5), nameof(UpdateGitHubAddons),
+      nameof(DeleteReshadeDlls), nameof(CreateShortcuts), nameof(Mica), nameof(AutoUpdateApp),
+    ];
+
     private readonly SettingsStore _store;
     private readonly GammaSession _session;
 
@@ -43,22 +53,41 @@ namespace Provodnik.Wpf.Features.Settings
       _createShortcuts = current.CreateShortcuts;
       _mica = current.Mica;
       _autoUpdateApp = current.AutoUpdateApp;
-      _language = Languages.First(l => l.Code == L.Language);
+      Languages =
+      [
+        new(null, L.T("settings.language.auto")),
+        new(L.Portuguese, "Português"),
+        new(L.English, "English"),
+        new(L.Russian, "Русский"),
+      ];
+      _language = Languages.FirstOrDefault(l => l.Code == current.Language) ?? Languages[0];
     }
 
-    /// <summary>Os idiomas, cada um escrito nele mesmo (quem não lê o atual acha o seu).</summary>
-    public IReadOnlyList<LanguageOption> Languages { get; } =
-    [
-      new(L.Portuguese, "Português"),
-      new(L.English, "English"),
-      new(L.Russian, "Русский"),
-    ];
+    /// <summary>
+    /// O automático (o idioma do Windows, o padrão) e os idiomas, cada um escrito nele mesmo: quem não lê o atual
+    /// acha o seu.
+    /// </summary>
+    public IReadOnlyList<LanguageOption> Languages { get; }
 
-    /// <summary>Salvou com outro idioma: o app precisa reabrir pra trocar.</summary>
-    public bool LanguageChanged { get; private set; }
+    /// <summary>Escolheu um idioma diferente do que está na tela: o app reabre pra trocar.</summary>
+    public event EventHandler? LanguageSwitchRequested;
 
     /// <summary>O exe mora dentro do GAMMA: a pasta é essa e pronto.</summary>
     public bool IsPortable => _session.IsPortable;
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+      base.OnPropertyChanged(e);
+      if (e.PropertyName is { } name && Live.Contains(name))
+        Persist();
+    }
+
+    partial void OnLanguageChanged(LanguageOption value)
+    {
+      _store.Update(s => s with { Language = value.Code });
+      if ((value.Code ?? L.SystemLanguage) != L.Language)
+        LanguageSwitchRequested?.Invoke(this, EventArgs.Empty);
+    }
 
     [RelayCommand]
     private void Browse()
@@ -70,8 +99,8 @@ namespace Provodnik.Wpf.Features.Settings
         GammaRoot = dialog.FolderName;
     }
 
-    /// <summary>Grava. Falso (com o motivo em <see cref="Error"/>) quando a pasta não é do GAMMA.</summary>
-    public bool Save()
+    /// <summary>O Pronto: a pasta do GAMMA, se mudou. Falso (com o motivo em <see cref="Error"/>) quando a pasta não é do GAMMA.</summary>
+    public bool Done()
     {
       if (!IsPortable && !string.IsNullOrWhiteSpace(GammaRoot) && !string.Equals(GammaRoot, _session.Layout?.Root, StringComparison.OrdinalIgnoreCase))
       {
@@ -79,7 +108,10 @@ namespace Provodnik.Wpf.Features.Settings
         if (Error is not null)
           return false;
       }
+      return true;
+    }
 
+    private void Persist() =>
       _store.Update(s => s with
       {
         ModDbParallel = Math.Clamp(ModDbParallel, 1, 8),
@@ -91,15 +123,11 @@ namespace Provodnik.Wpf.Features.Settings
         CreateShortcuts = CreateShortcuts,
         Mica = Mica,
         AutoUpdateApp = AutoUpdateApp,
-        Language = Language.Code,
       });
-      LanguageChanged = Language.Code != L.Language;
-      return true;
-    }
   }
 
-  /// <summary>Um idioma da lista: o código ("pt") e o nome escrito nele mesmo.</summary>
-  public sealed record LanguageOption(string Code, string Name)
+  /// <summary>Um idioma da lista: o código ("pt"; nulo é o do Windows) e o nome escrito nele mesmo.</summary>
+  public sealed record LanguageOption(string? Code, string Name)
   {
     public override string ToString() => Name;
   }

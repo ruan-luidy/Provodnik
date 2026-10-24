@@ -366,7 +366,7 @@
               </ListBox.ItemTemplate>
             </ListBox>
             <controls:EmptyState
-              Icon="{icons:Phosphor ScrollBold}"
+              Icon="{icons:Phosphor FileTextBold}"
               Text="{loc:Tr logs.empty}"
               Visibility="{Binding Lines.Count, Converter={StaticResource WhenEmpty}, FallbackValue=Collapsed}" />
           </Grid>

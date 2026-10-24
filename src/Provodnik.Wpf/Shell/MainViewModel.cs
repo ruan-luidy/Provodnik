@@ -99,21 +99,23 @@ namespace Provodnik.Wpf.Shell
     private async Task OpenSettingsAsync()
     {
       var settings = new SettingsViewModel(_settings, _session);
-      if (!await DialogService.ShowAsync(new SettingsView { DataContext = settings }))
-        return;
-      if (!settings.LanguageChanged)
-      {
-        ToastService.Success(L.T("settings.saved"));
-        return;
-      }
-      // o idioma vale da partida em diante: reabre, a não ser no meio de uma instalação
+      settings.LanguageSwitchRequested += (_, _) => SwitchLanguage();
+      await DialogService.ShowAsync(new SettingsView { DataContext = settings });
+    }
+
+    /// <summary>
+    /// O idioma vale da partida em diante: o app reabre sozinho no mesmo lugar, na mesma aba e com as Configurações
+    /// abertas, em vez de perguntar. No meio de uma instalação só avisa: o idioma novo entra quando ele abrir de novo.
+    /// </summary>
+    private void SwitchLanguage()
+    {
       if (Install.IsRunning)
       {
         ToastService.Info(L.T("settings.language.later"));
         return;
       }
-      if (await DialogService.ConfirmAsync(L.T("settings.language.title"), L.T("settings.language.restart"), L.T("settings.language.reopen"), L.T("settings.language.notNow"), DialogKind.Info))
-        ((App)Application.Current).Restart();
+      var window = (MainWindow)Application.Current.MainWindow;
+      ((App)Application.Current).Restart(MainWindow.ReopenSettings, window.BoundsArgument());
     }
   }
 }

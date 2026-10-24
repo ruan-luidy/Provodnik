@@ -123,7 +123,7 @@
   "logs.duration.minutes": "{0} min",
   "logs.duration.seconds": "{0} s",
   "settings.title": "Settings",
-  "settings.subtitle": "Apply to the next install",
+  "settings.subtitle": "Changes apply right away",
   "settings.section.folder": "GAMMA FOLDER",
   "settings.folder.browse": "Choose the folder",
   "settings.folder.browse.title": "The GAMMA folder (the one with ModOrganizer.exe)",
@@ -151,6 +151,6 @@
   "settings.section.appearance": "APPEARANCE",
   "settings.mica.title": "Mica background",
   "settings.mica.caption": "The translucent Windows 11 background. On Windows 10 it stays solid gray.",
-  "settings.cancel": "Cancel",
-  "settings.save": "Save"
+  "settings.done": "Done",
+  "settings.language.auto": "Automatic (Windows)"
 }

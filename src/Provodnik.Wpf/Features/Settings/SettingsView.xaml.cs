@@ -13,12 +13,11 @@ namespace Provodnik.Wpf.Features.Settings
 
     public event EventHandler<bool>? Closed;
 
-    private void Save_Click(object sender, RoutedEventArgs e)
+    // as opções já valem; o Pronto (e o X, e o Esc) só confere a pasta do GAMMA e fecha
+    private void Done_Click(object sender, RoutedEventArgs e)
     {
-      if (((SettingsViewModel)DataContext).Save())
+      if (((SettingsViewModel)DataContext).Done())
         Closed?.Invoke(this, true);
     }
-
-    private void Cancel_Click(object sender, RoutedEventArgs e) => Closed?.Invoke(this, false);
   }
 }

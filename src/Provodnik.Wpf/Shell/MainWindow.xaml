@@ -204,7 +204,7 @@
             GroupName="Nav"
             IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Logs}}"
             Style="{StaticResource SideNavItem}"
-            Tag="{icons:Phosphor ScrollBold}" />
+            Tag="{icons:Phosphor FileTextBold}" />
         </StackPanel>
 
         <Grid />

@@ -10,6 +10,12 @@ namespace Provodnik.Wpf.Shell
 {
   public partial class MainWindow : HandyControl.Controls.Window
   {
+    /// <summary>Reaberto pra trocar de idioma: abre as Configurações de novo, onde a pessoa estava.</summary>
+    public const string ReopenSettings = "--settings";
+
+    /// <summary>"--bounds=x,y,largura,altura,maximizada": a janela volta no mesmo lugar depois de reabrir.</summary>
+    public const string BoundsArg = "--bounds=";
+
     private readonly InstallService _install;
     private readonly SettingsStore _settings;
     private bool _closing;
@@ -30,7 +36,13 @@ namespace Provodnik.Wpf.Shell
         else
           NonClientAreaBackground = System.Windows.Media.Brushes.Transparent;
       };
-      Loaded += async (_, _) => await viewModel.StartAsync();
+      ApplyStartupBounds();
+      Loaded += async (_, _) =>
+      {
+        if (Environment.GetCommandLineArgs().Contains(ReopenSettings))
+          _ = Dispatcher.InvokeAsync(() => viewModel.OpenSettingsCommand.Execute(null), System.Windows.Threading.DispatcherPriority.Background);
+        await viewModel.StartAsync();
+      };
       install.Finished += (_, report) =>
       {
         // terminou com a janela atrás de outra (o jogo, o navegador): o aviso vai pra área de trabalho
@@ -42,6 +54,27 @@ namespace Provodnik.Wpf.Shell
         else
           ToastService.Show(DialogKind.Warning, L.T("shell.failed.title"), L.T("shell.failed.message", report.Failures.Count), TimeSpan.FromSeconds(10), desktop: desktop);
       };
+    }
+
+    /// <summary>O argumento com o lugar e o tamanho da janela agora, pra reabrir igual.</summary>
+    public string BoundsArgument()
+    {
+      var r = WindowState == System.Windows.WindowState.Normal ? new System.Windows.Rect(Left, Top, Width, Height) : RestoreBounds;
+      var culture = System.Globalization.CultureInfo.InvariantCulture;
+      return string.Create(culture, $"{BoundsArg}{r.X:0},{r.Y:0},{r.Width:0},{r.Height:0},{(WindowState == System.Windows.WindowState.Maximized ? 1 : 0)}");
+    }
+
+    private void ApplyStartupBounds()
+    {
+      var arg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith(BoundsArg, StringComparison.Ordinal));
+      var parts = arg?[BoundsArg.Length..].Split(',');
+      if (parts is not { Length: 5 } || !parts.Take(4).All(p => double.TryParse(p, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _)))
+        return;
+      var v = parts.Take(4).Select(p => double.Parse(p, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+      WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+      (Left, Top, Width, Height) = (v[0], v[1], v[2], v[3]);
+      if (parts[4] == "1")
+        WindowState = System.Windows.WindowState.Maximized;
     }
 
     /// <summary>

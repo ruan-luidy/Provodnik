@@ -123,7 +123,7 @@
   "logs.duration.minutes": "{0} мин",
   "logs.duration.seconds": "{0} с",
   "settings.title": "Настройки",
-  "settings.subtitle": "Действуют со следующей установки",
+  "settings.subtitle": "Изменения применяются сразу",
   "settings.section.folder": "ПАПКА GAMMA",
   "settings.folder.browse": "Выбрать папку",
   "settings.folder.browse.title": "Папка GAMMA (та, где лежит ModOrganizer.exe)",
@@ -151,6 +151,6 @@
   "settings.section.appearance": "ВНЕШНИЙ ВИД",
   "settings.mica.title": "Фон Mica",
   "settings.mica.caption": "Полупрозрачный фон Windows 11. В Windows 10 остаётся сплошной серый.",
-  "settings.cancel": "Отмена",
-  "settings.save": "Сохранить"
+  "settings.done": "Готово",
+  "settings.language.auto": "Автоматически (Windows)"
 }

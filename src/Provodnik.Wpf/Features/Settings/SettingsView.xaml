@@ -41,7 +41,7 @@
   <!--  O corpo vai até a borda da direita: a barra de rolagem corre no canto do diálogo, longe dos cartões  -->
   <controls:DialogFrame
     BodyPadding="20,0,4,0"
-    CloseClick="Cancel_Click"
+    CloseClick="Done_Click"
     Subtitle="{loc:Tr settings.subtitle}"
     Title="{loc:Tr settings.title}">
     <Grid>
@@ -253,13 +253,9 @@
     <controls:DialogFrame.Footer>
       <hc:UniformSpacingPanel Style="{StaticResource DialogActions}">
         <Button
-          Click="Cancel_Click"
-          Content="{loc:Tr settings.cancel}"
+          Click="Done_Click"
+          Content="{loc:Tr settings.done}"
           IsCancel="True"
-          Style="{StaticResource Action.Dialog}" />
-        <Button
-          Click="Save_Click"
-          Content="{loc:Tr settings.save}"
           IsDefault="True"
           Style="{StaticResource Action.Dialog.Primary}" />
       </hc:UniformSpacingPanel>

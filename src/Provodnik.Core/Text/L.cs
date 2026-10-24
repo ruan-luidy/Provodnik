@@ -33,6 +33,12 @@ namespace Provodnik.Core.Text
 
     public static string Language { get; private set; } = Portuguese;
 
+    /// <summary>
+    /// O idioma do Windows, lido uma vez antes de o app trocar a cultura da thread pela do idioma escolhido (depois
+    /// disso a CurrentUICulture já é a do app). É o que vale no "Automático".
+    /// </summary>
+    public static string SystemLanguage { get; } = FromSystem(CultureInfo.CurrentUICulture);
+
     private static void RegisterIfOurs(Assembly assembly)
     {
       if (assembly.GetName().Name?.StartsWith("Provodnik", StringComparison.Ordinal) == true && !assembly.IsDynamic)

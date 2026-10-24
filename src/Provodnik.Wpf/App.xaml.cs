@@ -126,7 +126,7 @@ namespace Provodnik.Wpf
     /// </summary>
     private static void ApplyLanguage(AppSettings settings)
     {
-      L.Use(settings.Language ?? L.FromSystem(CultureInfo.CurrentUICulture));
+      L.Use(settings.Language ?? L.SystemLanguage);
       CultureInfo.DefaultThreadCurrentCulture = L.Culture;
       CultureInfo.DefaultThreadCurrentUICulture = L.Culture;
       CultureInfo.CurrentCulture = L.Culture;
@@ -136,15 +136,18 @@ namespace Provodnik.Wpf
     }
 
     /// <summary>
-    /// Fecha e abre de novo, com os mesmos argumentos (a simulação continua simulação, sem recomeçar do zero): pra trocar
-    /// de idioma. Solta a instância única antes, senão a nova só acordaria esta e sairia.
+    /// Fecha e abre de novo, com os mesmos argumentos (a simulação continua simulação, sem recomeçar do zero) mais os
+    /// <paramref name="extra"/>: pra trocar de idioma. Solta a instância única antes, senão a nova só acordaria esta e
+    /// sairia.
     /// </summary>
-    public void Restart()
+    public void Restart(params string[] extra)
     {
       _instance?.ReleaseMutex();
       _instance?.Dispose();
       _instance = null;
-      var args = Environment.GetCommandLineArgs().Skip(1).Where(a => a != "--demo-novo");
+      var args = Environment.GetCommandLineArgs().Skip(1)
+        .Where(a => a != "--demo-novo" && a != Shell.MainWindow.ReopenSettings && !a.StartsWith(Shell.MainWindow.BoundsArg, StringComparison.Ordinal))
+        .Concat(extra);
       Process.Start(new ProcessStartInfo(Environment.ProcessPath!, args) { UseShellExecute = false })?.Dispose();
       // a versão baixada fica pra quando fechar de vez: o Update.exe trocaria os arquivos com a nova já rodando
       _elevating = true;

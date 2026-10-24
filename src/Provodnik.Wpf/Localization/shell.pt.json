@@ -1,9 +1,4 @@
 {
-  "settings.saved": "Configurações salvas",
-  "settings.language.title": "Trocar o idioma",
-  "settings.language.restart": "O Проводник precisa reabrir pra mudar o idioma. Reabrir agora?",
-  "settings.language.reopen": "Reabrir",
-  "settings.language.notNow": "Depois",
   "settings.language.later": "O idioma novo entra na próxima vez que o Проводник abrir.",
   "shell.appName": "Проводник",
   "shell.nav.home": "Início",
