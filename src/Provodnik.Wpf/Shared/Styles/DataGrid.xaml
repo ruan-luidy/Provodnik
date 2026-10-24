@@ -11,22 +11,134 @@
     (QuickFilter) faz o serviço.
   -->
 
+  <!--
+    Cabeçalho com a mesma linha fraca das células: separador na direita (no mesmo x) e a linha de baixo. A última
+    coluna e o pedaço que sobra depois dela ficam sem o da direita.
+  -->
+  <Style
+    x:Key="StandardColumnHeader"
+    BasedOn="{StaticResource DataGridColumnHeaderStyle.Small}"
+    TargetType="DataGridColumnHeader">
+    <Setter Property="BorderThickness" Value="0,0,1,1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Grid.DividerBrush}" />
+    <Style.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource IsLastColumn}">
+            <Binding Path="Column" RelativeSource="{RelativeSource Self}" />
+            <Binding Path="DisplayIndex" RelativeSource="{RelativeSource Self}" />
+            <Binding RelativeSource="{RelativeSource AncestorType=DataGrid}" />
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <!--
+    Linha sem o azul cheio do HandyControl (em cima dele a pílula e o texto azul sumiam): o destaque é um fundo
+    arredondado solto das bordas, branco bem fraco no hover e o azul suave na escolhida. A divisória
+    entre as linhas fica embaixo e fora do destaque, recuada das pontas.
+  -->
   <Style
     x:Key="StandardDataGridRow"
     BasedOn="{StaticResource DataGridRowStyle.Small}"
     TargetType="DataGridRow">
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="Margin" Value="0,0,0,-1" />
-    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="DataGridRow">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Border
+              Margin="3,1,3,2"
+              Background="{TemplateBinding Background}"
+              CornerRadius="{StaticResource Radius.Sm}" />
+            <DataGridCellsPresenter
+              Margin="0,0,0,1"
+              ItemsPanel="{TemplateBinding ItemsPanel}"
+              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+            <DataGridDetailsPresenter
+              Grid.Row="1"
+              Margin="0,0,0,1"
+              Visibility="{TemplateBinding DetailsVisibility}" />
+            <Border
+              Grid.RowSpan="2"
+              Height="1"
+              Margin="8,0"
+              VerticalAlignment="Bottom"
+              Background="{DynamicResource Grid.DividerBrush}" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource Hover.RowBrush}" />
+      </Trigger>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="{StaticResource Selection.RowBrush}" />
+      </Trigger>
+    </Style.Triggers>
   </Style>
 
+  <!--
+    Célula transparente (o fundo é o da linha), texto sempre na cor normal. O separador de coluna é desenhado aqui,
+    recuado em cima e embaixo pra não encostar na divisória das linhas; some na última coluna e na linha com
+    destaque (hover ou escolhida), que fica uma pílula limpa.
+  -->
   <Style
     x:Key="StandardDataGridCell"
     BasedOn="{StaticResource DataGridCellStyle.Small}"
     TargetType="DataGridCell">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="DataGridCell">
+          <Grid Background="Transparent" SnapsToDevicePixels="True">
+            <ContentPresenter
+              Margin="{TemplateBinding Padding}"
+              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+            <Border
+              x:Name="Separator"
+              Width="1"
+              Margin="0,5"
+              HorizontalAlignment="Right"
+              Background="{DynamicResource Grid.DividerBrush}" />
+          </Grid>
+          <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True">
+              <Setter TargetName="Separator" Property="Visibility" Value="Hidden" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True">
+              <Setter TargetName="Separator" Property="Visibility" Value="Hidden" />
+            </DataTrigger>
+            <DataTrigger Value="True">
+              <DataTrigger.Binding>
+                <MultiBinding Converter="{StaticResource IsLastColumn}">
+                  <Binding Path="Column" RelativeSource="{RelativeSource Self}" />
+                  <Binding Path="Column.DisplayIndex" RelativeSource="{RelativeSource Self}" />
+                  <Binding RelativeSource="{RelativeSource AncestorType=DataGrid}" />
+                  <Binding Path="Column.Visibility" RelativeSource="{RelativeSource Self}" />
+                </MultiBinding>
+              </DataTrigger.Binding>
+              <Setter TargetName="Separator" Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
     <Style.Triggers>
       <Trigger Property="IsSelected" Value="True">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
       </Trigger>
     </Style.Triggers>
   </Style>
@@ -40,7 +152,7 @@
     <!--  Mais linhas embaixo: as últimas somem num degradê, sem linha cortada ao meio  -->
     <Setter Property="behaviors:ScrollFade.IsEnabled" Value="True" />
 
-    <Setter Property="ColumnHeaderStyle" Value="{StaticResource DataGridColumnHeaderStyle.Small}" />
+    <Setter Property="ColumnHeaderStyle" Value="{StaticResource StandardColumnHeader}" />
     <Setter Property="CellStyle" Value="{StaticResource StandardDataGridCell}" />
     <Setter Property="RowStyle" Value="{StaticResource StandardDataGridRow}" />
 
@@ -55,9 +167,9 @@
 
     <Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource Radius.Lg}" />
     <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
-    <Setter Property="GridLinesVisibility" Value="Vertical" />
+    <!--  As linhas são das células e das linhas (acima), não da grade do DataGrid  -->
+    <Setter Property="GridLinesVisibility" Value="None" />
     <Setter Property="HeadersVisibility" Value="Column" />
-    <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource Divider.Brush}" />
     <Setter Property="BorderThickness" Value="0" />
 
     <Setter Property="EnableColumnVirtualization" Value="True" />

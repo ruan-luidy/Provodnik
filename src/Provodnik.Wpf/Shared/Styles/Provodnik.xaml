@@ -125,6 +125,10 @@
     <Setter Property="Background" Value="{StaticResource Selection.RowBrush}" />
     <Setter Property="TextElement.Foreground" Value="{DynamicResource PrimaryBrush}" />
     <Style.Triggers>
+      <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Success}">
+        <Setter Property="Background" Value="{DynamicResource Success.SoftBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource SuccessBrush}" />
+      </DataTrigger>
       <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Error}">
         <Setter Property="Background" Value="{StaticResource Danger.SoftBrush}" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource DangerBrush}" />
@@ -650,6 +654,12 @@
   -->
   <SolidColorBrush x:Key="Card.BackgroundBrush" Color="#14FFFFFF" />
   <SolidColorBrush x:Key="Divider.Brush" Color="#14FFFFFF" />
+  <!--  As linhas da tabela, um degrau abaixo da divisória: são muitas, então bem fracas  -->
+  <SolidColorBrush x:Key="Grid.DividerBrush" Color="#0DFFFFFF" />
+  <!--  Botão sem borda: fundo translúcido sobre a camada, mais claro no hover, mais apagado apertado  -->
+  <SolidColorBrush x:Key="Button.BackgroundBrush" Color="#17FFFFFF" />
+  <SolidColorBrush x:Key="Button.HoverBrush" Color="#24FFFFFF" />
+  <SolidColorBrush x:Key="Button.PressedBrush" Color="#0EFFFFFF" />
   <SolidColorBrush x:Key="Nav.SelectedBrush" Color="#1AFFFFFF" />
   <!--  Os fundos suaves dos ícones (a cor do estado bem apagada)  -->
   <SolidColorBrush x:Key="Accent.SoftBrush" Color="#2E3778BF" />

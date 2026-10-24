@@ -32,6 +32,8 @@
     -->
     <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size}" />
     <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size}" />
+    <!--  Provodnik: sem borda, como os botões da Связь - o fundo é que marca o botão  -->
+    <Setter Property="BorderThickness" Value="0" />
     <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
     <Setter Property="RenderTransform">
       <Setter.Value>
@@ -113,12 +115,14 @@
     BasedOn="{StaticResource ButtonBaseStyle}"
     TargetType="Button">
     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <!--  Provodnik: sem borda, o cinza sólido virava um bloco escuro no Mica - fundo translúcido no lugar  -->
+    <Setter Property="Background" Value="{DynamicResource Button.BackgroundBrush}" />
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+        <Setter Property="Background" Value="{DynamicResource Button.HoverBrush}" />
       </Trigger>
       <Trigger Property="IsPressed" Value="True">
-        <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource Button.PressedBrush}" />
       </Trigger>
     </Style.Triggers>
   </Style>
@@ -736,6 +740,14 @@
     <!--  O ButtonIcon do HandyControl não herda o ButtonBaseStyle: sem isso o ícone enche o botão  -->
     <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size}" />
     <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size}" />
+    <!--  Hover: o ícone acende e ganha o fundo fraco (o encolher no clique vem do ButtonIcon acima)  -->
+    <Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource Radius.Sm}" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource Button.BackgroundBrush}" />
+      </Trigger>
+    </Style.Triggers>
   </Style>
 
   <!--  O X de fechar (diálogo, toast): glifo de 10, o tamanho do X dos botões da janela do Windows  -->
