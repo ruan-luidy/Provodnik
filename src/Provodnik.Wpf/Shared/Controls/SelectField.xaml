@@ -6,7 +6,7 @@
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   x:Name="Root"
-  Height="30"
+  Height="{StaticResource Control.Height}"
   mc:Ignorable="d">
 
   <UserControl.Resources>
