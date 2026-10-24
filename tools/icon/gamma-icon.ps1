@@ -14,6 +14,29 @@ $decoder = [Windows.Media.Imaging.BitmapDecoder]::Create($stream, [Windows.Media
 $stream.Close()
 $big = $decoder.Frames | Sort-Object PixelWidth -Descending | Select-Object -First 1
 
+# o átomo tem muita borda vazia e um brilho fraco em volta: em 16 px ele sumia. Recorta no que tem alfa de verdade
+# (acima de $Threshold), num quadrado com uma folguinha, antes de reduzir.
+$Threshold = 70
+$bgra = [Windows.Media.Imaging.FormatConvertedBitmap]::new($big, [Windows.Media.PixelFormats]::Bgra32, $null, 0)
+$w = $bgra.PixelWidth; $h = $bgra.PixelHeight
+$pixels = [byte[]]::new($w * $h * 4)
+$bgra.CopyPixels($pixels, $w * 4, 0)
+$left = $w; $top = $h; $right = 0; $bottom = 0
+for ($y = 0; $y -lt $h; $y++) {
+  for ($x = 0; $x -lt $w; $x++) {
+    if ($pixels[($y * $w + $x) * 4 + 3] -gt $Threshold) {
+      if ($x -lt $left) { $left = $x }; if ($x -gt $right) { $right = $x }
+      if ($y -lt $top) { $top = $y }; if ($y -gt $bottom) { $bottom = $y }
+    }
+  }
+}
+$side = [Math]::Max($right - $left, $bottom - $top) + 6
+$cx = ($left + $right) / 2; $cy = ($top + $bottom) / 2
+$x0 = [int][Math]::Max(0, [Math]::Min($w - $side, $cx - $side / 2))
+$y0 = [int][Math]::Max(0, [Math]::Min($h - $side, $cy - $side / 2))
+$big = [Windows.Media.Imaging.CroppedBitmap]::new($big, [Windows.Int32Rect]::new($x0, $y0, [Math]::Min($side, $w), [Math]::Min($side, $h)))
+"recorte: $x0,$y0 lado $side (de ${w}x$h)"
+
 function Png([Windows.Media.Imaging.BitmapSource]$image) {
   $encoder = [Windows.Media.Imaging.PngBitmapEncoder]::new()
   $encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($image))
@@ -27,7 +50,9 @@ function Scaled([int]$size) {
   $visual = [Windows.Media.DrawingVisual]::new()
   $context = $visual.RenderOpen()
   [Windows.Media.RenderOptions]::SetBitmapScalingMode($visual, [Windows.Media.BitmapScalingMode]::Fant)
-  $context.DrawImage($big, [Windows.Rect]::new(0, 0, $size, $size))
+  # pequeno, o brilho fino sumia: desenhado mais de uma vez por cima, o átomo engrossa e fica visível na barra
+  $layers = if ($size -le 24) { 3 } elseif ($size -le 48) { 2 } else { 1 }
+  for ($i = 0; $i -lt $layers; $i++) { $context.DrawImage($big, [Windows.Rect]::new(0, 0, $size, $size)) }
   $context.Close()
   $target = [Windows.Media.Imaging.RenderTargetBitmap]::new($size, $size, 96, 96, [Windows.Media.PixelFormats]::Pbgra32)
   $target.Render($visual)

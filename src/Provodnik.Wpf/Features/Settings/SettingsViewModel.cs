@@ -22,6 +22,7 @@ namespace Provodnik.Wpf.Features.Settings
     [ObservableProperty] private bool _updateGitHubAddons;
     [ObservableProperty] private bool _deleteReshadeDlls;
     [ObservableProperty] private bool _createShortcuts;
+    [ObservableProperty] private bool _mica;
     [ObservableProperty] private string? _error;
 
     public SettingsViewModel(SettingsStore store, GammaSession session)
@@ -37,6 +38,7 @@ namespace Provodnik.Wpf.Features.Settings
       _updateGitHubAddons = current.UpdateGitHubAddons;
       _deleteReshadeDlls = current.DeleteReshadeDlls;
       _createShortcuts = current.CreateShortcuts;
+      _mica = current.Mica;
     }
 
     /// <summary>O exe mora dentro do GAMMA: a pasta é essa e pronto.</summary>
@@ -71,6 +73,7 @@ namespace Provodnik.Wpf.Features.Settings
         UpdateGitHubAddons = UpdateGitHubAddons,
         DeleteReshadeDlls = DeleteReshadeDlls,
         CreateShortcuts = CreateShortcuts,
+        Mica = Mica,
       });
       return true;
     }

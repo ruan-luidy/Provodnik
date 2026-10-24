@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using HandyControl.Data;
+using HandyControl.Tools;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared.Controls;
 using Provodnik.Wpf.Shared.Services;
@@ -8,13 +10,17 @@ namespace Provodnik.Wpf.Shell
   public partial class MainWindow : HandyControl.Controls.Window
   {
     private readonly InstallService _install;
+    private readonly SettingsStore _settings;
     private bool _closing;
 
-    public MainWindow(MainViewModel viewModel, InstallService install)
+    public MainWindow(MainViewModel viewModel, InstallService install, SettingsStore settings)
     {
       InitializeComponent();
       DataContext = viewModel;
       _install = install;
+      _settings = settings;
+      settings.Changed += (_, _) => ApplyBackdrop();
+      ApplyBackdrop();
       Loaded += async (_, _) => await viewModel.StartAsync();
       install.Finished += (_, report) =>
       {
@@ -27,6 +33,24 @@ namespace Provodnik.Wpf.Shell
         else
           ToastService.Show(DialogKind.Warning, "Terminou com falhas", $"{report.Failures.Count} item(ns) não entraram. Veja na tela de instalação e use \"Tentar de novo\".", TimeSpan.FromSeconds(10), desktop: desktop);
       };
+    }
+
+    /// <summary>
+    /// Fundo Mica do Windows 11 pelo próprio HandyControl, como na Связь (SystemBackdropType: DWMWA_SYSTEMBACKDROP_TYPE
+    /// + modo escuro do DWM + fundo transparente). Sem suporte (Windows 10) ou desligado nas configurações, volta pro
+    /// cinza sólido.
+    /// </summary>
+    private void ApplyBackdrop()
+    {
+      if (_settings.Current.Mica && BackdropType.Mica.IsSupported())
+      {
+        if (SystemBackdropType != BackdropType.Mica)
+          SystemBackdropType = BackdropType.Mica;
+        return;
+      }
+      if (SystemBackdropType == BackdropType.Mica)
+        SystemBackdropType = BackdropType.Disable;
+      SetResourceReference(BackgroundProperty, "RegionBrush");
     }
 
     /// <summary>Fechar no meio de uma instalação pergunta; confirmando, cancela e fecha quando ela parar.</summary>

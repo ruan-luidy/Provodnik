@@ -117,6 +117,16 @@
         Content="Criar atalhos na área de trabalho"
         IsChecked="{Binding CreateShortcuts}"
         Style="{StaticResource Option}" />
+
+      <TextBlock
+        Margin="0,12,0,8"
+        Style="{StaticResource DialogFieldLabel}"
+        Text="Aparência" />
+      <CheckBox
+        Content="Fundo Mica (Windows 11)"
+        IsChecked="{Binding Mica}"
+        Style="{StaticResource Option}"
+        ToolTip="O fundo translúcido do Windows 11, que deixa a cor da área de trabalho atravessar. No Windows 10 fica o cinza sólido." />
     </StackPanel>
 
     <controls:DialogFrame.Footer>

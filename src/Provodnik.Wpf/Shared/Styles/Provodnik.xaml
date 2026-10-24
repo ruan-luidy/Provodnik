@@ -636,4 +636,11 @@
   <!--  Toda barra de progresso do app é a fina  -->
   <Style BasedOn="{StaticResource SlimProgress}" TargetType="ProgressBar" />
 
+  <!--
+    A camada por cima do Mica (o jeito da Связь e do Windows 11): branco translúcido em vez de cinza sólido, pro fundo
+    da área de trabalho atravessar. Sem Mica (Windows 10 ou desligado) a janela volta pro RegionBrush e esta camada dá
+    quase o mesmo cinza de antes.
+  -->
+  <SolidColorBrush x:Key="Pane.BackgroundBrush" Color="#12FFFFFF" />
+
 </ResourceDictionary>

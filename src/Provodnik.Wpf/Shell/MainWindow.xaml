@@ -17,6 +17,7 @@
   d:DataContext="{d:DesignInstance Type=shell:MainViewModel}"
   hc:Dialog.Token="{x:Static services:DialogService.Token}"
   BorderBrush="{DynamicResource BorderBrush}"
+  NonClientAreaBackground="Transparent"
   Icon="/Provodnik;component/Assets/provodnik.ico"
   ShowTitle="True"
   WindowStartupLocation="CenterScreen"
@@ -146,8 +147,9 @@
     </Grid.ColumnDefinitions>
 
     <!--  ===== Painel lateral: as telas em cima, Configurações no rodapé =====  -->
+    <!--  Sem fundo próprio: o Mica (ou o RegionBrush da janela, sem ele) aparece direto no painel  -->
     <Border
-      Background="{DynamicResource RegionBrush}"
+      Background="Transparent"
       BorderBrush="{DynamicResource BorderBrush}"
       BorderThickness="0,0,1,0">
       <DockPanel Margin="8,8">
@@ -213,7 +215,8 @@
       IsHitTestVisible="False" />
 
     <!--  A tela aberta; por cima, o erro e o carregando  -->
-    <Grid Grid.Column="1" Background="{DynamicResource RegionBrush}">
+    <!--  A tela uma camada acima do painel: branco translúcido por cima do Mica  -->
+    <Grid Grid.Column="1" Background="{DynamicResource Pane.BackgroundBrush}">
       <ContentControl x:Name="Page" Content="{Binding Current}" />
 
       <controls:ErrorState RetryCommand="{Binding Current.ReloadCommand}" Text="{Binding Current.Error}" />
