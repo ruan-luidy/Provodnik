@@ -702,4 +702,108 @@
     <Setter Property="Background" Value="{DynamicResource Divider.Brush}" />
   </Style>
 
+  <!--
+    Linhas de configuração (as da Связь): cada opção num cartão translúcido, título e explicação à esquerda e o
+    controle à direita, com o título de seção em cima do grupo.
+  -->
+  <Style x:Key="SettingRow" TargetType="Border">
+    <Setter Property="Margin" Value="0,0,0,4" />
+    <Setter Property="Padding" Value="14,9" />
+    <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
+    <Setter Property="CornerRadius" Value="10" />
+  </Style>
+
+  <Style x:Key="SettingTitle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <Style x:Key="SettingCaption" TargetType="TextBlock">
+    <Setter Property="Margin" Value="0,2,0,0" />
+    <Setter Property="FontSize" Value="{StaticResource FontSize.Sm}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <Style x:Key="SettingSection" TargetType="TextBlock">
+    <Setter Property="Margin" Value="2,14,0,6" />
+    <Setter Property="FontSize" Value="{StaticResource FontSize.XS}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+  </Style>
+
+  <!--
+    Chave liga/desliga (a da Связь): trilho 36x20 branco fraco / azul, bolinha branca deslizando em 150 ms. O
+    ToggleButtonSwitch do HandyControl sumia no cartão translúcido quando desligado.
+  -->
+  <Style x:Key="Switch" TargetType="ToggleButton">
+    <Setter Property="Width" Value="36" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Grid>
+            <Border
+              x:Name="Track"
+              Background="#33FFFFFF"
+              CornerRadius="10" />
+            <Ellipse
+              Width="14"
+              Height="14"
+              Margin="3,0"
+              HorizontalAlignment="Left"
+              Fill="White">
+              <Ellipse.RenderTransform>
+                <TranslateTransform x:Name="KnobMove" X="0" />
+              </Ellipse.RenderTransform>
+            </Ellipse>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Track" Property="Background" Value="{DynamicResource PrimaryBrush}" />
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation
+                      Storyboard.TargetName="KnobMove"
+                      Storyboard.TargetProperty="X"
+                      To="16"
+                      Duration="0:0:0.15">
+                      <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut" />
+                      </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation
+                      Storyboard.TargetName="KnobMove"
+                      Storyboard.TargetProperty="X"
+                      To="0"
+                      Duration="0:0:0.15">
+                      <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut" />
+                      </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Track" Property="Opacity" Value="0.85" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
 </ResourceDictionary>

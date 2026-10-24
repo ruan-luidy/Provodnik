@@ -8,33 +8,34 @@
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:settings="clr-namespace:Provodnik.Wpf.Features.Settings"
-  Width="480"
+  Width="560"
   d:DataContext="{d:DesignInstance Type=settings:SettingsViewModel}"
   Background="Transparent"
   mc:Ignorable="d">
 
+  <!--
+    Configurações no jeito da Связь: as opções em grupos, cada uma num cartão com o título e o que ela faz à
+    esquerda e o controle à direita (chave no lugar da caixinha, número com a explicação do lado). Se não couber na
+    janela, o meio rola.
+  -->
   <UserControl.Resources>
-    <!--  Linha "rótulo ..... número" dos downloads simultâneos  -->
-    <Style x:Key="CountRow" TargetType="DockPanel">
-      <Setter Property="Margin" Value="0,0,0,8" />
-    </Style>
-    <Style x:Key="CountLabel" TargetType="TextBlock">
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-    </Style>
     <Style
       x:Key="Count"
       BasedOn="{StaticResource NumericUpDownExtend}"
       TargetType="hc:NumericUpDown">
-      <Setter Property="Width" Value="96" />
+      <Setter Property="Width" Value="84" />
+      <Setter Property="Margin" Value="12,0,0,0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Minimum" Value="1" />
       <Setter Property="DockPanel.Dock" Value="Right" />
     </Style>
     <Style
-      x:Key="Option"
-      BasedOn="{StaticResource {x:Type CheckBox}}"
-      TargetType="CheckBox">
-      <Setter Property="Margin" Value="0,0,0,10" />
+      x:Key="RowSwitch"
+      BasedOn="{StaticResource Switch}"
+      TargetType="ToggleButton">
+      <Setter Property="Margin" Value="12,0,0,0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="DockPanel.Dock" Value="Right" />
     </Style>
   </UserControl.Resources>
 
@@ -42,92 +43,130 @@
     CloseClick="Cancel_Click"
     Subtitle="Valem pra próxima instalação"
     Title="Configurações">
-    <StackPanel>
-      <TextBlock Style="{StaticResource DialogFieldLabel}" Text="Pasta do GAMMA" />
-      <DockPanel>
-        <Button
-          Margin="6,0,0,0"
-          hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
-          Command="{Binding BrowseCommand}"
-          DockPanel.Dock="Right"
-          IsEnabled="{Binding IsPortable, Converter={StaticResource Boolean2BooleanReConverter}}"
-          Style="{StaticResource Action}" />
-        <hc:TextBox
-          hc:InfoElement.Placeholder="D:\GAMMA"
-          IsReadOnly="{Binding IsPortable}"
-          Text="{Binding GammaRoot}" />
-      </DockPanel>
-      <TextBlock
-        Margin="0,4,0,0"
-        Style="{StaticResource CaptionText}"
-        Text="O Проводник está dentro dessa pasta, então ela é fixa."
-        Visibility="{Binding IsPortable, Converter={StaticResource Boolean2VisibilityConverter}}" />
-      <TextBlock
-        Margin="0,4,0,0"
-        Foreground="{DynamicResource DangerBrush}"
-        Text="{Binding Error}"
-        TextWrapping="Wrap"
-        Visibility="{Binding Error, Converter={StaticResource String2VisibilityConverter}}" />
+    <ScrollViewer
+      MaxHeight="440"
+      Margin="0,-14,0,0"
+      VerticalScrollBarVisibility="Auto">
+      <!--  O respiro da direita é da barra de rolagem, que flutua por cima do conteúdo  -->
+      <StackPanel Margin="0,0,10,0">
+        <TextBlock Style="{StaticResource SettingSection}" Text="PASTA DO GAMMA" />
+        <Border Style="{StaticResource SettingRow}">
+          <StackPanel>
+            <DockPanel>
+              <Button
+                Margin="6,0,0,0"
+                hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
+                Command="{Binding BrowseCommand}"
+                DockPanel.Dock="Right"
+                IsEnabled="{Binding IsPortable, Converter={StaticResource Boolean2BooleanReConverter}}"
+                Style="{StaticResource Action.Icon}"
+                ToolTip="Escolher a pasta" />
+              <hc:TextBox
+                hc:InfoElement.Placeholder="D:\GAMMA"
+                IsReadOnly="{Binding IsPortable}"
+                Text="{Binding GammaRoot}" />
+            </DockPanel>
+            <TextBlock
+              Style="{StaticResource SettingCaption}"
+              Text="O Проводник está dentro dessa pasta, então ela é fixa."
+              Visibility="{Binding IsPortable, Converter={StaticResource Boolean2VisibilityConverter}}" />
+            <TextBlock
+              Margin="0,4,0,0"
+              Foreground="{DynamicResource DangerBrush}"
+              Text="{Binding Error}"
+              TextWrapping="Wrap"
+              Visibility="{Binding Error, Converter={StaticResource String2VisibilityConverter}}" />
+          </StackPanel>
+        </Border>
 
-      <TextBlock
-        Margin="0,20,0,8"
-        Style="{StaticResource DialogFieldLabel}"
-        Text="Ao mesmo tempo" />
-      <DockPanel Style="{StaticResource CountRow}" ToolTip="Downloads ao mesmo tempo no CDN do ModDB. Os pedidos de link vão um por vez, no ritmo que o ModDB aceita, e a fila esfria sozinha quando ele reclama">
-        <hc:NumericUpDown
-          Maximum="8"
-          Style="{StaticResource Count}"
-          Value="{Binding ModDbParallel}" />
-        <TextBlock Style="{StaticResource CountLabel}" Text="Downloads do ModDB" />
-      </DockPanel>
-      <DockPanel Style="{StaticResource CountRow}">
-        <hc:NumericUpDown
-          Maximum="16"
-          Style="{StaticResource Count}"
-          Value="{Binding HttpParallel}" />
-        <TextBlock Style="{StaticResource CountLabel}" Text="Downloads do GitHub" />
-      </DockPanel>
-      <DockPanel Style="{StaticResource CountRow}" ToolTip="O gargalo é o disco: em HD, deixe 1">
-        <hc:NumericUpDown
-          Maximum="8"
-          Style="{StaticResource Count}"
-          Value="{Binding ExtractParallel}" />
-        <TextBlock Style="{StaticResource CountLabel}" Text="Extrações" />
-      </DockPanel>
+        <TextBlock Style="{StaticResource SettingSection}" Text="AO MESMO TEMPO" />
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <hc:NumericUpDown
+              Maximum="8"
+              Style="{StaticResource Count}"
+              Value="{Binding ModDbParallel}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Downloads do ModDB" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="Os links saem um por vez, no ritmo que o ModDB aceita; a fila esfria sozinha quando ele reclama." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <hc:NumericUpDown
+              Maximum="16"
+              Style="{StaticResource Count}"
+              Value="{Binding HttpParallel}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Downloads do GitHub" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="Os addons que vêm direto do GitHub e do gofile." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <hc:NumericUpDown
+              Maximum="8"
+              Style="{StaticResource Count}"
+              Value="{Binding ExtractParallel}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Extrações" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="O gargalo é o disco: em HD, deixe 1." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
 
-      <TextBlock
-        Margin="0,12,0,8"
-        Style="{StaticResource DialogFieldLabel}"
-        Text="Opções" />
-      <CheckBox
-        Content="Conferir o md5 dos arquivos"
-        IsChecked="{Binding CheckMd5}"
-        Style="{StaticResource Option}"
-        ToolTip="Arquivo baixado que não bate com a lista é baixado de novo. Desligar é inseguro." />
-      <CheckBox
-        Content="Atualizar os addons do GitHub"
-        IsChecked="{Binding UpdateGitHubAddons}"
-        Style="{StaticResource Option}"
-        ToolTip="Pergunta pro GitHub se o zip mudou e baixa só quando mudou" />
-      <CheckBox
-        Content="Apagar as DLLs do Reshade (dxgi.dll e d3d9.dll)"
-        IsChecked="{Binding DeleteReshadeDlls}"
-        Style="{StaticResource Option}" />
-      <CheckBox
-        Content="Criar atalhos na área de trabalho"
-        IsChecked="{Binding CreateShortcuts}"
-        Style="{StaticResource Option}" />
+        <TextBlock Style="{StaticResource SettingSection}" Text="INSTALAÇÃO" />
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <ToggleButton IsChecked="{Binding CheckMd5}" Style="{StaticResource RowSwitch}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Conferir o md5 dos arquivos" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="Arquivo que não bate com a lista é baixado de novo. Desligar é inseguro." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <ToggleButton IsChecked="{Binding UpdateGitHubAddons}" Style="{StaticResource RowSwitch}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Atualizar os addons do GitHub" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="Pergunta pro GitHub se o zip mudou e baixa só quando mudou." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <ToggleButton IsChecked="{Binding DeleteReshadeDlls}" Style="{StaticResource RowSwitch}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Apagar as DLLs do Reshade" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="dxgi.dll e d3d9.dll em Anomaly\bin, como o launcher original faz." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <ToggleButton IsChecked="{Binding CreateShortcuts}" Style="{StaticResource RowSwitch}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Criar atalhos na área de trabalho" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="Pro Проводник e pro MO2 do GAMMA." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
 
-      <TextBlock
-        Margin="0,12,0,8"
-        Style="{StaticResource DialogFieldLabel}"
-        Text="Aparência" />
-      <CheckBox
-        Content="Fundo Mica (Windows 11)"
-        IsChecked="{Binding Mica}"
-        Style="{StaticResource Option}"
-        ToolTip="O fundo translúcido do Windows 11, que deixa a cor da área de trabalho atravessar. No Windows 10 fica o cinza sólido." />
-    </StackPanel>
+        <TextBlock Style="{StaticResource SettingSection}" Text="APARÊNCIA" />
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <ToggleButton IsChecked="{Binding Mica}" Style="{StaticResource RowSwitch}" />
+            <StackPanel>
+              <TextBlock Style="{StaticResource SettingTitle}" Text="Fundo Mica" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="O fundo translúcido do Windows 11. No Windows 10 fica o cinza sólido." />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
 
     <controls:DialogFrame.Footer>
       <hc:UniformSpacingPanel Style="{StaticResource DialogActions}">
