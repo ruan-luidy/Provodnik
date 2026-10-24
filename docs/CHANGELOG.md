@@ -12,6 +12,8 @@
 - Registro legível: texto na cor normal, o nível só na bolinha e numa etiqueta.
 - Barra de título sem a pílula: carregando, andamento e barra fina.
 - Camadas da Связь, sem linha dura: o painel fica direto no Mica, a tela é uma camada com o canto de cima arredondado e os cartões são brancos translúcidos; o cartão Pastas é o de informação da Связь, com divisória fina.
+- Início com cara própria: o cartão do estado ganha o ícone grande e um degradê suave da cor do estado; os números ganham ícone e, nas proporções, a barrinha que fica verde quando completa.
+- Diálogo aberto escurece a barra de título junto; o carregando e o erro respeitam o canto arredondado da tela.
 - Fundo Mica do Windows 11, como na Связь (desliga nas Configurações; no Windows 10 fica o cinza sólido).
 - Pasta de instrução renomeada pelo autor (o Defended Lab X10: a lista diz "Spawn Options\No Bloodsuckers", o arquivo tem "Spawn - No Bloodsuckers"): usa a única pasta que termina igual, em vez de deixar o mod vazio como o original.
 - Conferência: nome do modlist com TAB no fim conta certo, e nome que o próprio modlist do GAMMA escreveu errado vira aviso, não falha.

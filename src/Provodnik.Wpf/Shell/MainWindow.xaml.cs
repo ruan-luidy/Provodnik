@@ -21,6 +21,14 @@ namespace Provodnik.Wpf.Shell
       _settings = settings;
       settings.Changed += (_, _) => ApplyBackdrop();
       ApplyBackdrop();
+      // diálogo aberto: a barra de título escurece igual ao resto (a máscara do HandyControl não chega nela)
+      DialogService.OpenChanged += (_, _) =>
+      {
+        if (DialogService.IsOpen)
+          SetResourceReference(NonClientAreaBackgroundProperty, "DarkOpacityBrush");
+        else
+          NonClientAreaBackground = System.Windows.Media.Brushes.Transparent;
+      };
       Loaded += async (_, _) => await viewModel.StartAsync();
       install.Finished += (_, report) =>
       {

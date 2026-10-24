@@ -2,6 +2,7 @@
   x:Class="Provodnik.Wpf.Shell.MainWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:behaviors="clr-namespace:Provodnik.Wpf.Shared.Behaviors"
   xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
@@ -212,7 +213,8 @@
       Grid.Column="1"
       Background="{DynamicResource Pane.BackgroundBrush}"
       CornerRadius="12,0,0,0" />
-    <Grid Grid.Column="1">
+    <!--  O carregando e o erro por cima da tela respeitam o canto arredondado da camada  -->
+    <Grid Grid.Column="1" behaviors:CornerClip.Radius="12,0,0,0">
       <ContentControl x:Name="Page" Content="{Binding Current}" />
 
       <controls:ErrorState RetryCommand="{Binding Current.ReloadCommand}" Text="{Binding Current.Error}" />

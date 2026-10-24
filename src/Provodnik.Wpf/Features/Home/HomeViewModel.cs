@@ -32,11 +32,21 @@ namespace Provodnik.Wpf.Features.Home
     [ObservableProperty] private string _versionText = "—";
     [ObservableProperty] private string _onlineVersionText = "—";
     [ObservableProperty] private string _modListText = "—";
-    [ObservableProperty] private int _modsTotal;
-    [ObservableProperty] private int _modsInstalled;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ModsFraction), nameof(ModsComplete))]
+    private int _modsTotal;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ModsFraction), nameof(ModsComplete))]
+    private int _modsInstalled;
     [ObservableProperty] private int _archivesPresent;
-    [ObservableProperty] private int _activeFound;
-    [ObservableProperty] private int _activeExpected;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ActiveFraction), nameof(ActiveComplete))]
+    private int _activeFound;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ActiveFraction), nameof(ActiveComplete))]
+    private int _activeExpected;
     [ObservableProperty] private int _archivesMissing;
     [ObservableProperty] private string _lastInstallText = "ainda não";
     [ObservableProperty] private IReadOnlyList<string> _executables = [];
@@ -61,6 +71,15 @@ namespace Provodnik.Wpf.Features.Home
     }
 
     public InstallService Install { get; }
+
+    /// <summary>A barrinha dos cartões de proporção (verde quando completa).</summary>
+    public double ModsFraction => ModsTotal > 0 ? (double)ModsInstalled / ModsTotal : 0;
+
+    public bool ModsComplete => ModsTotal > 0 && ModsInstalled >= ModsTotal;
+
+    public double ActiveFraction => ActiveExpected > 0 ? (double)ActiveFound / ActiveExpected : 0;
+
+    public bool ActiveComplete => ActiveExpected > 0 && ActiveFound >= ActiveExpected;
 
     public bool HasGamma => _session.Layout is not null;
 

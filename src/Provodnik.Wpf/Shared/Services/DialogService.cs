@@ -64,8 +64,10 @@ namespace Provodnik.Wpf.Shared.Services
       content.Closed += (_, ok) =>
       {
         dialog?.Close();
-        result.TrySetResult(ok);
+        if (result.TrySetResult(ok))
+          Track(-1);
       };
+      Track(+1);
       dialog = Dialog.Show(content, Token);
       return result.Task;
     }
@@ -78,13 +80,33 @@ namespace Provodnik.Wpf.Shared.Services
       void Finish(bool value)
       {
         dialog?.Close();
-        result.TrySetResult(value);
+        if (result.TrySetResult(value))
+          Track(-1);
       }
 
       content.PrimaryClicked += (_, _) => Finish(true);
       content.SecondaryClicked += (_, _) => Finish(false);
+      Track(+1);
       dialog = Dialog.Show(content, Token);
       return result.Task;
+    }
+
+    private static int _open;
+
+    /// <summary>
+    /// Tem diálogo aberto. A máscara escura do HandyControl cobre só a área da janela; a barra de título (que é nossa,
+    /// com o Mica) escuta isto pra escurecer junto, senão ela ficava de outra cor por cima do diálogo.
+    /// </summary>
+    public static bool IsOpen => _open > 0;
+
+    public static event EventHandler? OpenChanged;
+
+    private static void Track(int delta)
+    {
+      var was = IsOpen;
+      _open = Math.Max(0, _open + delta);
+      if (was != IsOpen)
+        OpenChanged?.Invoke(null, EventArgs.Empty);
     }
 
     /// <summary>O overlay precisa de uma janela carregada (ele entra na camada de adorno dela).</summary>

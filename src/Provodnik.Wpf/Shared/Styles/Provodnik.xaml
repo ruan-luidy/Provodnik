@@ -651,6 +651,9 @@
   <SolidColorBrush x:Key="Card.BackgroundBrush" Color="#14FFFFFF" />
   <SolidColorBrush x:Key="Divider.Brush" Color="#14FFFFFF" />
   <SolidColorBrush x:Key="Nav.SelectedBrush" Color="#1AFFFFFF" />
+  <!--  Os fundos suaves dos ícones (a cor do estado bem apagada)  -->
+  <SolidColorBrush x:Key="Accent.SoftBrush" Color="#2E3778BF" />
+  <SolidColorBrush x:Key="Success.SoftBrush" Color="#2633C467" />
 
   <!--  Cartão de informação da Связь: linhas "rótulo ..... valor [ação]" com divisória fina entre elas  -->
   <Style x:Key="InfoCard" TargetType="Border">

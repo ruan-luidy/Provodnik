@@ -8,6 +8,7 @@
   xmlns:home="clr-namespace:Provodnik.Wpf.Features.Home"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:shared="clr-namespace:Provodnik.Wpf.Shared"
   d:DataContext="{d:DesignInstance Type=home:HomeViewModel}"
   mc:Ignorable="d">
 
@@ -25,11 +26,97 @@
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
     <Style x:Key="StatNumber" TargetType="TextBlock">
-      <Setter Property="Margin" Value="0,4,0,0" />
+      <Setter Property="Margin" Value="0,10,0,0" />
       <Setter Property="FontFamily" Value="{StaticResource FontFamily.Numbers}" />
       <Setter Property="FontSize" Value="{StaticResource FontSize.Title}" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    </Style>
+    <!--  O quadradinho do ícone dos números: azul suave, ícone azul  -->
+    <Style x:Key="StatIconBox" TargetType="Border">
+      <Setter Property="Width" Value="26" />
+      <Setter Property="Height" Value="26" />
+      <Setter Property="Margin" Value="0,0,8,0" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="Background" Value="{DynamicResource Accent.SoftBrush}" />
+    </Style>
+    <Style x:Key="StatIcon" TargetType="Path">
+      <Setter Property="Width" Value="14" />
+      <Setter Property="Height" Value="14" />
+      <Setter Property="Fill" Value="{DynamicResource PrimaryBrush}" />
+      <Setter Property="Stretch" Value="Uniform" />
+    </Style>
+
+    <!--  O cartão do estado: o degradê suave da cor do estado vindo da esquerda por cima do cartão translúcido  -->
+    <Style x:Key="HeroCard" TargetType="Border">
+      <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+      <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Success}">
+          <Setter Property="Background">
+            <Setter.Value>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Offset="0" Color="#2E33C467" />
+                <GradientStop Offset="0.55" Color="#14FFFFFF" />
+              </LinearGradientBrush>
+            </Setter.Value>
+          </Setter>
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Warning}">
+          <Setter Property="Background">
+            <Setter.Value>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Offset="0" Color="#2EF0B429" />
+                <GradientStop Offset="0.55" Color="#14FFFFFF" />
+              </LinearGradientBrush>
+            </Setter.Value>
+          </Setter>
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Error}">
+          <Setter Property="Background">
+            <Setter.Value>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Offset="0" Color="#2EF05A66" />
+                <GradientStop Offset="0.55" Color="#14FFFFFF" />
+              </LinearGradientBrush>
+            </Setter.Value>
+          </Setter>
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+    <Style x:Key="HeroIconBox" TargetType="Border">
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Background" Value="{DynamicResource Accent.SoftBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Success}">
+          <Setter Property="Background" Value="{DynamicResource Success.SoftBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Warning}">
+          <Setter Property="Background" Value="{DynamicResource Warning.SoftBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Error}">
+          <Setter Property="Background" Value="{DynamicResource Danger.SoftBrush}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+    <Style x:Key="HeroIcon" TargetType="Path">
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Data" Value="{icons:Phosphor InfoFill}" />
+      <Setter Property="Fill" Value="{DynamicResource PrimaryBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Success}">
+          <Setter Property="Data" Value="{icons:Phosphor CheckCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Warning}">
+          <Setter Property="Data" Value="{icons:Phosphor WarningCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource WarningBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Error}">
+          <Setter Property="Data" Value="{icons:Phosphor XCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource DangerBrush}" />
+        </DataTrigger>
+      </Style.Triggers>
     </Style>
   </UserControl.Resources>
 
@@ -102,8 +189,11 @@
       VerticalScrollBarVisibility="Auto"
       Visibility="{Binding HasGamma, Converter={StaticResource Boolean2VisibilityConverter}}">
       <StackPanel>
-        <!--  O cartão principal: o estado à esquerda, Jogar e Instalar à direita  -->
-        <Border Style="{StaticResource SurfaceCard}">
+        <!--
+          O cartão do estado: o ícone grande no quadrado da cor do estado, e um degradê bem suave dessa cor vindo da
+          esquerda (verde em dia, amarelo atenção, vermelho problema). Jogar e Instalar à direita.
+        -->
+        <Border Padding="18,16" Style="{StaticResource HeroCard}">
           <DockPanel>
             <StackPanel
               VerticalAlignment="Center"
@@ -131,41 +221,48 @@
                 Style="{StaticResource Action.Primary}" />
             </StackPanel>
 
-            <StackPanel VerticalAlignment="Center">
-              <StackPanel Orientation="Horizontal">
-                <Ellipse
-                  Width="10"
-                  Height="10"
-                  Margin="0,0,10,0"
-                  VerticalAlignment="Center"
-                  Style="{StaticResource ToneDot}" />
-                <TextBlock
-                  FontSize="{StaticResource FontSize.Lg}"
-                  FontWeight="SemiBold"
-                  Foreground="{DynamicResource PrimaryTextBrush}"
-                  Text="{Binding StatusTitle}" />
+            <Border
+              Width="48"
+              Height="48"
+              Margin="0,0,16,0"
+              VerticalAlignment="Center"
+              DockPanel.Dock="Left"
+              Style="{StaticResource HeroIconBox}">
+              <Grid>
+                <Path
+                  Width="24"
+                  Height="24"
+                  Style="{StaticResource HeroIcon}"
+                  Visibility="{Binding IsChecking, Converter={StaticResource Boolean2VisibilityReConverter}}" />
                 <hc:CircleProgressBar
-                  Width="14"
-                  Height="14"
-                  Margin="10,0,0,0"
+                  Width="22"
+                  Height="22"
                   IsIndeterminate="True"
                   Style="{StaticResource BusyCircle}"
                   Visibility="{Binding IsChecking, Converter={StaticResource Boolean2VisibilityConverter}}" />
-              </StackPanel>
+              </Grid>
+            </Border>
+
+            <StackPanel VerticalAlignment="Center">
               <TextBlock
-                Margin="20,4,16,0"
+                FontSize="{StaticResource FontSize.Lg}"
+                FontWeight="SemiBold"
+                Foreground="{DynamicResource PrimaryTextBrush}"
+                Text="{Binding StatusTitle}" />
+              <TextBlock
+                Margin="0,3,16,0"
                 Style="{StaticResource CaptionText}"
                 Text="{Binding StatusText}"
                 TextTrimming="None"
                 TextWrapping="Wrap" />
               <!--  A instalação rodando aparece aqui também, com a barra  -->
-              <StackPanel Margin="20,10,16,0" Visibility="{Binding Install.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
+              <StackPanel Margin="0,10,16,0" Visibility="{Binding Install.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
                 <TextBlock
                   Foreground="{DynamicResource PrimaryBrush}"
                   Text="{Binding Install.Headline}"
                   TextTrimming="CharacterEllipsis" />
                 <ProgressBar
-                  Height="6"
+                  Height="4"
                   Margin="0,6,0,0"
                   Maximum="1"
                   Value="{Binding Install.Overall, Mode=OneWay}" />
@@ -174,50 +271,110 @@
           </DockPanel>
         </Border>
 
-        <!--  Os números  -->
+        <!--  Os números: ícone no quadradinho azul, o valor grande e, nas proporções, a barrinha (verde quando completa)  -->
         <UniformGrid
-          Margin="0,16,-10,0"
+          Margin="0,12,-10,0"
           Columns="5"
           Rows="1">
           <Border Style="{StaticResource StatCard}">
             <StackPanel>
-              <TextBlock Style="{StaticResource StatLabel}" Text="DEFINIÇÃO" />
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
+                  <Path Data="{icons:Phosphor GitBranchBold}" Style="{StaticResource StatIcon}" />
+                </Border>
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="DEFINIÇÃO" />
+              </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}" Text="{Binding VersionText}" />
               <TextBlock Style="{StaticResource CaptionText}" Text="{Binding OnlineVersionText, StringFormat=no GitHub: {0}}" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
             <StackPanel>
-              <TextBlock Style="{StaticResource StatLabel}" Text="ADDONS NA PASTA" />
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
+                  <Path Data="{icons:Phosphor PackageBold}" Style="{StaticResource StatIcon}" />
+                </Border>
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="ADDONS NA PASTA" />
+              </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}">
                 <Run Text="{Binding ModsInstalled, Mode=OneWay}" /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding ModsTotal, Mode=OneWay, StringFormat=' / {0}'}" />
               </TextBlock>
+              <ProgressBar
+                Height="3"
+                Margin="0,6,0,6"
+                Maximum="1"
+                Value="{Binding ModsFraction, Mode=OneWay}">
+                <ProgressBar.Style>
+                  <Style BasedOn="{StaticResource SlimProgress}" TargetType="ProgressBar">
+                    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding ModsComplete}" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </ProgressBar.Style>
+              </ProgressBar>
               <TextBlock Style="{StaticResource CaptionText}" Text="{Binding ModListText, StringFormat=lista: {0}}" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
             <StackPanel>
-              <TextBlock Style="{StaticResource StatLabel}" Text="ATIVOS NO MO2" />
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
+                  <Path Data="{icons:Phosphor ToggleRightBold}" Style="{StaticResource StatIcon}" />
+                </Border>
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="ATIVOS NO MO2" />
+              </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}">
                 <Run Text="{Binding ActiveFound, Mode=OneWay}" /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding ActiveExpected, Mode=OneWay, StringFormat=' / {0}'}" />
               </TextBlock>
-              <TextBlock Style="{StaticResource CaptionText}" Text="a regra dos 5xx" ToolTip="A regra dos 5xx mods: o número de mods ativos que o MO2 tem que mostrar muda a cada versão do GAMMA; aqui ele sai do modlist.txt do GAMMA" />
+              <ProgressBar
+                Height="3"
+                Margin="0,6,0,6"
+                Maximum="1"
+                Value="{Binding ActiveFraction, Mode=OneWay}">
+                <ProgressBar.Style>
+                  <Style BasedOn="{StaticResource SlimProgress}" TargetType="ProgressBar">
+                    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding ActiveComplete}" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </ProgressBar.Style>
+              </ProgressBar>
+              <TextBlock
+                Style="{StaticResource CaptionText}"
+                Text="a regra dos 5xx"
+                ToolTip="A regra dos 5xx mods: o número de mods ativos que o MO2 tem que mostrar muda a cada versão do GAMMA; aqui ele sai do modlist.txt do GAMMA" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
             <StackPanel>
-              <TextBlock Style="{StaticResource StatLabel}" Text="FALTANDO" />
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
+                  <Path Data="{icons:Phosphor CloudArrowDownBold}" Style="{StaticResource StatIcon}" />
+                </Border>
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="FALTANDO" />
+              </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}" Text="{Binding ArchivesMissing}" />
               <TextBlock Style="{StaticResource CaptionText}" Text="arquivos pra baixar" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
             <StackPanel>
-              <TextBlock Style="{StaticResource StatLabel}" Text="ÚLTIMA INSTALAÇÃO" />
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
+                  <Path Data="{icons:Phosphor ClockCounterClockwiseBold}" Style="{StaticResource StatIcon}" />
+                </Border>
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="ÚLTIMA INSTALAÇÃO" />
+              </DockPanel>
               <TextBlock
-                Style="{StaticResource StatNumber}"
                 FontFamily="{StaticResource FontFamily.Default}"
                 FontSize="{StaticResource FontSize.Lg}"
+                Style="{StaticResource StatNumber}"
                 Text="{Binding LastInstallText}"
                 TextTrimming="CharacterEllipsis" />
               <TextBlock Style="{StaticResource CaptionText}" Text="completa, sem falha" />
