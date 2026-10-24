@@ -706,14 +706,18 @@
   </Style>
 
   <!--
-    Linhas de configuração (as da Связь): cada opção num cartão translúcido, título e explicação à esquerda e o
-    controle à direita, com o título de seção em cima do grupo.
+    Configurações no jeito do cartão de informação da Связь: um cartão translúcido por seção (SettingGroup), com o
+    título da seção em cima e as opções dentro (SettingRow), separadas pela divisória fina (InfoDivider). Cada opção
+    tem título e explicação à esquerda e o controle à direita.
   -->
-  <Style x:Key="SettingRow" TargetType="Border">
-    <Setter Property="Margin" Value="0,0,0,4" />
-    <Setter Property="Padding" Value="14,9" />
+  <Style x:Key="SettingGroup" TargetType="Border">
+    <Setter Property="Padding" Value="14,0" />
     <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
     <Setter Property="CornerRadius" Value="10" />
+  </Style>
+
+  <Style x:Key="SettingRow" TargetType="Border">
+    <Setter Property="Padding" Value="0,10" />
   </Style>
 
   <Style x:Key="SettingTitle" TargetType="TextBlock">

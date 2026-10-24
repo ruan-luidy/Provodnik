@@ -1,0 +1,41 @@
+<UserControl
+  x:Class="Provodnik.Wpf.Shared.Controls.Stepper"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  x:Name="Root"
+  Height="{StaticResource Control.Height}">
+
+  <!--  "−  3  +" no fundo translúcido dos botões: o número no meio, os botões de ícone nas pontas  -->
+  <Border Background="{DynamicResource Button.BackgroundBrush}" CornerRadius="{StaticResource Radius.Sm}">
+    <DockPanel>
+      <Button
+        x:Name="Down"
+        Margin="2,0,0,0"
+        hc:IconElement.Geometry="{icons:Phosphor MinusBold}"
+        hc:IconElement.Height="11"
+        hc:IconElement.Width="11"
+        Click="Down_Click"
+        DockPanel.Dock="Left"
+        Focusable="False"
+        Style="{StaticResource Action.Icon.Small}" />
+      <Button
+        x:Name="Up"
+        Margin="0,0,2,0"
+        hc:IconElement.Geometry="{icons:Phosphor PlusBold}"
+        hc:IconElement.Height="11"
+        hc:IconElement.Width="11"
+        Click="Up_Click"
+        DockPanel.Dock="Right"
+        Focusable="False"
+        Style="{StaticResource Action.Icon.Small}" />
+      <TextBlock
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        FontFamily="{StaticResource FontFamily.Numbers}"
+        Foreground="{DynamicResource PrimaryTextBrush}"
+        Text="{Binding Value, ElementName=Root}" />
+    </DockPanel>
+  </Border>
+</UserControl>
