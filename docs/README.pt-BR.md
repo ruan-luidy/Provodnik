@@ -66,4 +66,3 @@ A versão mora no `Directory.Build.props` e a nota do release sai da seção del
 | `Provodnik.Features` | O pipeline de instalação, downloads, verificação, perfil, patches e o Jogar. |
 | `Provodnik.Infrastructure` | HttpClient e as ferramentas do GAMMA rodadas como processo. |
 | `Provodnik.Wpf` | A interface (HandyControl + CommunityToolkit.Mvvm), em fatias por `Features/`. |
-
