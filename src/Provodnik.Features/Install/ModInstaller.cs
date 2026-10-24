@@ -25,8 +25,14 @@ namespace Provodnik.Features.Install
         if (!Directory.EnumerateFileSystemEntries(staging).Any())
           throw new ArchiveException("o arquivo abriu vazio");
 
-        if (mod.Instructions.Count > 0)
-          InstructionApplier.Apply(staging, mod.Instructions, warn);
+        if (mod.Instructions.Count > 0 && InstructionApplier.Apply(staging, mod.Instructions, warn) && !FileTree.HasContent(staging))
+        {
+          // do jeito do original o mod saiu vazio (a lista do GAMMA aponta pra pasta que o autor renomeou ou embrulhou):
+          // extrai de novo e procura a pasta pelo nome parecido. Mod que já sai com conteúdo fica igual ao oficial
+          FileTree.Delete(staging);
+          await extractor.ExtractAsync(archive, staging, progress, cancellationToken).ConfigureAwait(false);
+          InstructionApplier.Apply(staging, mod.Instructions, warn, rescue: true);
+        }
 
         File.WriteAllText(Path.Combine(staging, "meta.ini"), MetaIni.Build(metaTemplate, mod.ArchiveName ?? string.Empty, mod.PageUrl), NoBom);
         cancellationToken.ThrowIfCancellationRequested();

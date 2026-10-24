@@ -79,7 +79,7 @@ namespace Provodnik.Tests
       File.WriteAllText(Path.Combine(_root, @"Timer - 10 minutes\gamedata\configs\b.ltx"), "dez");
       var warnings = new List<string>();
 
-      InstructionApplier.Apply(_root, [@"Spawn Options\No Bloodsuckers", @"Timer Options\10 minutes"], warnings.Add);
+      InstructionApplier.Apply(_root, [@"Spawn Options\No Bloodsuckers", @"Timer Options\10 minutes"], warnings.Add, rescue: true);
 
       Assert.True(Has(@"gamedata\configs\a.ltx"));
       Assert.Equal("dez", File.ReadAllText(Path.Combine(_root, @"gamedata\configs\b.ltx")));
@@ -88,12 +88,28 @@ namespace Provodnik.Tests
     }
 
     [Fact]
+    public void Pasta_embrulhada_numa_pasta_nova_e_achada()
+    {
+      // #466: a versão nova do arquivo pôs tudo dentro de "PDA_Map..._0.4.3-c\"
+      Touch(@"PDA_Map_0.4.3-c\pda_map_location_text_by_mmmint\gamedata\a.ltx");
+      // #398: "Main" virou "1. Main"
+      Touch(@"1. Main\gamedata\b.ltx");
+      Touch(@"2. Vanilla weapons (optional)\gamedata\c.ltx");
+
+      InstructionApplier.Apply(_root, ["pda_map_location_text_by_mmmint", "Main"], _ => { }, rescue: true);
+
+      Assert.True(Has(@"gamedata\a.ltx"));
+      Assert.True(Has(@"gamedata\b.ltx"));
+      Assert.False(Has(@"gamedata\c.ltx"));
+    }
+
+    [Fact]
     public void Pasta_com_o_mesmo_nome_ja_movida_continua_de_fora_como_no_original()
     {
       Touch(@"MagsRedux-main\gamedata\a.ltx");
       Touch(@"MagsRedux-main\aug_patch\gamedata\b.ltx");
 
-      InstructionApplier.Apply(_root, ["MagsRedux-main", @"MagsRedux-main\aug_patch"], _ => { });
+      InstructionApplier.Apply(_root, ["MagsRedux-main", @"MagsRedux-main\aug_patch"], _ => { }, rescue: true);
 
       Assert.True(Has(@"gamedata\a.ltx"));
       Assert.False(Has(@"gamedata\b.ltx"));

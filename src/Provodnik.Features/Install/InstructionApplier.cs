@@ -15,8 +15,14 @@ namespace Provodnik.Features.Install
   {
     private static readonly string[] Kept = ["gamedata", "appdata", "db", "fomod"];
 
-    public static void Apply(string root, IReadOnlyList<string> instructions, Action<string> warn)
+    /// <summary>
+    /// Aplica as instruções. Devolve true quando alguma pasta pedida não existia. Com <paramref name="rescue"/>, pasta que
+    /// sumiu é procurada pelo nome parecido (<see cref="FindRenamed"/>); o instalador só liga isso na segunda passada,
+    /// quando o jeito do original deixou o mod vazio.
+    /// </summary>
+    public static bool Apply(string root, IReadOnlyList<string> instructions, Action<string> warn, bool rescue = false)
     {
+      var missing = false;
       foreach (var raw in instructions)
       {
         // o original junta como texto ("$Extract_path\$i"): "\Black_Market-main" e "pasta/sub" valem igual a "pasta\sub"
@@ -30,7 +36,7 @@ namespace Provodnik.Features.Install
           continue;
         }
 
-        if (!Directory.Exists(source) && FindRenamed(root, instruction) is { } renamed)
+        if (!Directory.Exists(source) && rescue && FindRenamed(root, instruction) is { } renamed)
         {
           // o autor renomeou a pasta e a lista do GAMMA não acompanhou ("Spawn Options\No Bloodsuckers" virou
           // "Spawn - No Bloodsuckers"): o original deixava o mod vazio; aqui usa a única pasta que termina igual
@@ -43,7 +49,9 @@ namespace Provodnik.Features.Install
         Directory.CreateDirectory(gamedata);
         if (!Directory.Exists(source))
         {
-          warn($"a pasta \"{instruction}\" não existe no arquivo");
+          missing = true;
+          if (!rescue)
+            warn($"a pasta \"{instruction}\" não existe no arquivo");
           continue;
         }
         if (!FileTree.MoveContents(source, gamedata))
@@ -55,6 +63,7 @@ namespace Provodnik.Features.Install
         if (!Kept.Contains(Path.GetFileName(folder), StringComparer.OrdinalIgnoreCase))
           FileTree.Delete(folder);
       }
+      return missing;
     }
 
     internal static string Normalize(string instruction) =>
@@ -72,7 +81,10 @@ namespace Provodnik.Features.Install
         return null;
 
       var candidates = Folders(root, depth: 3)
-        .Where(d => Squash(Path.GetFileName(d)) is var name && name != key && name.EndsWith(key, StringComparison.Ordinal))
+        .Where(d => Squash(Path.GetFileName(d)) is var name
+          && ((name != key && name.EndsWith(key, StringComparison.Ordinal))
+            // o mesmo nome só vale embrulhado numa pasta nova ("Mod_0.4.3-c\pasta"); na raiz é a que o original já moveu
+            || (name == key && !string.Equals(Path.GetDirectoryName(d), Path.GetFullPath(root).TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))))
         .Where(d => Directory.Exists(Path.Combine(d, "gamedata")))
         .Take(2)
         .ToList();
