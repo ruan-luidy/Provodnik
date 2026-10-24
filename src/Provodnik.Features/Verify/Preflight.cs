@@ -42,8 +42,8 @@ namespace Provodnik.Features.Verify
 
       checks.Add(Writable(layout, system));
       checks.Add(Anomaly(layout, system));
-      checks.Add(Running());
-      checks.Add(Space(layout));
+      checks.Add(Running(system));
+      checks.Add(Space(layout, system));
       checks.Add(Tools(layout));
       checks.Add(Browser(layout, system));
       checks.Add(LongPaths(layout, system));
@@ -75,18 +75,18 @@ namespace Provodnik.Features.Verify
       return new("Anomaly", CheckLevel.Ok, anomaly);
     }
 
-    private static PreflightCheck Running()
+    private static PreflightCheck Running(ISystemInfo system)
     {
-      if (GameLauncher.IsGameRunning())
+      if (system.IsGameRunning)
         return new(L.T("features.preflight.running.title"), CheckLevel.Failed, L.T("features.preflight.running.game"));
-      if (GameLauncher.IsModOrganizerRunning())
+      if (system.IsModOrganizerRunning)
         return new(L.T("features.preflight.running.title"), CheckLevel.Failed, L.T("features.preflight.running.mo2"));
       return new(L.T("features.preflight.running.title"), CheckLevel.Ok, L.T("features.preflight.running.ok"));
     }
 
-    private static PreflightCheck Space(GammaLayout layout)
+    private static PreflightCheck Space(GammaLayout layout, ISystemInfo system)
     {
-      var free = new DriveInfo(Path.GetPathRoot(layout.Root)!).AvailableFreeSpace;
+      var free = system.FreeSpace(layout.Root);
       var title = L.T("features.preflight.space.title");
       var text = L.T("features.preflight.space.free", ByteSize.Format(free), Path.GetPathRoot(layout.Root));
       return free switch

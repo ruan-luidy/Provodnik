@@ -11,11 +11,6 @@ namespace Provodnik.Features.Launch
   /// </summary>
   public static class GameLauncher
   {
-    public static bool IsModOrganizerRunning() => Process.GetProcessesByName("ModOrganizer").Length > 0;
-
-    public static bool IsGameRunning() =>
-      Process.GetProcesses().Any(p => p.ProcessName.StartsWith("AnomalyDX", StringComparison.OrdinalIgnoreCase));
-
     /// <param name="unelevated">
     /// Com o Проводник rodando como administrador: abre por um atalho pelo Explorer, que não herda o administrador.
     /// MO2 e jogo elevados dão dor de cabeça (arrastar arquivo, overlay do Steam/Discord, saves).

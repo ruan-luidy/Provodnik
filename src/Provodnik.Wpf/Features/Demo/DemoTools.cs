@@ -18,6 +18,25 @@ namespace Provodnik.Wpf.Features.Demo
   /// </summary>
   public static class DemoTools
   {
+    /// <summary>
+    /// O Windows de verdade (administrador, caminhos longos, WebView2), menos o espaço e o jogo: a simulação não baixa
+    /// nada, então finge disco folgado, e não para porque alguém está jogando o GAMMA de verdade.
+    /// </summary>
+    public sealed class System(ISystemInfo real) : ISystemInfo
+    {
+      public bool IsElevated => real.IsElevated;
+
+      public bool? LongPathsEnabled => real.LongPathsEnabled;
+
+      public string? WebView2Version => real.WebView2Version;
+
+      public long FreeSpace(string path) => 600L * 1024 * 1024 * 1024;
+
+      public bool IsGameRunning => false;
+
+      public bool IsModOrganizerRunning => false;
+    }
+
     public sealed class Api(DemoWorld world) : IGammaApi
     {
       public async Task<string> GetModListAsync(string key, CancellationToken cancellationToken)

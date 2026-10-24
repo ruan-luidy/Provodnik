@@ -244,6 +244,13 @@ namespace Provodnik.Tests
       public bool? LongPathsEnabled => true;
 
       public string? WebView2Version => "155.0";
+
+      // disco folgado e nada aberto: o teste não depende de quem está jogando na máquina
+      public long FreeSpace(string path) => 500L * 1024 * 1024 * 1024;
+
+      public bool IsGameRunning => false;
+
+      public bool IsModOrganizerRunning => false;
     }
 
     private sealed class NoShortcuts : IShortcutWriter

@@ -236,6 +236,7 @@ namespace Provodnik.Wpf
         services.AddSingleton<IFileDownloader>(sp => new DemoTools.Downloader(sp.GetRequiredService<IToolConsole>()));
         services.AddSingleton<IArchiveExtractor>(sp => new DemoTools.Extractor(demo, sp.GetRequiredService<IToolConsole>()));
         services.AddSingleton<IShortcutWriter, DemoTools.Shortcuts>();
+        services.AddSingleton<ISystemInfo>(new DemoTools.System(new SystemInfo()));
       }
       services.AddSingleton<InstallPipeline>();
       services.AddSingleton<UpdateChecker>();

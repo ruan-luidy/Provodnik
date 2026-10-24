@@ -1,12 +1,20 @@
+using System.Diagnostics;
 using System.Security.Principal;
 using Microsoft.Win32;
 using Provodnik.Core.Desktop;
 
 namespace Provodnik.Infrastructure.Desktop
 {
-  /// <summary>Administrador e caminhos longos, direto do Windows.</summary>
+  /// <summary>Administrador, caminhos longos, espaço em disco e o que está aberto, direto do Windows.</summary>
   public sealed class SystemInfo : ISystemInfo
   {
+    public long FreeSpace(string path) => new DriveInfo(Path.GetPathRoot(path)!).AvailableFreeSpace;
+
+    public bool IsGameRunning =>
+      Process.GetProcesses().Any(p => p.ProcessName.StartsWith("AnomalyDX", StringComparison.OrdinalIgnoreCase));
+
+    public bool IsModOrganizerRunning => Process.GetProcessesByName("ModOrganizer").Length > 0;
+
     public bool IsElevated { get; } = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
     private const string WebView2Key = @"Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
