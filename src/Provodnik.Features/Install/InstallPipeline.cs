@@ -140,15 +140,11 @@ namespace Provodnik.Features.Install
       // sem número: vêm do modpack_addons e dos arquivos grandes, que a instalação copia inteiros
       foreach (var name in loose)
         run.Warn($"O modlist do GAMMA liga \"{name}\", mas a pasta dele está vazia ou não existe.");
-      // nome que o próprio modlist do GAMMA escreveu errado ("DarkasleQif's..."): o MO2 descarta a linha pra todo mundo,
-      // não tem o que reinstalar
-      foreach (var name in result.Misnamed)
-        run.Warn($"O modlist do GAMMA liga \"{name}\", que não existe com esse nome (erro de digitação na lista do GAMMA; o MO2 descarta a linha pra todo mundo).");
 
       var numbered = result.Missing.Count - loose.Count;
       var summary = $"{result.Found} de {result.Expected} mods ativos";
-      run.Reporter.Log(result.Missing.Count == 0 ? LogLevel.Success : LogLevel.Warning, $"Conferência: {summary} no MO2{(result.Misnamed.Count > 0 ? $" ({result.Misnamed.Count} com o nome errado na lista do GAMMA, fora da conta)" : string.Empty)}");
-      run.Reporter.Stage(InstallStage.Verify, numbered > 0 ? StageState.Failed : loose.Count + result.Misnamed.Count > 0 ? StageState.Warning : StageState.Done, summary);
+      run.Reporter.Log(result.Missing.Count == 0 ? LogLevel.Success : LogLevel.Warning, $"Conferência: {summary} no MO2");
+      run.Reporter.Stage(InstallStage.Verify, numbered > 0 ? StageState.Failed : loose.Count > 0 ? StageState.Warning : StageState.Done, summary);
     }
 
     // ===== Preparando =====
@@ -494,8 +490,12 @@ namespace Provodnik.Features.Install
       run.Reporter.Stage(InstallStage.Profile, StageState.Running);
       try
       {
-        var profile = ProfileSetup.Apply(run.Layout, run.Metadata);
+        var fixes = new List<(string From, string To)>();
+        var profile = ProfileSetup.Apply(run.Layout, run.Metadata, fixes);
         run.Reporter.Log(LogLevel.Info, $"Perfil do MO2 em {profile}");
+        // erro de digitação no modlist do GAMMA: com o nome errado o MO2 desligava o mod
+        foreach (var (from, to) in fixes)
+          run.Reporter.Log(LogLevel.Info, $"Nome corrigido no perfil: \"{from}\" -> \"{to}\" (erro de digitação no modlist do GAMMA; sem isso o MO2 deixava o mod desligado)");
         run.Reporter.Stage(InstallStage.Profile, StageState.Done, run.Metadata.FolderName);
       }
       catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
