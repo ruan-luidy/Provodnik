@@ -99,13 +99,10 @@
       x:Key="LevelPill"
       BasedOn="{StaticResource TonePill}"
       TargetType="Border">
-      <Setter Property="Width" Value="50" />
-      <Setter Property="Height" Value="18" />
+      <Setter Property="Width" Value="54" />
       <Setter Property="Padding" Value="0" />
-      <Setter Property="CornerRadius" Value="9" />
       <Setter Property="HorizontalAlignment" Value="Left" />
       <Setter Property="VerticalAlignment" Value="Top" />
-      <Setter Property="TextElement.FontSize" Value="11" />
       <Style.Triggers>
         <DataTrigger Binding="{Binding LevelText}" Value="">
           <Setter Property="Visibility" Value="Hidden" />
@@ -356,10 +353,7 @@
                       Foreground="{DynamicResource SecondaryTextBrush}"
                       Text="{Binding TimeText}" />
                     <Border Grid.Column="1" Style="{StaticResource LevelPill}">
-                      <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="{Binding LevelText}" />
+                      <TextBlock Text="{Binding LevelText}" />
                     </Border>
                     <TextBlock
                       Grid.Column="2"

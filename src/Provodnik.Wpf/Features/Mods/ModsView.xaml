@@ -103,6 +103,7 @@
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate DataType="{x:Type mods:ModItemRow}">
               <Border
+                Width="76"
                 HorizontalAlignment="Left"
                 Style="{StaticResource TonePill}"
                 ToolTip="{Binding FolderHint}">

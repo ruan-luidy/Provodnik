@@ -117,13 +117,24 @@
   </Style>
 
   <!--  Pílula do estado em texto ("Rodando", "Com erro"): o fundo é a cor do estado apagada, o texto a cor cheia  -->
+  <!--
+    Pílula de estado: a letra do tamanho do texto da tabela (a de 10 sumia), 20 de altura e a palavra no meio - quem usa
+    numa coluna dá a mesma largura pra todas (Width), e elas ficam alinhadas umas com as outras.
+  -->
   <Style x:Key="TonePill" TargetType="Border">
-    <Setter Property="Padding" Value="7,1" />
-    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="9,0" />
+    <Setter Property="CornerRadius" Value="10" />
     <Setter Property="VerticalAlignment" Value="Center" />
-    <Setter Property="TextElement.FontSize" Value="{StaticResource FontSize.XS}" />
+    <Setter Property="TextElement.FontSize" Value="{StaticResource FontSize.Sm}" />
     <Setter Property="Background" Value="{StaticResource Selection.RowBrush}" />
     <Setter Property="TextElement.Foreground" Value="{DynamicResource PrimaryBrush}" />
+    <Style.Resources>
+      <Style TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+      </Style>
+    </Style.Resources>
     <Style.Triggers>
       <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Muted}">
         <Setter Property="Background" Value="{DynamicResource Nav.SelectedBrush}" />
