@@ -19,6 +19,26 @@ namespace Provodnik.Wpf.Shared.Behaviors
     public static readonly DependencyProperty IsEnabledProperty =
       DependencyProperty.RegisterAttached("IsEnabled", typeof(bool), typeof(ScrollFade), new PropertyMetadata(false, OnIsEnabledChanged));
 
+    /// <summary>
+    /// Modo cobertura, pra rolagem dentro de diálogo: em vez de apagar o conteúdo (OpacityMask), mostra este elemento -
+    /// uma faixa em degradê até a cor do fundo, por cima da ponta de baixo - enquanto tem mais coisa embaixo. Lá dentro a
+    /// máscara somava com a sombra e a animação da moldura e o WPF desenhava os cantos arredondados serrilhados.
+    /// </summary>
+    public static readonly DependencyProperty CoverProperty =
+      DependencyProperty.RegisterAttached("Cover", typeof(UIElement), typeof(ScrollFade), new PropertyMetadata(null));
+
+    public static UIElement? GetCover(DependencyObject element) => (UIElement?)element.GetValue(CoverProperty);
+
+    public static void SetCover(DependencyObject element, UIElement? value) => element.SetValue(CoverProperty, value);
+
+    /// <summary>A mesma faixa pra ponta de cima, depois de rolar.</summary>
+    public static readonly DependencyProperty TopCoverProperty =
+      DependencyProperty.RegisterAttached("TopCover", typeof(UIElement), typeof(ScrollFade), new PropertyMetadata(null));
+
+    public static UIElement? GetTopCover(DependencyObject element) => (UIElement?)element.GetValue(TopCoverProperty);
+
+    public static void SetTopCover(DependencyObject element, UIElement? value) => element.SetValue(TopCoverProperty, value);
+
     /// <summary>Já ligado nesse controle (Loaded roda de novo a cada troca de aba).</summary>
     private static readonly DependencyProperty HookedProperty =
       DependencyProperty.RegisterAttached("Hooked", typeof(bool), typeof(ScrollFade), new PropertyMetadata(false));
@@ -54,13 +74,25 @@ namespace Provodnik.Wpf.Shared.Behaviors
       // A grade rola de linha em linha: a primeira linha sempre aparece inteira, só a de baixo corta. Degradê em cima
       // só nas listas que rolam por pixel
       var top = element is not DataGrid;
-      viewer.ScrollChanged += (_, _) => Update(viewer, top);
-      viewer.SizeChanged += (_, _) => Update(viewer, top);
-      Update(viewer, top);
+      var cover = GetCover(element);
+      var topCover = GetTopCover(element);
+      viewer.ScrollChanged += (_, _) => Update(viewer, top, cover, topCover);
+      viewer.SizeChanged += (_, _) => Update(viewer, top, cover, topCover);
+      Update(viewer, top, cover, topCover);
     }
 
-    private static void Update(ScrollViewer viewer, bool top)
+    private static void Update(ScrollViewer viewer, bool top, UIElement? cover, UIElement? topCover)
     {
+      if (cover is not null || topCover is not null)
+      {
+        var more = viewer.ScrollableHeight > 0.5 && viewer.VerticalOffset < viewer.ScrollableHeight - 0.5;
+        if (cover is not null)
+          cover.Visibility = more ? Visibility.Visible : Visibility.Collapsed;
+        if (topCover is not null)
+          topCover.Visibility = viewer.VerticalOffset > 0.5 ? Visibility.Visible : Visibility.Collapsed;
+        return;
+      }
+
       var target = viewer.Template?.FindName("PART_ScrollContentPresenter", viewer) as FrameworkElement ?? viewer;
       var height = target.ActualHeight;
       var below = viewer.ScrollableHeight > 0.5 && viewer.VerticalOffset < viewer.ScrollableHeight - 0.5;

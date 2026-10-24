@@ -828,13 +828,15 @@
     </Style.Triggers>
   </Style>
 
-  <!--  O X de fechar (diálogo, toast): glifo de 10, o tamanho do X dos botões da janela do Windows  -->
+  <!--  O X de fechar (diálogo, toast): alvo de 28 com glifo de 12 - o de 24 com glifo de 10 era pequeno demais  -->
   <Style
     x:Key="Action.Icon.Close"
     BasedOn="{StaticResource Action.Icon.Small}"
     TargetType="Button">
-    <Setter Property="hc:IconElement.Width" Value="10" />
-    <Setter Property="hc:IconElement.Height" Value="10" />
+    <Setter Property="Width" Value="{StaticResource Control.Height}" />
+    <Setter Property="Height" Value="{StaticResource Control.Height}" />
+    <Setter Property="hc:IconElement.Width" Value="12" />
+    <Setter Property="hc:IconElement.Height" Value="12" />
   </Style>
 
   <Style
