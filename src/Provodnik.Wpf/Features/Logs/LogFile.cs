@@ -1,7 +1,9 @@
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Provodnik.Core.Install;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared;
 using Provodnik.Wpf.Shared.Services;
@@ -14,9 +16,18 @@ namespace Provodnik.Wpf.Features.Logs
   /// </summary>
   public sealed record LogFile(string Path, DateTime Started, string Caption, RowTone Tone)
   {
-    private static readonly Regex Finished = new(@"(Pronto|Terminou) em (\d+):(\d+):(\d+)(?:.* com (\d+) falha)?", RegexOptions.Compiled);
+    // o {0} (ou {0:formato}) das frases do catálogo (fica antes do Finished, que depende dele)
+    private static readonly Regex Placeholder = new(@"\{(\d+)(?:[,:][^}]*)?\}", RegexOptions.Compiled);
 
-    public string Title => Started.ToString("dd/MM · HH:mm", CultureInfo.InvariantCulture);
+    // a frase do fim nos idiomas do catálogo, mais a de antes dos catálogos (logs antigos)
+    private static readonly IReadOnlyList<Regex> Finished =
+    [
+      .. L.Variants("features.install.finished.ok").Select(t => Pattern(t, failures: false)).OfType<Regex>(),
+      .. L.Variants("features.install.finished.failures").Select(t => Pattern(t, failures: true)).OfType<Regex>(),
+      new(@"(?:Pronto|Terminou) em (?<h>\d+):(?<m>\d+):(?<s>\d+)(?:.* com (?<failures>\d+) falha)?", RegexOptions.Compiled),
+    ];
+
+    public string Title => L.T("logs.file.title", Started);
 
     public static IReadOnlyList<LogFile> List(string? folder)
     {
@@ -84,10 +95,10 @@ namespace Provodnik.Wpf.Features.Logs
         var detail = stage.Groups[3].Success ? $", {stage.Groups[3].Value}" : string.Empty;
         return stage.Groups[2].Value switch
         {
-          nameof(StageState.Done) => (LogLevel.Success, $"{title}: pronto{detail}"),
-          nameof(StageState.Warning) => (LogLevel.Warning, $"{title}: com aviso{detail}"),
-          nameof(StageState.Failed) => (LogLevel.Error, $"{title}: falhou{detail}"),
-          nameof(StageState.Skipped) => (LogLevel.Info, $"{title}: pulado, nada mudou{detail}"),
+          nameof(StageState.Done) => (LogLevel.Success, L.T("logs.stage.done", title, detail)),
+          nameof(StageState.Warning) => (LogLevel.Warning, L.T("logs.stage.warning", title, detail)),
+          nameof(StageState.Failed) => (LogLevel.Error, L.T("logs.stage.failed", title, detail)),
+          nameof(StageState.Skipped) => (LogLevel.Info, L.T("logs.stage.skipped", title, detail)),
           var state => (LogLevel.Info, $"{title}: {state}{detail}"),
         };
       }
@@ -98,9 +109,9 @@ namespace Provodnik.Wpf.Features.Logs
         var detail = mod.Groups[4].Success ? mod.Groups[4].Value : null;
         return mod.Groups[3].Value switch
         {
-          nameof(ModStatus.Failed) => (LogLevel.Error, detail is null ? $"{who}: falhou" : $"{who}: falhou - {detail}"),
-          nameof(ModStatus.UpToDate) => (LogLevel.Info, $"{who}: já estava em dia"),
-          _ => (LogLevel.Info, $"{who}: instalado"),
+          nameof(ModStatus.Failed) => (LogLevel.Error, detail is null ? L.T("logs.mod.failed", who) : L.T("logs.mod.failedWith", who, detail)),
+          nameof(ModStatus.UpToDate) => (LogLevel.Info, L.T("logs.mod.upToDate", who)),
+          _ => (LogLevel.Info, L.T("logs.mod.installed", who)),
         };
       }
 
@@ -110,16 +121,45 @@ namespace Provodnik.Wpf.Features.Logs
     private static (string Caption, RowTone Tone) Outcome(string path)
     {
       if (ReadAll(path) is not { } text)
-        return ("não deu pra ler", RowTone.Neutral);
-      if (Finished.Matches(text).LastOrDefault() is not { } match)
-        return ("parou no meio", RowTone.Warning);
+        return (L.T("logs.outcome.unreadable"), RowTone.Neutral);
+      // a última frase do fim no arquivo, em qualquer idioma
+      var match = Finished.Select(f => f.Matches(text).LastOrDefault()).OfType<Match>().MaxBy(m => m.Index);
+      if (match is null)
+        return (L.T("logs.outcome.interrupted"), RowTone.Warning);
 
-      var took = new TimeSpan(int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
-      var duration = took.TotalHours >= 1 ? $"{(int)took.TotalHours} h {took.Minutes} min" : took.TotalMinutes >= 1 ? $"{took.Minutes} min" : $"{took.Seconds} s";
-      if (!match.Groups[5].Success)
-        return ($"{duration} · sem falha", RowTone.Success);
-      var failures = match.Groups[5].Value;
-      return ($"{duration} · {failures} {(failures == "1" ? "falha" : "falhas")}", RowTone.Error);
+      var took = new TimeSpan(int.Parse(match.Groups["h"].Value), int.Parse(match.Groups["m"].Value), int.Parse(match.Groups["s"].Value));
+      var duration = took.TotalHours >= 1
+        ? L.T("logs.duration.hours", (int)took.TotalHours, took.Minutes)
+        : took.TotalMinutes >= 1 ? L.T("logs.duration.minutes", took.Minutes) : L.T("logs.duration.seconds", took.Seconds);
+      if (!match.Groups["failures"].Success)
+        return (L.T("logs.outcome.ok", duration), RowTone.Success);
+      var failures = int.Parse(match.Groups["failures"].Value);
+      return (L.T(failures == 1 ? "logs.outcome.failure" : "logs.outcome.failures", duration, failures), RowTone.Error);
+    }
+
+    /// <summary>
+    /// A frase do catálogo virando regex: {0} é o tempo (hh:mm:ss), {1} o número de falhas na de falha, o resto
+    /// qualquer número. Para no último {n}: o que vem depois é conselho e pode mudar de uma versão pra outra.
+    /// </summary>
+    private static Regex? Pattern(string template, bool failures)
+    {
+      var pattern = new StringBuilder();
+      var at = 0;
+      var hasTime = false;
+      foreach (Match placeholder in Placeholder.Matches(template))
+      {
+        pattern.Append(Regex.Escape(template[at..placeholder.Index]));
+        var index = placeholder.Groups[1].Value;
+        hasTime |= index == "0";
+        pattern.Append(index switch
+        {
+          "0" => @"(?<h>\d+):(?<m>\d+):(?<s>\d+)",
+          "1" when failures => @"(?<failures>\d+)",
+          _ => @"\d+",
+        });
+        at = placeholder.Index + placeholder.Length;
+      }
+      return hasTime ? new Regex(pattern.ToString(), RegexOptions.Compiled) : null;
     }
 
     // o arquivo da instalação que está rodando continua aberto pra escrita

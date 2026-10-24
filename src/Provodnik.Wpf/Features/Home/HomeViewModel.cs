@@ -2,6 +2,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using Provodnik.Core.Text;
 using Provodnik.Features.Launch;
 using Provodnik.Features.Mods;
 using Provodnik.Features.Update;
@@ -25,7 +26,7 @@ namespace Provodnik.Wpf.Features.Home
     private readonly Navigator _navigator;
     private readonly ElevationService _elevation;
 
-    [ObservableProperty] private string _statusTitle = "Conferindo...";
+    [ObservableProperty] private string _statusTitle = L.T("home.status.checking");
     [ObservableProperty] private string _statusText = string.Empty;
     [ObservableProperty] private RowTone _tone;
     [ObservableProperty] private bool _isChecking;
@@ -48,7 +49,7 @@ namespace Provodnik.Wpf.Features.Home
     [NotifyPropertyChangedFor(nameof(ActiveFraction), nameof(ActiveComplete))]
     private int _activeExpected;
     [ObservableProperty] private int _archivesMissing;
-    [ObservableProperty] private string _lastInstallText = "ainda não";
+    [ObservableProperty] private string _lastInstallText = L.T("home.stat.last.never");
     [ObservableProperty] private IReadOnlyList<string> _executables = [];
     [ObservableProperty] private string? _selectedExecutable;
 
@@ -85,7 +86,7 @@ namespace Provodnik.Wpf.Features.Home
 
     public string GammaRoot => _session.Layout?.Root ?? "—";
 
-    public string AnomalyPath => _session.Mo2.GamePath ?? "o MO2 ainda não sabe (abra ele uma vez)";
+    public string AnomalyPath => _session.Mo2.GamePath ?? L.T("home.folders.anomalyUnknown");
 
     public string ProfileName => _session.Mo2.SelectedProfile ?? _session.Metadata.FolderName;
 
@@ -126,12 +127,12 @@ namespace Provodnik.Wpf.Features.Home
       try
       {
         var status = await _updates.CheckAsync(layout, _settings.Current.ModListKey, CancellationToken.None);
-        OnlineVersionText = status.OnlineVersion ?? "sem resposta";
+        OnlineVersionText = status.OnlineVersion ?? L.T("home.noAnswer");
         ModListText = status.ModListChanged switch
         {
-          true => "mudou no site",
-          false => "em dia",
-          null => "sem resposta",
+          true => L.T("home.modList.changed"),
+          false => L.T("home.modList.upToDate"),
+          null => L.T("home.noAnswer"),
         };
         Summarize(status);
       }
@@ -144,16 +145,16 @@ namespace Provodnik.Wpf.Features.Home
     /// <summary>O que dá pra saber sem internet: versão instalada, executáveis e a última instalação.</summary>
     private void RefreshLocal()
     {
-      VersionText = _session.InstalledVersion ?? "não instalada";
+      VersionText = _session.InstalledVersion ?? L.T("home.version.notInstalled");
       Executables = _session.Mo2.GameExecutables.Select(e => e.Title).ToList();
       SelectedExecutable = Executables.Contains(_settings.Current.Executable ?? string.Empty)
         ? _settings.Current.Executable
         : Executables.FirstOrDefault(e => e.Contains("DX11-AVX", StringComparison.OrdinalIgnoreCase)) ?? Executables.FirstOrDefault();
-      LastInstallText = _session.State.LastCompleted is { } done ? done.ToString("dd/MM/yyyy HH:mm") : "ainda não";
+      LastInstallText = _session.State.LastCompleted is { } done ? L.T("home.stat.last.date", done) : L.T("home.stat.last.never");
       if (!HasGamma)
       {
-        StatusTitle = "GAMMA não encontrado";
-        StatusText = "Escolha a pasta do GAMMA (a que tem o ModOrganizer.exe) ou coloque o Проводник dentro dela.";
+        StatusTitle = L.T("home.status.notFound.title");
+        StatusText = L.T("home.status.notFound.text");
         Tone = RowTone.Error;
       }
     }
@@ -162,27 +163,27 @@ namespace Provodnik.Wpf.Features.Home
     {
       if (_session.State.IsIncomplete)
       {
-        (StatusTitle, StatusText, Tone) = ("Instalação incompleta", "A última instalação não chegou até o fim. Rode de novo: ela continua de onde parou.", RowTone.Warning);
+        (StatusTitle, StatusText, Tone) = (L.T("home.status.incomplete.title"), L.T("home.status.incomplete.text"), RowTone.Warning);
       }
       else if (_session.InstalledVersion is null)
       {
-        (StatusTitle, StatusText, Tone) = ("GAMMA não instalado", "Clique em Instalar pra baixar e montar o modpack.", RowTone.Warning);
+        (StatusTitle, StatusText, Tone) = (L.T("home.status.notInstalled.title"), L.T("home.status.notInstalled.text"), RowTone.Warning);
       }
       else if (status.HasUpdate)
       {
-        (StatusTitle, StatusText, Tone) = ("Atualização disponível", status.DefinitionOutdated ? $"A definição foi pra {status.OnlineVersion}." : "A lista de mods mudou no site.", RowTone.Warning);
+        (StatusTitle, StatusText, Tone) = (L.T("home.status.update.title"), status.DefinitionOutdated ? L.T("home.status.update.definition", status.OnlineVersion) : L.T("home.status.update.modList"), RowTone.Warning);
       }
       else if (ActiveFound < ActiveExpected || ModsInstalled < ModsTotal)
       {
-        (StatusTitle, StatusText, Tone) = ("Faltam addons", $"O MO2 tem {ActiveFound} de {ActiveExpected} mods ativos com pasta. Instale de novo pra completar (ele continua de onde parou).", RowTone.Warning);
+        (StatusTitle, StatusText, Tone) = (L.T("home.status.missing.title"), L.T("home.status.missing.text", ActiveFound, ActiveExpected), RowTone.Warning);
       }
       else
       {
-        (StatusTitle, StatusText, Tone) = ("Tudo em dia", $"{ActiveExpected} mods ativos no MO2, como a lista pede. É só jogar.", RowTone.Success);
+        (StatusTitle, StatusText, Tone) = (L.T("home.status.ok.title"), L.T("home.status.ok.text", ActiveExpected), RowTone.Success);
       }
 
       if (status.Error is { } error)
-        StatusText += $" (sem resposta de: {error})";
+        StatusText += L.T("home.status.noAnswerFrom", error);
     }
 
     [RelayCommand]
@@ -192,17 +193,17 @@ namespace Provodnik.Wpf.Features.Home
         return;
       if (Install.IsRunning)
       {
-        ToastService.Warning("Espere a instalação terminar.");
+        ToastService.Warning(L.T("home.play.wait"));
         return;
       }
       try
       {
         GameLauncher.Play(layout, SelectedExecutable, _elevation.Unelevated);
-        ToastService.Info(SelectedExecutable is null ? "Abrindo o Mod Organizer" : $"Abrindo {SelectedExecutable} pelo MO2", "Boa caçada, stalker");
+        ToastService.Info(SelectedExecutable is null ? L.T("home.play.openingMo2") : L.T("home.play.opening", SelectedExecutable), L.T("home.play.goodHunting"));
       }
       catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception)
       {
-        await DialogService.ErrorAsync("Não abriu", ex.Message);
+        await DialogService.ErrorAsync(L.T("home.play.failed"), ex.Message);
       }
     }
 
@@ -227,11 +228,11 @@ namespace Provodnik.Wpf.Features.Home
     [RelayCommand]
     private async Task ChooseFolderAsync()
     {
-      var dialog = new OpenFolderDialog { Title = "A pasta do GAMMA (a que tem o ModOrganizer.exe)" };
+      var dialog = new OpenFolderDialog { Title = L.T("home.chooseFolder.title") };
       if (dialog.ShowDialog() != true)
         return;
       if (_session.SetRoot(dialog.FolderName) is { } error)
-        await DialogService.WarningAsync("Pasta errada", error);
+        await DialogService.WarningAsync(L.T("home.chooseFolder.wrong"), error);
     }
 
     [RelayCommand]

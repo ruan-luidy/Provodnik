@@ -7,6 +7,7 @@
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:home="clr-namespace:Provodnik.Wpf.Features.Home"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:shared="clr-namespace:Provodnik.Wpf.Shared"
   d:DataContext="{d:DesignInstance Type=home:HomeViewModel}"
@@ -133,13 +134,13 @@
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
             Command="{Binding CheckCommand}"
-            Content="Conferir"
+            Content="{loc:Tr home.check}"
             Style="{StaticResource Action}"
-            ToolTip="Pergunta de novo se tem atualização" />
+            ToolTip="{loc:Tr home.check.tip}" />
           <Button
             hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
             Command="{Binding OpenFolderCommand}"
-            Content="Pasta do GAMMA"
+            Content="{loc:Tr home.openGammaFolder}"
             Style="{StaticResource Action}" />
         </StackPanel>
       </controls:PageHeader.Actions>
@@ -165,11 +166,11 @@
           FontSize="{StaticResource FontSize.Lg}"
           FontWeight="SemiBold"
           Foreground="{DynamicResource PrimaryTextBrush}"
-          Text="Cadê o GAMMA?" />
+          Text="{loc:Tr home.noGamma.title}" />
         <TextBlock
           Margin="0,6,0,0"
           Style="{StaticResource CaptionText}"
-          Text="O jeito mais fácil: coloque o Provodnik.exe dentro da pasta do GAMMA (ao lado do ModOrganizer.exe ou dentro de .Grok's Modpack Installer) e ele se acha sozinho. Ou escolha a pasta aqui."
+          Text="{loc:Tr home.noGamma.text}"
           TextAlignment="Center"
           TextTrimming="None"
           TextWrapping="Wrap" />
@@ -178,7 +179,7 @@
           HorizontalAlignment="Center"
           hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
           Command="{Binding ChooseFolderCommand}"
-          Content="Escolher a pasta do GAMMA"
+          Content="{loc:Tr home.noGamma.choose}"
           Style="{StaticResource Action.Primary}" />
       </StackPanel>
     </Border>
@@ -203,21 +204,21 @@
                 Width="190"
                 Margin="0,0,8,0"
                 ItemsSource="{Binding Executables}"
-                Placeholder="Executável"
+                Placeholder="{loc:Tr home.executable}"
                 SelectedItem="{Binding SelectedExecutable}"
-                ToolTip="Qual executável do MO2 o Jogar abre (DX11-AVX é o recomendado)" />
+                ToolTip="{loc:Tr home.executable.tip}" />
               <Button
                 Margin="0,0,8,0"
                 hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
                 Command="{Binding GoInstallCommand}"
-                Content="Instalar / atualizar"
+                Content="{loc:Tr home.install}"
                 IsEnabled="{Binding Install.IsRunning, Converter={StaticResource Boolean2BooleanReConverter}}"
                 Style="{StaticResource Action}" />
               <Button
                 Width="120"
                 hc:IconElement.Geometry="{icons:Phosphor PlayFill}"
                 Command="{Binding PlayCommand}"
-                Content="Jogar"
+                Content="{loc:Tr home.play}"
                 Style="{StaticResource Action.Primary}" />
             </StackPanel>
 
@@ -282,10 +283,10 @@
                 <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
                   <Path Data="{icons:Phosphor GitBranchBold}" Style="{StaticResource StatIcon}" />
                 </Border>
-                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="DEFINIÇÃO" />
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="{loc:Tr home.stat.definition}" />
               </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}" Text="{Binding VersionText}" />
-              <TextBlock Style="{StaticResource CaptionText}" Text="{Binding OnlineVersionText, StringFormat=no GitHub: {0}}" />
+              <TextBlock Style="{StaticResource CaptionText}" Text="{Binding OnlineVersionText, StringFormat={loc:Tr home.stat.online}}" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
@@ -294,7 +295,7 @@
                 <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
                   <Path Data="{icons:Phosphor PackageBold}" Style="{StaticResource StatIcon}" />
                 </Border>
-                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="ADDONS NA PASTA" />
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="{loc:Tr home.stat.addons}" />
               </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}">
                 <Run Text="{Binding ModsInstalled, Mode=OneWay}" /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding ModsTotal, Mode=OneWay, StringFormat=' / {0}'}" />
@@ -315,7 +316,7 @@
                   </Style>
                 </ProgressBar.Style>
               </ProgressBar>
-              <TextBlock Style="{StaticResource CaptionText}" Text="{Binding ModListText, StringFormat=lista: {0}}" />
+              <TextBlock Style="{StaticResource CaptionText}" Text="{Binding ModListText, StringFormat={loc:Tr home.stat.modList}}" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
@@ -324,7 +325,7 @@
                 <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
                   <Path Data="{icons:Phosphor ToggleRightBold}" Style="{StaticResource StatIcon}" />
                 </Border>
-                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="ATIVOS NO MO2" />
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="{loc:Tr home.stat.active}" />
               </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}">
                 <Run Text="{Binding ActiveFound, Mode=OneWay}" /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding ActiveExpected, Mode=OneWay, StringFormat=' / {0}'}" />
@@ -347,8 +348,8 @@
               </ProgressBar>
               <TextBlock
                 Style="{StaticResource CaptionText}"
-                Text="a regra dos 5xx"
-                ToolTip="A regra dos 5xx mods: o número de mods ativos que o MO2 tem que mostrar muda a cada versão do GAMMA; aqui ele sai do modlist.txt do GAMMA" />
+                Text="{loc:Tr home.stat.rule}"
+                ToolTip="{loc:Tr home.stat.rule.tip}" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
@@ -357,10 +358,10 @@
                 <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
                   <Path Data="{icons:Phosphor CloudArrowDownBold}" Style="{StaticResource StatIcon}" />
                 </Border>
-                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="FALTANDO" />
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="{loc:Tr home.stat.missing}" />
               </DockPanel>
               <TextBlock Style="{StaticResource StatNumber}" Text="{Binding ArchivesMissing}" />
-              <TextBlock Style="{StaticResource CaptionText}" Text="arquivos pra baixar" />
+              <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Tr home.stat.missing.caption}" />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
@@ -369,7 +370,7 @@
                 <Border DockPanel.Dock="Left" Style="{StaticResource StatIconBox}">
                   <Path Data="{icons:Phosphor ClockCounterClockwiseBold}" Style="{StaticResource StatIcon}" />
                 </Border>
-                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="ÚLTIMA INSTALAÇÃO" />
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource StatLabel}" Text="{loc:Tr home.stat.last}" />
               </DockPanel>
               <TextBlock
                 FontFamily="{StaticResource FontFamily.Default}"
@@ -377,7 +378,7 @@
                 Style="{StaticResource StatNumber}"
                 Text="{Binding LastInstallText}"
                 TextTrimming="CharacterEllipsis" />
-              <TextBlock Style="{StaticResource CaptionText}" Text="completa, sem falha" />
+              <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Tr home.stat.last.caption}" />
             </StackPanel>
           </Border>
         </UniformGrid>
@@ -386,7 +387,7 @@
         <TextBlock
           Margin="2,16,0,6"
           Style="{StaticResource StatLabel}"
-          Text="PASTAS" />
+          Text="{loc:Tr home.folders}" />
         <Border Style="{StaticResource InfoCard}">
           <StackPanel>
             <DockPanel Style="{StaticResource InfoRow}">
@@ -397,7 +398,7 @@
                 Command="{Binding OpenFolderCommand}"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Abrir" />
+                ToolTip="{loc:Tr home.folders.open}" />
               <TextBlock
                 FontFamily="{StaticResource FontFamily.Numbers}"
                 Style="{StaticResource InfoValue}"
@@ -413,7 +414,7 @@
                 CommandParameter="anomaly"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Abrir" />
+                ToolTip="{loc:Tr home.folders.open}" />
               <TextBlock
                 FontFamily="{StaticResource FontFamily.Numbers}"
                 Style="{StaticResource InfoValue}"
@@ -421,7 +422,7 @@
             </DockPanel>
             <Border Style="{StaticResource InfoDivider}" />
             <DockPanel Style="{StaticResource InfoRow}">
-              <TextBlock Style="{StaticResource InfoLabel}" Text="Perfil do MO2" />
+              <TextBlock Style="{StaticResource InfoLabel}" Text="{loc:Tr home.folders.profile}" />
               <Button
                 Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
@@ -429,7 +430,7 @@
                 CommandParameter="profile"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Abrir" />
+                ToolTip="{loc:Tr home.folders.open}" />
               <TextBlock Style="{StaticResource InfoValue}" Text="{Binding ProfileName}" />
             </DockPanel>
             <Border Style="{StaticResource InfoDivider}" />
@@ -441,7 +442,7 @@
                 Command="{Binding OpenModOrganizerCommand}"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Abrir o Mod Organizer (sem o jogo)" />
+                ToolTip="{loc:Tr home.folders.openMo2}" />
               <Button
                 Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
@@ -449,8 +450,8 @@
                 CommandParameter="downloads"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Abrir downloads\" />
-              <TextBlock Style="{StaticResource InfoValue}" Text="downloads\ e mods\ dentro da pasta do GAMMA" />
+                ToolTip="{loc:Tr home.folders.openDownloads}" />
+              <TextBlock Style="{StaticResource InfoValue}" Text="{loc:Tr home.folders.mo2}" />
             </DockPanel>
           </StackPanel>
         </Border>
@@ -472,8 +473,8 @@
             <TextBlock
               Foreground="{DynamicResource SecondaryTextBrush}"
               TextWrapping="Wrap">
-              <Run FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Text="Dica:" />
-              <Run Text="copie o Provodnik.exe pra dentro da pasta do GAMMA (ao lado do ModOrganizer.exe). Assim ele acha tudo sozinho, anda junto se a pasta mudar de lugar e substitui o G.A.M.M.A. Launcher.exe sem configurar nada." />
+              <Run FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Text="{loc:Tr home.tip}" />
+              <Run Text="{loc:Tr home.tip.text}" />
             </TextBlock>
           </DockPanel>
         </Border>

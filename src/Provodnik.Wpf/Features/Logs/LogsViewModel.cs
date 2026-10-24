@@ -6,6 +6,7 @@ using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Provodnik.Core.Install;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared;
 using Provodnik.Wpf.Shared.Services;
@@ -126,7 +127,7 @@ namespace Provodnik.Wpf.Features.Logs
     {
       var visible = Lines.Cast<LogLine>().ToList();
       Clipboard.SetText(string.Join(Environment.NewLine, visible.Select(l => $"{l.TimeText} {l.Level} {l.Text}")));
-      ToastService.Success($"{visible.Count} linhas copiadas");
+      ToastService.Success(L.T("logs.copied", visible.Count));
     }
 
     [RelayCommand]

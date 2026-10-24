@@ -7,6 +7,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:mods="clr-namespace:Provodnik.Wpf.Features.Mods"
   d:DataContext="{d:DesignInstance Type=mods:ModsViewModel}"
@@ -19,35 +20,29 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <controls:PageHeader Title="Mods">
-      <controls:PageHeader.Subtitle>
-        <MultiBinding StringFormat="{}{0} instalados · {1} com a pasta vazia · ligar, desligar e ordenar é no MO2">
-          <Binding Path="Installed" />
-          <Binding Path="Missing" />
-        </MultiBinding>
-      </controls:PageHeader.Subtitle>
+    <controls:PageHeader Title="{loc:Tr mods.title}" Subtitle="{Binding Subtitle}">
       <controls:PageHeader.Actions>
         <StackPanel Orientation="Horizontal">
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor SlidersHorizontalBold}"
             Command="{Binding OpenModOrganizerCommand}"
-            Content="Abrir no MO2"
+            Content="{loc:Tr mods.openMo2}"
             Style="{StaticResource Action}"
-            ToolTip="O Mod Organizer: busca, conflitos, ligar e desligar mods" />
+            ToolTip="{loc:Tr mods.openMo2.tip}" />
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
             Command="{Binding ReloadCommand}"
-            Content="Recarregar"
+            Content="{loc:Tr mods.reload}"
             Style="{StaticResource Action}" />
           <Button
             hc:IconElement.Geometry="{icons:Phosphor MagicWandBold}"
             Command="{Binding ReinstallMissingCommand}"
-            Content="Completar os vazios"
+            Content="{loc:Tr mods.fillEmpty}"
             IsEnabled="{Binding Install.IsRunning, Converter={StaticResource Boolean2BooleanReConverter}}"
             Style="{StaticResource Action.Primary}"
-            ToolTip="Baixa (se faltar) e extrai só os addons com a pasta vazia" />
+            ToolTip="{loc:Tr mods.fillEmpty.tip}" />
         </StackPanel>
       </controls:PageHeader.Actions>
     </controls:PageHeader>
@@ -58,12 +53,12 @@
         x:Name="Filter"
         Width="260"
         DockPanel.Dock="Left"
-        hc:InfoElement.Placeholder="Filtrar por nome, autor, arquivo"
+        hc:InfoElement.Placeholder="{loc:Tr mods.filter}"
         Style="{StaticResource FilterBox}" />
       <CheckBox
         Margin="8,0,0,0"
         VerticalAlignment="Center"
-        Content="Só os vazios"
+        Content="{loc:Tr mods.onlyEmpty}"
         IsChecked="{Binding OnlyMissing}" />
     </DockPanel>
 
@@ -78,7 +73,7 @@
           Width="52"
           Binding="{Binding Index}"
           Header="#" />
-        <DataGridTemplateColumn Width="*" Header="Mod">
+        <DataGridTemplateColumn Width="*" Header="{loc:Tr mods.column.mod}">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate DataType="{x:Type mods:ModItemRow}">
               <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
@@ -88,22 +83,22 @@
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTextColumn
-          Width="70"
+          Width="84"
           Binding="{Binding Source}"
-          Header="Origem" />
+          Header="{loc:Tr mods.column.source}" />
         <DataGridTextColumn
           Width="190"
           Binding="{Binding ArchiveName}"
-          Header="Arquivo" />
+          Header="{loc:Tr mods.column.archive}" />
         <DataGridTextColumn
-          Width="90"
+          Width="100"
           Binding="{Binding ArchiveText}"
-          Header="Baixado" />
-        <DataGridTemplateColumn Width="90" Header="Pasta">
+          Header="{loc:Tr mods.column.downloaded}" />
+        <DataGridTemplateColumn Width="100" Header="{loc:Tr mods.column.folder}">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate DataType="{x:Type mods:ModItemRow}">
               <Border
-                Width="76"
+                Width="84"
                 HorizontalAlignment="Left"
                 Style="{StaticResource TonePill}"
                 ToolTip="{Binding FolderHint}">
@@ -115,7 +110,7 @@
         <DataGridTextColumn
           Width="180"
           Binding="{Binding Origin}"
-          Header="Instalado por" />
+          Header="{loc:Tr mods.column.installedBy}" />
         <DataGridTemplateColumn Width="96">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate DataType="{x:Type mods:ModItemRow}">
@@ -125,19 +120,19 @@
                   Command="{Binding DataContext.OpenPageCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                   CommandParameter="{Binding}"
                   Style="{StaticResource Action.Icon.Small}"
-                  ToolTip="Página do addon" />
+                  ToolTip="{loc:Tr mods.openPage}" />
                 <Button
                   hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
                   Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                   CommandParameter="{Binding}"
                   Style="{StaticResource Action.Icon.Small}"
-                  ToolTip="Pasta em mods\" />
+                  ToolTip="{loc:Tr mods.openFolder}" />
                 <Button
                   hc:IconElement.Geometry="{icons:Phosphor ArrowClockwiseBold}"
                   Command="{Binding DataContext.ReinstallCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                   CommandParameter="{Binding}"
                   Style="{StaticResource Action.Icon.Small}"
-                  ToolTip="Reinstalar este mod" />
+                  ToolTip="{loc:Tr mods.reinstall}" />
               </StackPanel>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
@@ -148,7 +143,7 @@
     <controls:EmptyState
       Grid.Row="2"
       Icon="{icons:Phosphor PackageBold}"
-      Text="Nenhum addon aqui: sem mods.txt ainda (rode a instalação uma vez) ou nenhum vazio."
+      Text="{loc:Tr mods.empty}"
       Visibility="{Binding Items.Count, Converter={StaticResource WhenEmpty}}" />
   </Grid>
 </UserControl>

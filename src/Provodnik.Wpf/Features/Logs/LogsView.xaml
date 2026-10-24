@@ -7,6 +7,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:logs="clr-namespace:Provodnik.Wpf.Features.Logs"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:services="clr-namespace:Provodnik.Wpf.Shared.Services"
@@ -99,7 +100,7 @@
       x:Key="LevelPill"
       BasedOn="{StaticResource TonePill}"
       TargetType="Border">
-      <Setter Property="Width" Value="54" />
+      <Setter Property="Width" Value="64" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="HorizontalAlignment" Value="Left" />
       <Setter Property="VerticalAlignment" Value="Top" />
@@ -117,28 +118,28 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <controls:PageHeader Title="Registro" Subtitle="O que aconteceu nesta sessão e nas instalações de antes (.provodnik\logs).">
+    <controls:PageHeader Title="{loc:Tr logs.title}" Subtitle="{loc:Tr logs.subtitle}">
       <controls:PageHeader.Actions>
         <StackPanel Orientation="Horizontal">
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor CopyBold}"
             Command="{Binding CopyCommand}"
-            Content="Copiar"
+            Content="{loc:Tr logs.copy}"
             Style="{StaticResource Action}"
-            ToolTip="Copia as linhas que estão aparecendo (com o filtro)" />
+            ToolTip="{loc:Tr logs.copy.tip}" />
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor TrashBold}"
             Command="{Binding ClearCommand}"
-            Content="Limpar"
+            Content="{loc:Tr logs.clear}"
             IsEnabled="{Binding IsSession}"
             Style="{StaticResource Action}"
-            ToolTip="Limpa o registro desta sessão (os arquivos ficam)" />
+            ToolTip="{loc:Tr logs.clear.tip}" />
           <Button
             hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
             Command="{Binding OpenFolderCommand}"
-            Content="Pasta dos logs"
+            Content="{loc:Tr logs.openFolder}"
             Style="{StaticResource Action}" />
         </StackPanel>
       </controls:PageHeader.Actions>
@@ -158,12 +159,12 @@
             Margin="6,4,0,8"
             DockPanel.Dock="Top"
             Style="{StaticResource StatLabel}"
-            Text="AGORA" />
+            Text="{loc:Tr logs.now}" />
           <Button
             Margin="0,0,0,12"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Stretch"
-            AutomationProperties.Name="Esta sessão"
+            AutomationProperties.Name="{loc:Tr logs.session}"
             Command="{Binding ShowSessionCommand}"
             Cursor="Hand"
             DockPanel.Dock="Top">
@@ -205,7 +206,7 @@
               <TextBlock
                 VerticalAlignment="Center"
                 Foreground="{DynamicResource PrimaryTextBrush}"
-                Text="Esta sessão" />
+                Text="{loc:Tr logs.session}" />
             </DockPanel>
           </Button>
 
@@ -213,7 +214,7 @@
             Margin="6,0,0,8"
             DockPanel.Dock="Top"
             Style="{StaticResource StatLabel}"
-            Text="INSTALAÇÕES DE ANTES" />
+            Text="{loc:Tr logs.previous}" />
           <Grid>
             <ListBox
               Background="Transparent"
@@ -247,7 +248,7 @@
             <TextBlock
               Margin="6,0"
               Style="{StaticResource CaptionText}"
-              Text="Nenhuma ainda."
+              Text="{loc:Tr logs.previous.none}"
               Visibility="{Binding Files.Count, Converter={StaticResource WhenEmpty}}" />
           </Grid>
         </DockPanel>
@@ -259,7 +260,7 @@
           <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
             <RadioButton IsChecked="{Binding Filter, Converter={StaticResource Is}, ConverterParameter={x:Static logs:LogFilter.All}}" Style="{StaticResource FilterChip}">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Tudo" />
+                <TextBlock Text="{loc:Tr logs.filter.all}" />
                 <TextBlock Style="{StaticResource ChipCount}" Text="{Binding Total}" />
               </StackPanel>
             </RadioButton>
@@ -271,7 +272,7 @@
                   Margin="0,0,7,0"
                   VerticalAlignment="Center"
                   Fill="{DynamicResource WarningBrush}" />
-                <TextBlock Text="Avisos" />
+                <TextBlock Text="{loc:Tr logs.filter.warnings}" />
                 <TextBlock Style="{StaticResource ChipCount}" Text="{Binding Warnings}" />
               </StackPanel>
             </RadioButton>
@@ -283,7 +284,7 @@
                   Margin="0,0,7,0"
                   VerticalAlignment="Center"
                   Fill="{DynamicResource DangerBrush}" />
-                <TextBlock Text="Erros" />
+                <TextBlock Text="{loc:Tr logs.filter.errors}" />
                 <TextBlock Style="{StaticResource ChipCount}" Text="{Binding Errors}" />
               </StackPanel>
             </RadioButton>
@@ -291,10 +292,10 @@
           <hc:TextBox
             Width="280"
             HorizontalAlignment="Left"
-            hc:InfoElement.Placeholder="Buscar no registro"
+            hc:InfoElement.Placeholder="{loc:Tr logs.search}"
             Style="{StaticResource FilterBox}"
             Text="{Binding Search, UpdateSourceTrigger=PropertyChanged, Delay=150}"
-            ToolTip="Mostra só as linhas com esse texto" />
+            ToolTip="{loc:Tr logs.search.tip}" />
         </DockPanel>
 
         <Border Padding="6" Style="{StaticResource SurfaceCard}">
@@ -342,7 +343,7 @@
                   <Grid>
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="66" />
-                      <ColumnDefinition Width="60" />
+                      <ColumnDefinition Width="70" />
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock
@@ -366,7 +367,7 @@
             </ListBox>
             <controls:EmptyState
               Icon="{icons:Phosphor ScrollBold}"
-              Text="Nada por aqui. Comece uma instalação e o passo a passo aparece."
+              Text="{loc:Tr logs.empty}"
               Visibility="{Binding Lines.Count, Converter={StaticResource WhenEmpty}, FallbackValue=Collapsed}" />
           </Grid>
         </Border>

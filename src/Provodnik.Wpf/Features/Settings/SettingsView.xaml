@@ -7,6 +7,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:settings="clr-namespace:Provodnik.Wpf.Features.Settings"
   Width="560"
@@ -41,8 +42,8 @@
   <controls:DialogFrame
     BodyPadding="20,0,4,0"
     CloseClick="Cancel_Click"
-    Subtitle="Valem pra próxima instalação"
-    Title="Configurações">
+    Subtitle="{loc:Tr settings.subtitle}"
+    Title="{loc:Tr settings.title}">
     <Grid>
       <ScrollViewer
         MaxHeight="460"
@@ -51,7 +52,7 @@
         behaviors:ScrollFade.TopCover="{Binding ElementName=TopFade}"
         VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,2,16,18">
-          <TextBlock Style="{StaticResource SettingSection}" Text="PASTA DO GAMMA" />
+          <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr settings.section.folder}" />
           <Border Style="{StaticResource SettingGroup}">
             <Border Style="{StaticResource SettingRow}">
               <StackPanel>
@@ -63,7 +64,7 @@
                     DockPanel.Dock="Right"
                     IsEnabled="{Binding IsPortable, Converter={StaticResource Boolean2BooleanReConverter}}"
                     Style="{StaticResource Action.Icon}"
-                    ToolTip="Escolher a pasta" />
+                    ToolTip="{loc:Tr settings.folder.browse}" />
                   <hc:TextBox
                     hc:InfoElement.Placeholder="D:\GAMMA"
                     IsReadOnly="{Binding IsPortable}"
@@ -72,7 +73,7 @@
                 </DockPanel>
                 <TextBlock
                   Style="{StaticResource SettingCaption}"
-                  Text="O Проводник está dentro dessa pasta, então ela é fixa."
+                  Text="{loc:Tr settings.folder.fixed}"
                   Visibility="{Binding IsPortable, Converter={StaticResource Boolean2VisibilityConverter}}" />
                 <TextBlock
                   Margin="0,4,0,0"
@@ -84,7 +85,7 @@
             </Border>
           </Border>
 
-          <TextBlock Style="{StaticResource SettingSection}" Text="AO MESMO TEMPO" />
+          <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr settings.section.parallel}" />
           <Border Style="{StaticResource SettingGroup}">
             <StackPanel>
               <Border Style="{StaticResource SettingRow}">
@@ -94,8 +95,8 @@
                     Style="{StaticResource Count}"
                     Value="{Binding ModDbParallel}" />
                   <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="Downloads do ModDB" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="Os links saem um por vez, no ritmo que o ModDB aceita; a fila esfria sozinha quando ele reclama." />
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.moddb.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.moddb.caption}" />
                   </StackPanel>
                 </DockPanel>
               </Border>
@@ -107,8 +108,8 @@
                     Style="{StaticResource Count}"
                     Value="{Binding HttpParallel}" />
                   <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="Downloads do GitHub" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="Os addons que vêm direto do GitHub e do gofile." />
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.github.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.github.caption}" />
                   </StackPanel>
                 </DockPanel>
               </Border>
@@ -120,23 +121,23 @@
                     Style="{StaticResource Count}"
                     Value="{Binding ExtractParallel}" />
                   <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="Extrações" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="O gargalo é o disco: em HD, deixe 1." />
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.extract.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.extract.caption}" />
                   </StackPanel>
                 </DockPanel>
               </Border>
             </StackPanel>
           </Border>
 
-          <TextBlock Style="{StaticResource SettingSection}" Text="INSTALAÇÃO" />
+          <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr settings.section.install}" />
           <Border Style="{StaticResource SettingGroup}">
             <StackPanel>
               <Border Style="{StaticResource SettingRow}">
                 <DockPanel>
                   <ToggleButton IsChecked="{Binding CheckMd5}" Style="{StaticResource RowSwitch}" />
                   <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="Conferir o md5 dos arquivos" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="Arquivo que não bate com a lista é baixado de novo. Desligar é inseguro." />
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.md5.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.md5.caption}" />
                   </StackPanel>
                 </DockPanel>
               </Border>
@@ -145,8 +146,8 @@
                 <DockPanel>
                   <ToggleButton IsChecked="{Binding UpdateGitHubAddons}" Style="{StaticResource RowSwitch}" />
                   <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="Atualizar os addons do GitHub" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="Pergunta pro GitHub se o zip mudou e baixa só quando mudou." />
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.githubAddons.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.githubAddons.caption}" />
                   </StackPanel>
                 </DockPanel>
               </Border>
@@ -155,8 +156,8 @@
                 <DockPanel>
                   <ToggleButton IsChecked="{Binding DeleteReshadeDlls}" Style="{StaticResource RowSwitch}" />
                   <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="Apagar as DLLs do Reshade" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="dxgi.dll e d3d9.dll em Anomaly\bin, como o launcher original faz." />
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.reshade.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.reshade.caption}" />
                   </StackPanel>
                 </DockPanel>
               </Border>
@@ -165,15 +166,15 @@
                 <DockPanel>
                   <ToggleButton IsChecked="{Binding CreateShortcuts}" Style="{StaticResource RowSwitch}" />
                   <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="Criar atalhos na área de trabalho" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="Pro Проводник e pro MO2 do GAMMA." />
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.shortcuts.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.shortcuts.caption}" />
                   </StackPanel>
                 </DockPanel>
               </Border>
             </StackPanel>
           </Border>
 
-          <TextBlock Style="{StaticResource SettingSection}" Text="PROVODNIK" />
+          <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr settings.section.app}" />
           <Border Style="{StaticResource SettingGroup}">
             <StackPanel>
             <Border Style="{StaticResource SettingRow}">
@@ -187,7 +188,7 @@
                   SelectedItem="{Binding Language}" />
                 <StackPanel>
                   <TextBlock Style="{StaticResource SettingTitle}" Text="Idioma · Language · Язык" />
-                  <TextBlock Style="{StaticResource SettingCaption}" Text="O app reabre pra trocar." />
+                  <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.languageRow.caption}" />
                 </StackPanel>
               </DockPanel>
             </Border>
@@ -196,22 +197,22 @@
               <DockPanel>
                 <ToggleButton IsChecked="{Binding AutoUpdateApp}" Style="{StaticResource RowSwitch}" />
                 <StackPanel>
-                  <TextBlock Style="{StaticResource SettingTitle}" Text="Atualizar sozinho" />
-                  <TextBlock Style="{StaticResource SettingCaption}" Text="Procura a versão nova do app no GitHub e baixa; ela entra quando o app fechar. Só na versão instalada pelo Setup." />
+                  <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.autoUpdate.title}" />
+                  <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.autoUpdate.caption}" />
                 </StackPanel>
               </DockPanel>
             </Border>
             </StackPanel>
           </Border>
 
-          <TextBlock Style="{StaticResource SettingSection}" Text="APARÊNCIA" />
+          <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr settings.section.appearance}" />
           <Border Style="{StaticResource SettingGroup}">
             <Border Style="{StaticResource SettingRow}">
               <DockPanel>
                 <ToggleButton IsChecked="{Binding Mica}" Style="{StaticResource RowSwitch}" />
                 <StackPanel>
-                  <TextBlock Style="{StaticResource SettingTitle}" Text="Fundo Mica" />
-                  <TextBlock Style="{StaticResource SettingCaption}" Text="O fundo translúcido do Windows 11. No Windows 10 fica o cinza sólido." />
+                  <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.mica.title}" />
+                  <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.mica.caption}" />
                 </StackPanel>
               </DockPanel>
             </Border>
@@ -253,12 +254,12 @@
       <hc:UniformSpacingPanel Style="{StaticResource DialogActions}">
         <Button
           Click="Cancel_Click"
-          Content="Cancelar"
+          Content="{loc:Tr settings.cancel}"
           IsCancel="True"
           Style="{StaticResource Action.Dialog}" />
         <Button
           Click="Save_Click"
-          Content="Salvar"
+          Content="{loc:Tr settings.save}"
           IsDefault="True"
           Style="{StaticResource Action.Dialog.Primary}" />
       </hc:UniformSpacingPanel>

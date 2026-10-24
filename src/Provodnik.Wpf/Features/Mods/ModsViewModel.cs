@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Core.Text;
 using Provodnik.Features.Launch;
 using Provodnik.Features.Mods;
 using Provodnik.Features.Verify;
@@ -24,8 +25,13 @@ namespace Provodnik.Wpf.Features.Mods
 
     [ObservableProperty] private ObservableCollection<ModItemRow> _items = [];
     [ObservableProperty] private ModItemRow? _selected;
-    [ObservableProperty] private int _installed;
-    [ObservableProperty] private int _missing;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Subtitle))]
+    private int _installed;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Subtitle))]
+    private int _missing;
     [ObservableProperty] private bool _onlyMissing;
 
     public ModsViewModel(GammaSession session, InstallService install, Navigator navigator, ElevationService elevation)
@@ -39,6 +45,8 @@ namespace Provodnik.Wpf.Features.Mods
     }
 
     public InstallService Install { get; }
+
+    public string Subtitle => L.T("mods.subtitle", Installed, Missing);
 
     private IReadOnlyList<ModItemRow> _all = [];
 
@@ -94,7 +102,7 @@ namespace Provodnik.Wpf.Features.Mods
       var missing = _all.Where(r => r.IsMissing).Select(r => r.Index).ToList();
       if (missing.Count == 0 || Install.IsRunning)
         return;
-      if (!await DialogService.ConfirmAsync("Completar os addons", $"Baixar (se faltar) e extrair os {missing.Count} addons com a pasta vazia?", "Completar", kind: DialogKind.Info))
+      if (!await DialogService.ConfirmAsync(L.T("mods.fill.title"), L.T("mods.fill.question", missing.Count), L.T("mods.fill.confirm"), kind: DialogKind.Info))
         return;
       _navigator.Open(Tab.Install);
       await Install.ReinstallAsync(missing);
