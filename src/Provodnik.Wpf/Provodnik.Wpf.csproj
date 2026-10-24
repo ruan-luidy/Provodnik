@@ -49,6 +49,8 @@
   <!--  As novidades vão dentro do exe  -->
   <ItemGroup>
     <EmbeddedResource Include="..\..\docs\CHANGELOG.md" LogicalName="Provodnik.CHANGELOG.md" />
+    <!--  A lista de mods de verdade pra simulação (a opção demo): os nomes reais, sem baixar nada  -->
+    <EmbeddedResource Include="..\..\tests\Provodnik.Tests\Data\mods.txt" LogicalName="Provodnik.demo-mods.txt" />
   </ItemGroup>
 
   <!--

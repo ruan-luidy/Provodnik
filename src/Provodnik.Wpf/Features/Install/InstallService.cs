@@ -25,6 +25,7 @@ namespace Provodnik.Wpf.Features.Install
     private readonly LogBook _log;
     private readonly SettingsStore _settings;
     private readonly ToolConsole _console;
+    private readonly AppOptions _options;
     private readonly DispatcherTimer _timer;
     private readonly ConcurrentDictionary<int, ModProgress> _pendingMods = new();
     private readonly ConcurrentQueue<(InstallStage Stage, StageState State, string? Detail)> _pendingStages = new();
@@ -45,13 +46,14 @@ namespace Provodnik.Wpf.Features.Install
     /// <summary>De 0 a 1, pra barra grande e pra barra de tarefas.</summary>
     [ObservableProperty] private double _overall;
 
-    public InstallService(InstallPipeline pipeline, GammaSession session, LogBook log, SettingsStore settings, ToolConsole console)
+    public InstallService(InstallPipeline pipeline, GammaSession session, LogBook log, SettingsStore settings, ToolConsole console, AppOptions options)
     {
       _pipeline = pipeline;
       _session = session;
       _log = log;
       _settings = settings;
       _console = console;
+      _options = options;
       _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(150), DispatcherPriority.Background, (_, _) => Flush(), Application.Current.Dispatcher);
       _timer.Stop();
       // parado, o total é o tamanho da lista que está no disco
@@ -101,7 +103,10 @@ namespace Provodnik.Wpf.Features.Install
       _cancel.Cancel();
     }
 
-    private InstallOptions Options() => _settings.Current.ToInstallOptions();
+    private InstallOptions Options() =>
+      _options.Demo
+        ? _settings.Current.ToInstallOptions() with { ModDbSpacing = TimeSpan.FromMilliseconds(120), ModDbCooldown = TimeSpan.FromSeconds(4), CreateShortcuts = false }
+        : _settings.Current.ToInstallOptions();
 
     private async Task<InstallReport?> RunAsync(InstallOptions options)
     {
@@ -140,6 +145,16 @@ namespace Provodnik.Wpf.Features.Install
       }
 
       LastReport = report;
+      // parou (cancelada ou não): nada mais está rodando, a tela não pode ficar com etapa girando e contador velho
+      foreach (var stage in Stages.Where(s => s.State == StageState.Running))
+      {
+        stage.State = report.Cancelled ? StageState.Pending : StageState.Warning;
+        stage.Detail = report.Cancelled ? "cancelada" : stage.Detail;
+      }
+      Active.Clear();
+      Downloading = 0;
+      Extracting = 0;
+      SpeedText = "—";
       // falhas que não vieram de um mod rodando (a conferência final, a instalação que nem começou) também vão pra lista
       foreach (var failure in report.Failures.Where(f => Failures.All(r => r.Index != f.Index || f.Index == 0)))
       {
@@ -224,7 +239,7 @@ namespace Provodnik.Wpf.Features.Install
       }
 
       Done = _rows.Values.Count(r => r.IsFinished);
-      Downloading = _rows.Values.Count(r => r.Status is ModStatus.Downloading or ModStatus.Resolving);
+      Downloading = _rows.Values.Count(r => r.Status is ModStatus.Downloading);
       Extracting = _rows.Values.Count(r => r.Status == ModStatus.Extracting);
       var speed = _rows.Values.Sum(r => r.BytesPerSecond);
       SpeedText = speed > 0 ? ByteSize.FormatSpeed(speed) : "—";

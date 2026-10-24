@@ -152,7 +152,7 @@ namespace Provodnik.Features.Download
             if (++throttles <= 8)
             {
               attempt--;
-              report(ModStatus.Resolving, detail: "o ModDB pediu calma; volta pra fila");
+              report(ModStatus.Retrying, detail: "o ModDB pediu calma; volta pra fila");
               continue;
             }
           }
@@ -160,7 +160,7 @@ namespace Provodnik.Features.Download
             break;
 
           var wait = TimeSpan.FromSeconds(Math.Min(60, 5 * Math.Pow(2.2, attempt - 1)) + Random.Shared.NextDouble() * 2);
-          report(ModStatus.Downloading, detail: $"{ex.Message} — tentando de novo em {wait.TotalSeconds:0} s");
+          report(ModStatus.Retrying, detail: $"{ex.Message} · de novo em {wait.TotalSeconds:0} s");
           await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
         }
       }

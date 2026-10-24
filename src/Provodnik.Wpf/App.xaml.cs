@@ -16,6 +16,7 @@ using Provodnik.Features.Update;
 using Provodnik.Infrastructure.Desktop;
 using Provodnik.Infrastructure.Http;
 using Provodnik.Infrastructure.Tools;
+using Provodnik.Wpf.Features.Demo;
 using Provodnik.Wpf.Features.Home;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Features.Logs;
@@ -28,7 +29,10 @@ namespace Provodnik.Wpf
   public partial class App : Application
   {
     // instância única: duas instalações ao mesmo tempo na mesma pasta seria desastre
-    private const string InstanceName = "Provodnik-5d2a91c4";
+    private const string RealInstance = "Provodnik-5d2a91c4";
+
+    // a simulação tem a trava dela: roda junto com uma instalação de verdade sem acordar a outra
+    private string InstanceName = RealInstance;
 
     private ServiceProvider? _services;
     private Mutex? _instance;
@@ -37,6 +41,15 @@ namespace Provodnik.Wpf
 
     protected override void OnStartup(StartupEventArgs e)
     {
+      var demo = DemoWorld.Requested(e.Args) ? new DemoWorld() : null;
+      if (demo is not null)
+      {
+        InstanceName = RealInstance + "-demo";
+        // configurações, errors.log e cookies da simulação ficam longe dos de verdade
+        Environment.SetEnvironmentVariable("PROVODNIK_DATA_DIR", demo.AppData);
+        demo.Prepare(reset: e.Args.Contains("--demo-novo"));
+      }
+
       _instance = new Mutex(true, InstanceName, out var first);
       if (!first)
       {
@@ -52,7 +65,7 @@ namespace Provodnik.Wpf
       DispatcherUnhandledException += OnDispatcherUnhandledException;
 
       var settings = AppSettings.Load();
-      _services = ConfigureServices(settings);
+      _services = ConfigureServices(settings, demo);
       ThemeService.Initialize(_services.GetRequiredService<SettingsStore>());
 
       var window = _services.GetRequiredService<MainWindow>();
@@ -125,7 +138,7 @@ namespace Provodnik.Wpf
     }
 
     /// <summary>Serviços e shell são Singleton (uma janela só). As telas também: cada aba guarda o que estava aberto.</summary>
-    private static ServiceProvider ConfigureServices(AppSettings settings)
+    private static ServiceProvider ConfigureServices(AppSettings settings, DemoWorld? demo)
     {
       var services = new ServiceCollection();
       var agent = $"Provodnik/{AppInfo.Version} (+https://github.com/ruan-luidy/Provodnik)";
@@ -138,6 +151,7 @@ namespace Provodnik.Wpf
       download.DefaultRequestHeaders.UserAgent.ParseAdd(agent);
 
       services.AddSingleton(settings);
+      services.AddSingleton(new AppOptions(demo is not null, demo?.Root));
       services.AddSingleton(new SettingsStore(settings));
       services.AddSingleton<Navigator>();
       services.AddSingleton<LogBook>();
@@ -165,6 +179,17 @@ namespace Provodnik.Wpf
       services.AddSingleton<IModDbResolver>(sp => new ModDbBrowser(sp.GetRequiredService<ModDbResolver>(), sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton<IArchiveExtractor>(sp => new SevenZipExtractor(() => Layout(sp).SevenZip, sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton<IShortcutWriter, ShortcutWriter>();
+      if (demo is not null)
+      {
+        // a simulação troca as ferramentas de verdade pelas de mentira (o último registro é o que vale)
+        services.AddSingleton(demo);
+        services.AddSingleton<IGammaApi>(new DemoTools.Api(demo));
+        services.AddSingleton<IGitClient>(sp => new DemoTools.Git(demo, sp.GetRequiredService<IToolConsole>()));
+        services.AddSingleton<IModDbResolver>(sp => new DemoTools.Resolver(sp.GetRequiredService<IToolConsole>()));
+        services.AddSingleton<IFileDownloader>(sp => new DemoTools.Downloader(sp.GetRequiredService<IToolConsole>()));
+        services.AddSingleton<IArchiveExtractor>(sp => new DemoTools.Extractor(demo, sp.GetRequiredService<IToolConsole>()));
+        services.AddSingleton<IShortcutWriter, DemoTools.Shortcuts>();
+      }
       services.AddSingleton<InstallPipeline>();
       services.AddSingleton<UpdateChecker>();
       services.AddSingleton<InstallService>();

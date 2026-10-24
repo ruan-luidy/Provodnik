@@ -34,6 +34,8 @@ Pra rodar do código:
 
 ```powershell
 dotnet run --project src/Provodnik.Wpf
+dotnet run --project src/Provodnik.Wpf -- --demo        # simulação: GAMMA de mentira em %TEMP%, nada é baixado
+dotnet run --project src/Provodnik.Wpf -- --demo-novo   # simulação começando do zero
 dotnet test
 ```
 

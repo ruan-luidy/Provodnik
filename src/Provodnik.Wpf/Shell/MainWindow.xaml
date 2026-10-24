@@ -33,6 +33,22 @@
   -->
   <hc:Window.NonClientAreaContent>
     <Grid>
+      <!--  Etiqueta SIMULAÇÃO na simulação (opção demo): nada ali baixa nem mexe no GAMMA de verdade  -->
+      <Border
+        Margin="6,0,0,0"
+        Padding="6,1"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Center"
+        Background="{DynamicResource PrimaryBrush}"
+        CornerRadius="{StaticResource Radius.Sm}"
+        ToolTip="Simulação: GAMMA de mentira em %TEMP%\provodnik-demo, ferramentas falsas, tempo acelerado"
+        Visibility="{Binding IsDemo, Converter={StaticResource Boolean2VisibilityConverter}}">
+        <TextBlock
+          FontSize="{StaticResource FontSize.XS}"
+          FontWeight="Bold"
+          Foreground="White"
+          Text="SIMULAÇÃO" />
+      </Border>
       <!--  Etiqueta ADMIN encostada no nome do app, só quando elevado  -->
       <Border
         Margin="6,0,0,0"
@@ -49,13 +65,17 @@
           Foreground="Black"
           Text="ADMIN" />
       </Border>
+      <!--
+        A instalação rodando, no molde do botão de usuário do Windfinder: sem fundo (só no hover), o carregando, o
+        andamento em número e uma barra fina. Clica e vai pra tela de instalação.
+      -->
       <Button
-        Height="25"
+        Height="26"
         Margin="0,0,10,0"
         Padding="10,0"
         HorizontalAlignment="Right"
         VerticalAlignment="Center"
-        Background="{StaticResource Selection.RowBrush}"
+        Background="Transparent"
         BorderThickness="0"
         Command="{Binding GoInstallCommand}"
         Cursor="Hand"
@@ -64,11 +84,17 @@
         <Button.Template>
           <ControlTemplate TargetType="Button">
             <Border
+              x:Name="Box"
               Padding="{TemplateBinding Padding}"
               Background="{TemplateBinding Background}"
-              CornerRadius="{StaticResource Radius.Pill}">
+              CornerRadius="{StaticResource Radius.Md}">
               <ContentPresenter VerticalAlignment="Center" />
             </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Box" Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+              </Trigger>
+            </ControlTemplate.Triggers>
           </ControlTemplate>
         </Button.Template>
         <StackPanel Orientation="Horizontal">
@@ -76,13 +102,26 @@
             Width="12"
             Height="12"
             Margin="0,0,8,0"
+            VerticalAlignment="Center"
             IsIndeterminate="True"
             Style="{StaticResource BusyCircle}" />
-          <TextBlock
-            FontFamily="{StaticResource FontFamily.Numbers}"
-            Foreground="{DynamicResource PrimaryBrush}">
-            <Run Text="Instalando " /><Run Text="{Binding Install.Done, Mode=OneWay}" /><Run Text=" / " /><Run Text="{Binding Install.Total, Mode=OneWay}" />
+          <TextBlock VerticalAlignment="Center" FontSize="{StaticResource FontSize.Sm}">
+            <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="Instalando" /><Run Text=" " /><Run
+              FontFamily="{StaticResource FontFamily.Numbers}"
+              FontWeight="SemiBold"
+              Foreground="{DynamicResource PrimaryTextBrush}"
+              Text="{Binding Install.Done, Mode=OneWay}" /><Run
+              FontFamily="{StaticResource FontFamily.Numbers}"
+              Foreground="{DynamicResource SecondaryTextBrush}"
+              Text="{Binding Install.Total, Mode=OneWay, StringFormat=' / {0}'}" />
           </TextBlock>
+          <ProgressBar
+            Width="64"
+            Height="4"
+            Margin="10,0,0,0"
+            VerticalAlignment="Center"
+            Maximum="1"
+            Value="{Binding Install.Overall, Mode=OneWay}" />
         </StackPanel>
       </Button>
     </Grid>

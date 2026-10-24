@@ -91,7 +91,7 @@ namespace Provodnik.Wpf.Shared.Services
           continue;
         _lastHint = explanation;
         _lastHintAt = line.Time;
-        Add(new ConsoleLine(line.Time, "→", $"{explanation.Meaning} {explanation.Hint}", ConsoleKind.Hint));
+        Add(new ConsoleLine(line.Time, "dica", $"{explanation.Meaning} {explanation.Hint}", ConsoleKind.Hint));
       }
 
       while (Lines.Count > Limit)

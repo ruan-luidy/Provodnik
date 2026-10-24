@@ -7,6 +7,11 @@
 - Pasta somente-leitura dentro do arquivo (zip/rar) não trava mais a extração.
 - Quem só espera a vez na fila do ModDB não aparece mais como "baixando".
 - Todos os mods entram na fila de uma vez: os do GitHub não esperam os do ModDB.
+- Simulação (`Provodnik.exe --demo`, `--demo-novo` pra começar do zero): GAMMA de mentira em %TEMP%, a lista de mods de verdade, ferramentas falsas com bloqueio do ModDB, quedas, 404 e arquivo corrompido, tempo acelerado. Roda junto com uma instalação de verdade sem encostar nela.
+- Tabela no estilo do rnzNegative (StandardDataGrid) com o degradê embaixo.
+- Registro legível: texto na cor normal, o nível só na bolinha e numa etiqueta.
+- Barra de título sem a pílula: carregando, andamento e barra fina.
+- Dicas com a lâmpada do Phosphor no lugar da seta; estado "Tentando de novo" enquanto espera a próxima tentativa; depois de cancelar nada fica girando.
 
 ## 0.2.0
 

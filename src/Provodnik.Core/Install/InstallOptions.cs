@@ -27,6 +27,9 @@ namespace Provodnik.Core.Install
     /// <summary>O respiro entre dois pedidos de link ao ModDB (a página que ele limita).</summary>
     public TimeSpan ModDbSpacing { get; init; } = TimeSpan.FromSeconds(1.5);
 
+    /// <summary>A primeira espera quando o ModDB reclama (dobra a cada nova reclamação, até 5 min).</summary>
+    public TimeSpan ModDbCooldown { get; init; } = TimeSpan.FromSeconds(30);
+
     /// <summary>Downloads do GitHub e afins ao mesmo tempo.</summary>
     public int HttpParallel { get; init; } = 4;
 

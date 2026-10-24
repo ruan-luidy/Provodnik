@@ -11,6 +11,15 @@ namespace Provodnik.Wpf.Shared.Services
   {
     public string TimeText => Time.ToString("HH:mm:ss");
 
+    /// <summary>A etiqueta pequena na frente da linha; info fica sem.</summary>
+    public string LevelText => Level switch
+    {
+      LogLevel.Warning => "aviso",
+      LogLevel.Error => "erro",
+      LogLevel.Success => "pronto",
+      _ => string.Empty,
+    };
+
     public RowTone Tone => Level switch
     {
       LogLevel.Success => RowTone.Success,

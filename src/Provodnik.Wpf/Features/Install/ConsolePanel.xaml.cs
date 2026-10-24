@@ -18,6 +18,12 @@ namespace Provodnik.Wpf.Features.Install
     {
       InitializeComponent();
       ((INotifyCollectionChanged)List.Items).CollectionChanged += OnLinesChanged;
+      // voltou pra tela (ou o painel foi ligado): começa no fim, que é o que importa
+      IsVisibleChanged += (_, _) =>
+      {
+        if (IsVisible && List.Items.Count > 0)
+          Dispatcher.InvokeAsync(() => List.ScrollIntoView(List.Items[^1]), System.Windows.Threading.DispatcherPriority.Loaded);
+      };
     }
 
     public IEnumerable? Lines

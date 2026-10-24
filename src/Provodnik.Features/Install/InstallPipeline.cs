@@ -316,7 +316,7 @@ namespace Provodnik.Features.Install
       using var httpGate = new SemaphoreSlim(Math.Max(1, options.HttpParallel));
       using var hashGate = new SemaphoreSlim(2);
       using var extractGate = new SemaphoreSlim(Math.Max(1, options.ExtractParallel));
-      var pacer = new ModDbPacer(resolver, options.ModDbSpacing);
+      var pacer = new ModDbPacer(resolver, options.ModDbSpacing, options.ModDbCooldown);
       var fetcher = new ArchiveFetcher(downloader, pacer, run.Hashes, layout.Downloads, options, modDbGate, httpGate, hashGate);
       var installer = new ModInstaller(extractor);
 
@@ -403,7 +403,8 @@ namespace Provodnik.Features.Install
               outcome.Path,
               run.MetaTemplate,
               new Progress<double>(f => reporter.Mod(new ModProgress(mod.Index, ModStatus.Extracting, f))),
-              message => run.Warn($"{mod.Title}: {message}"),
+              // pasta de instrução que não existe: o original também ignora calado; fica como informação, não aviso
+              message => reporter.Log(LogLevel.Info, $"{mod.Title}: {message} (igual ao launcher original)"),
               token).ConfigureAwait(false);
 
             run.MarkInstalled(mod.FolderName, new InstalledMod(mod.ArchiveName!, fingerprint, DateTime.Now));

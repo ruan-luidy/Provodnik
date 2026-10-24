@@ -35,12 +35,14 @@ namespace Provodnik.Wpf.Shell
       GammaSession session,
       SettingsStore settings,
       Navigator navigator,
-      ElevationService elevation)
+      ElevationService elevation,
+      AppOptions options)
     {
       _settings = settings;
       _session = session;
       Install = installService;
       IsElevated = elevation.IsElevated;
+      IsDemo = options.Demo;
       _pages = new()
       {
         [Tab.Home] = home,
@@ -59,6 +61,9 @@ namespace Provodnik.Wpf.Shell
 
     /// <summary>Rodando como administrador: a barra de título avisa (o MO2 e o jogo abrem sem).</summary>
     public bool IsElevated { get; }
+
+    /// <summary>A simulação (--demo): a barra de título avisa que nada ali é de verdade.</summary>
+    public bool IsDemo { get; }
 
     public string Title => _session.Layout is null ? "Проводник" : $"Проводник · {_session.Metadata.Name}";
 

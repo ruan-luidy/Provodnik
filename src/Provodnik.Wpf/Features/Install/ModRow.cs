@@ -46,9 +46,9 @@ namespace Provodnik.Wpf.Features.Install
 
     public double Percent => (Fraction ?? 0) * 100;
 
-    public bool IsIndeterminate => IsActive && Fraction is null;
+    public bool IsIndeterminate => IsActive && Status != ModStatus.Retrying && Fraction is null;
 
-    public bool IsActive => Status is ModStatus.Resolving or ModStatus.Downloading or ModStatus.Verifying or ModStatus.Extracting;
+    public bool IsActive => Status is ModStatus.Resolving or ModStatus.Downloading or ModStatus.Retrying or ModStatus.Verifying or ModStatus.Extracting;
 
     public bool IsFinished => Status is ModStatus.Installed or ModStatus.UpToDate or ModStatus.Failed;
 
@@ -58,6 +58,7 @@ namespace Provodnik.Wpf.Features.Install
       ModStatus.Checking => "Conferindo",
       ModStatus.Resolving => "Pedindo o link",
       ModStatus.Downloading => "Baixando",
+      ModStatus.Retrying => "Tentando de novo",
       ModStatus.Verifying => "Conferindo md5",
       ModStatus.WaitingExtraction => "Esperando",
       ModStatus.Extracting => "Extraindo",
@@ -71,6 +72,7 @@ namespace Provodnik.Wpf.Features.Install
     {
       ModStatus.Installed or ModStatus.UpToDate => RowTone.Success,
       ModStatus.Failed => RowTone.Error,
+      ModStatus.Retrying => RowTone.Warning,
       _ => RowTone.Neutral,
     };
 
@@ -80,10 +82,11 @@ namespace Provodnik.Wpf.Features.Install
       if (IsFinished && progress.Status is not (ModStatus.Checking or ModStatus.Pending))
         return;
 
+      // estado novo traz o recado dele (ou nenhum); no mesmo estado, só um recado novo troca o de antes
+      if (progress.Status != Status || progress.Detail is not null)
+        Detail = progress.Detail;
       Status = progress.Status;
       Fraction = progress.Fraction;
-      if (progress.Detail is not null || progress.Status != ModStatus.Downloading)
-        Detail = progress.Detail;
 
       BytesPerSecond = progress.Status == ModStatus.Downloading ? progress.BytesPerSecond ?? 0 : 0;
       SpeedText = progress.Status == ModStatus.Downloading ? ByteSize.FormatSpeed(progress.BytesPerSecond) : string.Empty;

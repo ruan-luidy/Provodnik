@@ -25,10 +25,11 @@ namespace Provodnik.Wpf.Shared.Services
     [ObservableProperty] private ModpackMetadata _metadata = ModpackMetadata.Gamma;
     [ObservableProperty] private string? _installedVersion;
 
-    public GammaSession(SettingsStore settings)
+    public GammaSession(SettingsStore settings, AppOptions options)
     {
       _settings = settings;
-      Layout = Detect(settings.Current.GammaRoot);
+      // na simulação, só a pasta de mentira: nunca o GAMMA de verdade ao lado do exe
+      Layout = options.DemoRoot is { } demo ? GammaLayout.Find(demo) : Detect(settings.Current.GammaRoot);
       Reload();
     }
 

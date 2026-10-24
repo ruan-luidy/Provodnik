@@ -2,11 +2,12 @@
   x:Class="Provodnik.Wpf.Features.Install.ConsolePanel"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
   xmlns:services="clr-namespace:Provodnik.Wpf.Shared.Services">
 
   <!--
     O console das ferramentas, no fundo escuro de terminal: hora, a ferramenta e a linha crua. Erro conhecido fica
-    vermelho e ganha embaixo, em amarelo, a linha "→" com o que quer dizer e o que fazer.
+    vermelho e ganha embaixo, em amarelo e com a lâmpada, o que quer dizer e o que fazer.
   -->
   <Border Padding="10,6" Background="#0F1012" CornerRadius="{StaticResource Radius.Md}">
     <ListBox
@@ -35,11 +36,40 @@
               DockPanel.Dock="Left"
               Foreground="#5C6370"
               Text="{Binding TimeText}" />
-            <TextBlock
-              Width="62"
-              DockPanel.Dock="Left"
-              Foreground="#61AFEF"
-              Text="{Binding Tool}" />
+            <!--  A ferramenta; na linha de dica, a lâmpada no lugar do nome  -->
+            <Grid Width="62" DockPanel.Dock="Left">
+              <TextBlock Foreground="#61AFEF" Text="{Binding Tool}">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding Kind}" Value="{x:Static services:ConsoleKind.Hint}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
+              <Path
+                Width="12"
+                Height="12"
+                Margin="0,2,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Data="{icons:Phosphor LightbulbFill}"
+                Fill="#E5C07B"
+                Stretch="Uniform">
+                <Path.Style>
+                  <Style TargetType="Path">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding Kind}" Value="{x:Static services:ConsoleKind.Hint}">
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </Path.Style>
+              </Path>
+            </Grid>
             <TextBlock Text="{Binding Text}" TextWrapping="Wrap">
               <TextBlock.Style>
                 <Style TargetType="TextBlock">
@@ -50,7 +80,6 @@
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Kind}" Value="{x:Static services:ConsoleKind.Hint}">
                       <Setter Property="Foreground" Value="#E5C07B" />
-                      <Setter Property="FontWeight" Value="SemiBold" />
                     </DataTrigger>
                   </Style.Triggers>
                 </Style>

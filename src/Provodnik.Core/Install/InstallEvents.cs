@@ -32,6 +32,8 @@ namespace Provodnik.Core.Install
     Checking,
     Resolving,
     Downloading,
+    /// <summary>Falhou e espera a próxima tentativa (a barra para; o recado diz quando volta).</summary>
+    Retrying,
     Verifying,
     WaitingExtraction,
     Extracting,

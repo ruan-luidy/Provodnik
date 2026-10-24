@@ -1,0 +1,71 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:behaviors="clr-namespace:Provodnik.Wpf.Shared.Behaviors"
+  xmlns:hc="https://handyorg.github.io/handycontrol">
+
+  <!--
+    A grade do rnzNegativeObserver (o StandardDataGrid do Windfinder): fundo cinza, raio Lg, sem borda, linha pequena
+    do HandyControl e o botão direito de copiar/exportar. Mais o degradê do ScrollFade embaixo (as últimas linhas
+    somem em vez de aparecerem cortadas). Sem o filtro por coluna do DataGridFilter: aqui a caixa de filtro de cima
+    (QuickFilter) faz o serviço.
+  -->
+
+  <Style
+    x:Key="StandardDataGridRow"
+    BasedOn="{StaticResource DataGridRowStyle.Small}"
+    TargetType="DataGridRow">
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Margin" Value="0,0,0,-1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style
+    x:Key="StandardDataGridCell"
+    BasedOn="{StaticResource DataGridCellStyle.Small}"
+    TargetType="DataGridCell">
+    <Style.Triggers>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="Transparent" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style
+    x:Key="StandardDataGrid"
+    BasedOn="{StaticResource DataGrid.Small}"
+    TargetType="DataGrid">
+    <!--  Botão direito: copiar a tabela / exportar CSV  -->
+    <Setter Property="behaviors:DataGridExport.IsEnabled" Value="True" />
+    <!--  Mais linhas embaixo: as últimas somem num degradê, sem linha cortada ao meio  -->
+    <Setter Property="behaviors:ScrollFade.IsEnabled" Value="True" />
+
+    <Setter Property="ColumnHeaderStyle" Value="{StaticResource DataGridColumnHeaderStyle.Small}" />
+    <Setter Property="CellStyle" Value="{StaticResource StandardDataGridCell}" />
+    <Setter Property="RowStyle" Value="{StaticResource StandardDataGridRow}" />
+
+    <Setter Property="AutoGenerateColumns" Value="False" />
+    <Setter Property="CanUserAddRows" Value="False" />
+    <Setter Property="CanUserDeleteRows" Value="False" />
+    <Setter Property="CanUserReorderColumns" Value="True" />
+    <Setter Property="CanUserSortColumns" Value="True" />
+    <Setter Property="IsReadOnly" Value="True" />
+    <Setter Property="SelectionMode" Value="Single" />
+    <Setter Property="SelectionUnit" Value="FullRow" />
+
+    <Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource Radius.Lg}" />
+    <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+    <Setter Property="GridLinesVisibility" Value="Vertical" />
+    <Setter Property="HeadersVisibility" Value="Column" />
+    <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource SecondaryRegionBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+
+    <Setter Property="EnableColumnVirtualization" Value="True" />
+    <Setter Property="EnableRowVirtualization" Value="True" />
+    <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+    <Setter Property="VirtualizingPanel.ScrollUnit" Value="Item" />
+    <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+    <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+  </Style>
+
+</ResourceDictionary>

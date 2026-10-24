@@ -26,6 +26,8 @@
         <!--  Barra de rolagem, menu, tooltip e combo  -->
         <ResourceDictionary Source="/Shared/Styles/Components.xaml" />
         <ResourceDictionary Source="/Shared/Styles/StatusColors.xaml" />
+        <!--  A grade do rnzNegative (StandardDataGrid) com o degradê do scroll  -->
+        <ResourceDictionary Source="/Shared/Styles/DataGrid.xaml" />
         <!--  O checkbox do Negativo, em todo CheckBox  -->
         <ResourceDictionary Source="/Shared/Styles/CheckBoxes.xaml" />
         <!--  Moldura dos diálogos (DialogFrame) e o rodapé de botões  -->

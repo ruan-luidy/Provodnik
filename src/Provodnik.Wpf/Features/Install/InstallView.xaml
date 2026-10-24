@@ -220,7 +220,7 @@
                 Style="{StaticResource StatLabel}"
                 Text="{Binding Service.Failures.Count, StringFormat=FALHAS ({0})}" />
             </DockPanel>
-            <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer MaxHeight="132" VerticalScrollBarVisibility="Auto">
               <ItemsControl ItemsSource="{Binding Service.Failures}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate DataType="{x:Type install:ModRow}">
@@ -244,13 +244,22 @@
                           Text="{Binding Detail}"
                           TextTrimming="CharacterEllipsis"
                           ToolTip="{Binding Detail}" />
-                        <!--  O que fazer, quando o erro é conhecido  -->
-                        <TextBlock
-                          Margin="0,1,0,0"
-                          Foreground="{DynamicResource WarningBrush}"
-                          Text="{Binding Hint, StringFormat=→ {0}}"
-                          TextWrapping="Wrap"
-                          Visibility="{Binding Hint, Converter={StaticResource String2VisibilityConverter}}" />
+                        <!--  O que fazer, quando o erro é conhecido: a lâmpada colorida e o texto na cor de legenda  -->
+                        <DockPanel Margin="0,2,0,0" Visibility="{Binding Hint, Converter={StaticResource String2VisibilityConverter}}">
+                          <Path
+                            Width="12"
+                            Height="12"
+                            Margin="0,2,6,0"
+                            VerticalAlignment="Top"
+                            Data="{icons:Phosphor LightbulbFill}"
+                            DockPanel.Dock="Left"
+                            Fill="{DynamicResource WarningBrush}"
+                            Stretch="Uniform" />
+                          <TextBlock
+                            Foreground="{DynamicResource SecondaryTextBrush}"
+                            Text="{Binding Hint}"
+                            TextWrapping="Wrap" />
+                        </DockPanel>
                       </StackPanel>
                     </DockPanel>
                   </DataTemplate>
@@ -262,8 +271,8 @@
 
         <!--  O console das ferramentas, embaixo de tudo (liga e desliga no cabeçalho)  -->
         <Border
-          Height="210"
-          Margin="0,16,0,0"
+          Height="190"
+          Margin="0,12,0,0"
           DockPanel.Dock="Bottom"
           Style="{StaticResource SurfaceCard}"
           Visibility="{Binding ShowConsole, Converter={StaticResource Boolean2VisibilityConverter}}">
@@ -362,16 +371,16 @@
                       <Grid Margin="0,4">
                         <Grid.ColumnDefinitions>
                           <ColumnDefinition Width="*" />
-                          <ColumnDefinition Width="110" />
-                          <ColumnDefinition Width="160" />
-                          <ColumnDefinition Width="80" />
+                          <ColumnDefinition Width="132" />
+                          <ColumnDefinition Width="150" />
+                          <ColumnDefinition Width="84" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                           <TextBlock
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource PrimaryTextBrush}"
                             TextTrimming="CharacterEllipsis">
-                            <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding Index, StringFormat=#{0} , Mode=OneWay}" /><Run Text="{Binding Title, Mode=OneWay}" />
+                            <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding Index, StringFormat=#{0}, Mode=OneWay}" /><Run Text="  " /><Run Text="{Binding Title, Mode=OneWay}" />
                           </TextBlock>
                           <TextBlock
                             Style="{StaticResource CaptionText}"
@@ -382,6 +391,7 @@
                         </StackPanel>
                         <Border
                           Grid.Column="1"
+                          Margin="12,0,0,0"
                           HorizontalAlignment="Left"
                           Style="{StaticResource TonePill}">
                           <TextBlock Text="{Binding StatusText}" />
