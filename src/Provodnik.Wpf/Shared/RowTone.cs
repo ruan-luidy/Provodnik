@@ -7,5 +7,8 @@ namespace Provodnik.Wpf.Shared
     Success,
     Warning,
     Error,
+
+    /// <summary>Fora de jogo (mod que o GAMMA deixa desligado): cinza, não pede nada.</summary>
+    Muted,
   }
 }

@@ -25,15 +25,19 @@ namespace Provodnik.Wpf.Features.Mods
 
     public string ArchiveText => Item.ArchiveSize is { } size ? ByteSize.Format(size) : Item.HasPartial ? "pela metade" : "faltando";
 
-    public string FolderText => Item.FolderHasContent ? "Instalado" : "Vazio";
+    public string FolderText => Item.FolderHasContent ? "Instalado" : Item.DisabledInGamma ? "Desligado" : "Vazio";
+
+    public string? FolderHint => !Item.FolderHasContent && Item.DisabledInGamma
+      ? "Pasta vazia, mas o GAMMA deixa este mod desligado no MO2: não faz falta no jogo."
+      : null;
 
     public string? WebPage => Item.Entry.WebPage;
 
     /// <summary>Instalado pelo Проводник (sabe de qual arquivo veio) ou só "tem coisa na pasta" (instalado pelo original).</summary>
     public string Origin => Item.Installed is { } installed ? $"Проводник, {installed.InstalledAt:dd/MM HH:mm}" : Item.FolderHasContent ? "launcher original" : "—";
 
-    public RowTone Tone => !Item.FolderHasContent ? RowTone.Error : !Item.ArchivePresent ? RowTone.Warning : RowTone.Success;
+    public RowTone Tone => Item.NeedsInstall ? RowTone.Error : !Item.FolderHasContent ? RowTone.Muted : !Item.ArchivePresent ? RowTone.Warning : RowTone.Success;
 
-    public bool IsMissing => !Item.FolderHasContent;
+    public bool IsMissing => Item.NeedsInstall;
   }
 }

@@ -106,17 +106,18 @@ namespace Provodnik.Wpf.Features.Home
       // os números do disco por trás (varrer 473 pastas leva um instante)
       var list = _session.ModList;
       var state = _session.State;
+      var metadata = _session.Metadata;
       if (list is not null)
       {
-        var items = await Task.Run(() => ModInventory.Scan(layout, list, state));
-        ModsTotal = items.Count;
+        var items = await Task.Run(() => ModInventory.Scan(layout, list, state, ActiveModsCheck.Disabled(layout, metadata)));
+        // o vazio de mod que o GAMMA deixa desligado não conta como faltando
+        ModsTotal = items.Count(i => i.FolderHasContent || i.NeedsInstall);
         ModsInstalled = items.Count(i => i.FolderHasContent);
         ArchivesPresent = items.Where(i => i.ArchivePresent).Select(i => i.Entry.ArchiveName).Distinct(StringComparer.OrdinalIgnoreCase).Count();
         ArchivesMissing = items.Where(i => !i.ArchivePresent).Select(i => i.Entry.ArchiveName).Distinct(StringComparer.OrdinalIgnoreCase).Count();
       }
 
       // a "regra dos 5xx mods": quantos o modlist do perfil liga e quantos têm pasta de verdade
-      var metadata = _session.Metadata;
       var active = await Task.Run(() => ActiveModsCheck.Run(layout, metadata));
       ActiveExpected = active.Expected;
       ActiveFound = active.Found;

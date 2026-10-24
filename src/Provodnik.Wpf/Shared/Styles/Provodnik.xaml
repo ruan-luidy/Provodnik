@@ -125,6 +125,10 @@
     <Setter Property="Background" Value="{StaticResource Selection.RowBrush}" />
     <Setter Property="TextElement.Foreground" Value="{DynamicResource PrimaryBrush}" />
     <Style.Triggers>
+      <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Muted}">
+        <Setter Property="Background" Value="{DynamicResource Nav.SelectedBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+      </DataTrigger>
       <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Success}">
         <Setter Property="Background" Value="{DynamicResource Success.SoftBrush}" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource SuccessBrush}" />
@@ -596,7 +600,8 @@
   <Style x:Key="SlimProgress" TargetType="ProgressBar">
     <Setter Property="Height" Value="6" />
     <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
-    <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
+    <!--  O BorderBrush do HandyControl quase some em cima do cartão translúcido: o trilho é branco fraco, como as divisórias  -->
+    <Setter Property="Background" Value="{DynamicResource Progress.TrackBrush}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ProgressBar">
@@ -656,6 +661,7 @@
   <SolidColorBrush x:Key="Divider.Brush" Color="#14FFFFFF" />
   <!--  As linhas da tabela, um degrau abaixo da divisória: são muitas, então bem fracas  -->
   <SolidColorBrush x:Key="Grid.DividerBrush" Color="#0DFFFFFF" />
+  <SolidColorBrush x:Key="Progress.TrackBrush" Color="#1AFFFFFF" />
   <!--  Botão sem borda: fundo translúcido sobre a camada, mais claro no hover, mais apagado apertado  -->
   <SolidColorBrush x:Key="Button.BackgroundBrush" Color="#17FFFFFF" />
   <SolidColorBrush x:Key="Button.HoverBrush" Color="#24FFFFFF" />

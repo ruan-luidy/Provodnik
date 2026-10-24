@@ -102,7 +102,10 @@
         <DataGridTemplateColumn Width="90" Header="Pasta">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate DataType="{x:Type mods:ModItemRow}">
-              <Border HorizontalAlignment="Left" Style="{StaticResource TonePill}">
+              <Border
+                HorizontalAlignment="Left"
+                Style="{StaticResource TonePill}"
+                ToolTip="{Binding FolderHint}">
                 <TextBlock Text="{Binding FolderText}" />
               </Border>
             </DataTemplate>

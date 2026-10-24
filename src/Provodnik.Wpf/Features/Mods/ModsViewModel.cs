@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Provodnik.Features.Launch;
 using Provodnik.Features.Mods;
+using Provodnik.Features.Verify;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared;
 using Provodnik.Wpf.Shared.Controls;
@@ -53,9 +54,10 @@ namespace Provodnik.Wpf.Features.Mods
       }
 
       var state = _session.State;
-      var items = await Task.Run(() => ModInventory.Scan(layout, list, state));
+      var metadata = _session.Metadata;
+      var items = await Task.Run(() => ModInventory.Scan(layout, list, state, ActiveModsCheck.Disabled(layout, metadata)));
       _all = items.Select(i => new ModItemRow(i, Path.Combine(layout.Mods, i.Entry.FolderName))).ToList();
-      Installed = _all.Count(r => !r.IsMissing);
+      Installed = _all.Count(r => r.Item.FolderHasContent);
       Missing = _all.Count(r => r.IsMissing);
       ApplyFilter();
     }

@@ -19,18 +19,28 @@ namespace Provodnik.Features.Verify
   {
     public static ActiveModsResult Run(GammaLayout layout, ModpackMetadata metadata)
     {
-      // o que o GAMMA manda (a definição); o perfil só recebe uma cópia dela no fim da instalação
-      var definition = Path.Combine(layout.Definition(metadata.FolderName), metadata.ModOrganizerModList.Replace('/', Path.DirectorySeparatorChar));
-      var source = File.Exists(definition) ? definition : Path.Combine(layout.Profiles, metadata.FolderName, "modlist.txt");
-      if (!File.Exists(source))
+      if (ReadModList(layout, metadata) is not { } modList)
         return new ActiveModsResult(0, 0, []);
 
-      var active = Mo2ModList.Parse(File.ReadAllText(source)).ActiveMods;
+      var active = modList.ActiveMods;
       var missing = active
         .Where(m => !FileTree.HasContent(Path.Combine(layout.Mods, m.Name)))
         .Select(m => m.Name)
         .ToList();
       return new ActiveModsResult(active.Count, active.Count - missing.Count, missing);
+    }
+
+    /// <summary>Os mods que o próprio GAMMA deixa desligados ("-Nome"): pasta vazia neles não faz falta no jogo.</summary>
+    public static IReadOnlySet<string> Disabled(GammaLayout layout, ModpackMetadata metadata) =>
+      ReadModList(layout, metadata)?.Entries.Where(e => !e.Enabled && !e.IsSeparator).Select(e => e.Name).ToHashSet(StringComparer.OrdinalIgnoreCase)
+        ?? new HashSet<string>();
+
+    private static Mo2ModList? ReadModList(GammaLayout layout, ModpackMetadata metadata)
+    {
+      // o que o GAMMA manda (a definição); o perfil só recebe uma cópia dela no fim da instalação
+      var definition = Path.Combine(layout.Definition(metadata.FolderName), metadata.ModOrganizerModList.Replace('/', Path.DirectorySeparatorChar));
+      var source = File.Exists(definition) ? definition : Path.Combine(layout.Profiles, metadata.FolderName, "modlist.txt");
+      return File.Exists(source) ? Mo2ModList.Parse(File.ReadAllText(source)) : null;
     }
   }
 }

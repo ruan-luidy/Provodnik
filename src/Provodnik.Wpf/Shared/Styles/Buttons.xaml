@@ -688,7 +688,7 @@
 
   <!--
     Liga/desliga só de ícone (o fixar da mini janela do Finder): o ToggleButtonIconTransparent do HandyControl, do
-    tamanho do Action.Icon.Small; ligado fica azul (e troca pro ícone cheio, pelo IconSwitchElement.GeometrySelected).
+    tamanho do Action.Icon.Small; ligado fica azul com o fundo suave do accent (o ícone pode trocar pelo IconSwitchElement.GeometrySelected).
   -->
   <Style
     x:Key="Action.Toggle.Icon"
@@ -700,12 +700,15 @@
     <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
     <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size}" />
     <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size}" />
+    <Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource Radius.Sm}" />
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource Button.BackgroundBrush}" />
       </Trigger>
       <Trigger Property="IsChecked" Value="True">
         <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource Accent.SoftBrush}" />
       </Trigger>
     </Style.Triggers>
   </Style>
