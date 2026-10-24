@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Infrastructure.Processes
 {
@@ -56,7 +57,7 @@ namespace Provodnik.Infrastructure.Processes
 
       using var process = new Process { StartInfo = info };
       if (!process.Start())
-        throw new InvalidOperationException($"Não deu pra abrir {Path.GetFileName(fileName)}");
+        throw new InvalidOperationException(L.T("infra.process.startFailed", Path.GetFileName(fileName)));
       process.StandardInput.Close();
 
       var output = new Queue<string>();
@@ -74,7 +75,7 @@ namespace Provodnik.Infrastructure.Processes
       {
         Kill(process);
         cancellationToken.ThrowIfCancellationRequested();
-        throw new TimeoutException($"{Path.GetFileName(fileName)} passou de {options.Timeout?.TotalSeconds:0} s sem terminar");
+        throw new TimeoutException(L.T("infra.process.timeout", Path.GetFileName(fileName), options.Timeout?.TotalSeconds));
       }
 
       await Task.WhenAll(outputTask, errorTask).ConfigureAwait(false);

@@ -1,3 +1,5 @@
+using Provodnik.Core.Text;
+
 namespace Provodnik.Core.Diagnostics
 {
   /// <summary>O que um erro quer dizer e o que fazer, em português de gente.</summary>
@@ -10,52 +12,32 @@ namespace Provodnik.Core.Diagnostics
   /// </summary>
   public static class ErrorExplainer
   {
-    private sealed record Rule(string[] Patterns, Explanation Explanation);
+    // as mensagens do próprio Проводник entram nos três idiomas (core.errors.*: o texto; os padrões: o pedaço da frase)
+    private sealed record Rule(string[] Patterns, string Key);
 
     private static readonly Rule[] Rules =
     [
-      new(["temporarily blocked", "bloqueou temporariamente"],
-        new("O ModDB bloqueou este IP por um tempo (costuma ser 1 hora).", "O Проводник espera e tenta de novo sozinho. Se não passar, pare, espere uma hora e rode de novo: o que já baixou fica.")),
-      new(["failed to generate download link"],
-        new("O stalker-gamma-dl-cli do GAMMA não conseguiu o link (ele está defasado: o ModDB agora exige navegador).", "O Проводник usa o navegador embutido (WebView2) no lugar dele; se aparecer isto, o WebView2 Runtime não está instalado.")),
-      new(["cloudflare", "challenge", "403 forbidden", "http 403", "error: 403"],
-        new("O ModDB (Cloudflare) recusou o pedido.", "Espere uns minutos e tente de novo; se repetir, diminua os downloads do ModDB nas Configurações (1 ou 2).")),
-      new(["429", "too many requests"],
-        new("Pedidos demais seguidos pro servidor.", "Diminua os downloads simultâneos nas Configurações e tente de novo daqui a pouco.")),
-      new(["could not resolve host", "couldn't resolve host", "não achou o servidor", "name or service not known", "no such host"],
-        new("Sem resolver o nome do site (DNS).", "Confira a internet. Se o resto da internet funciona, troque o DNS pra 1.1.1.1 ou 8.8.8.8.")),
-      new(["failed to connect", "connection refused", "não conectou", "couldn't connect", "unable to access"],
-        new("Não conseguiu conectar no servidor.", "Confira a internet, VPN e firewall. O servidor também pode estar fora do ar: tente mais tarde.")),
-      new(["timed out", "timeout", "parou de responder", "operation too slow", "não respondeu a tempo"],
-        new("A conexão ficou parada tempo demais.", "Internet lenta ou instável. Ele já tenta de novo sozinho; se continuar, rode de novo mais tarde.")),
-      new(["early eof", "rpc failed", "connection reset", "a conexão caiu", "recv failure", "unexpected disconnect", "curl 56", "curl 18", "veio cortado", "transfer closed"],
-        new("A conexão caiu no meio do download.", "Normal em internet instável: ele continua de onde parou na próxima tentativa.")),
-      new(["ssl", "tls", "certificate", "schannel"],
-        new("Falhou a conexão segura (TLS) com o servidor.", "Confira a data e a hora do Windows e se algum antivírus está inspecionando HTTPS.")),
-      new(["http 404", "404 not found", "error: 404"],
-        new("O arquivo não existe mais no servidor.", "O link da lista do GAMMA quebrou. Espere a correção (costuma sair rápido) e atualize.")),
-      new(["http 5", "returned error: 5", "bad gateway", "service unavailable"],
-        new("O servidor está com problema.", "Não é com você: tente de novo daqui a alguns minutos.")),
-      new(["md5 não bate", "md5 mismatch"],
-        new("O arquivo baixado não é o que a lista do GAMMA espera.", "Ele baixa de novo sozinho. Se ficar igual duas vezes, o autor atualizou no ModDB e ele aceita com aviso.")),
-      new(["headers error", "data error", "unexpected end", "can not open the file as archive", "cannot open the file as archive", "crc failed", "is not archive", "arquivo abriu vazio", "7-zip parou com código 2"],
-        new("O arquivo está corrompido ou incompleto.", "Apague ele de downloads\\ (ou use Reinstalar na tela de Mods) que ele baixa de novo.")),
-      new(["being used by another process", "sendo usado por outro processo", "the process cannot access the file"],
-        new("Algum programa está segurando o arquivo.", "Feche o MO2, o jogo e janelas do Explorer abertas na pasta do GAMMA. Antivírus escaneando também prende: tente de novo.")),
-      new(["access is denied", "acesso negado", "access to the path", "unauthorizedaccess", "permission denied", "operation not permitted"],
-        new("Sem permissão pra escrever na pasta.", "Feche o MO2 e o jogo. Se o GAMMA estiver em Arquivos de Programas ou outra pasta protegida, reabra o Проводник como administrador (ou mova o GAMMA pra C:\\GAMMA).")),
-      new(["not enough space", "espaço suficiente", "no space left", "disk full", "disco cheio"],
-        new("O disco encheu.", "Libere espaço: uma instalação do zero precisa de uns 150 GB. Dá pra apagar arquivos velhos de downloads\\ depois de instalar.")),
-      new(["filename too long", "path too long", "nome do arquivo muito longo", "pathtoolong"],
-        new("Caminho de arquivo comprido demais pro Windows.", "Ative os caminhos longos (a checagem antes de instalar tem o botão) ou mova o GAMMA pra uma pasta curta como C:\\GAMMA.")),
-      new(["não devolveu o link", "stalker-gamma-dl-cli"],
-        new("O ModDB não entregou o link de download.", "O addon pode ter saído do ar ou o ModDB mudou a página. Tente de novo; se insistir, avise no Discord do GAMMA.")),
-      new(["não encontrado em", "not found", "cannot find the file", "não pode encontrar o arquivo"],
-        new("Falta um arquivo que deveria estar lá.", "O antivírus pode ter apagado uma ferramenta do GAMMA (curl, 7z, stalker-gamma-dl-cli). Restaure da quarentena ou baixe o instalador do GAMMA de novo.")),
-      new(["virus", "potentially unwanted", "operation did not complete successfully because the file contains"],
-        new("O antivírus bloqueou um arquivo.", "Adicione a pasta do GAMMA nas exclusões do antivírus e tente de novo.")),
-      new(["could not lock", "index.lock", "unable to create", "fatal: not a git repository"],
-        new("O repositório git ficou travado ou estragado.", "Rode de novo: se continuar, apague a pasta do repositório em resources\\ que ele clona do zero.")),
+      new(["temporarily blocked", "bloqueou temporariamente", "временно заблокировал"], "blocked"),
+      new(["failed to generate download link"], "dlcli"),
+      new(["cloudflare", "challenge", "403 forbidden", "http 403", "error: 403"], "cloudflare"),
+      new(["429", "too many requests"], "tooMany"),
+      new(["could not resolve host", "couldn't resolve host", "não achou o servidor", "couldn't find the server", "сервер не найден", "name or service not known", "no such host"], "dns"),
+      new(["failed to connect", "connection refused", "não conectou", "couldn't connect", "не удалось подключиться", "unable to access"], "connect"),
+      new(["timed out", "timeout", "parou de responder", "stopped responding", "перестал отвечать", "operation too slow", "não respondeu a tempo", "didn't respond in time", "не ответил вовремя"], "timeout"),
+      new(["early eof", "rpc failed", "connection reset", "a conexão caiu", "connection dropped", "соединение оборвалось", "recv failure", "unexpected disconnect", "curl 56", "curl 18", "veio cortado", "cut short", "загрузка оборвалась", "transfer closed"], "dropped"),
+      new(["ssl", "tls", "certificate", "schannel"], "tls"),
+      new(["http 404", "404 not found", "error: 404"], "notFound"),
+      new(["http 5", "returned error: 5", "bad gateway", "service unavailable"], "server"),
+      new(["md5 não bate", "md5 mismatch", "md5 не совпадает"], "md5"),
+      new(["headers error", "data error", "unexpected end", "can not open the file as archive", "cannot open the file as archive", "crc failed", "is not archive", "arquivo abriu vazio", "archive opened empty", "архив открылся пустым", "7-zip parou com código 2", "7-zip stopped with code 2", "7-zip завершился с кодом 2"], "corrupt"),
+      new(["being used by another process", "sendo usado por outro processo", "занят другим процессом", "the process cannot access the file"], "locked"),
+      new(["access is denied", "acesso negado", "отказано в доступе", "access to the path", "unauthorizedaccess", "permission denied", "operation not permitted"], "denied"),
+      new(["not enough space", "espaço suficiente", "недостаточно места", "no space left", "disk full", "disco cheio"], "disk"),
+      new(["filename too long", "path too long", "nome do arquivo muito longo", "pathtoolong"], "longPath"),
+      new(["não devolveu o link", "didn't return the download link", "не вернул ссылку", "stalker-gamma-dl-cli"], "noLink"),
+      new(["não encontrado em", "не найден в", "not found", "cannot find the file", "não pode encontrar o arquivo"], "missingFile"),
+      new(["virus", "potentially unwanted", "operation did not complete successfully because the file contains"], "antivirus"),
+      new(["could not lock", "index.lock", "unable to create", "fatal: not a git repository"], "git"),
     ];
 
     public static Explanation? Explain(string? text)
@@ -63,7 +45,9 @@ namespace Provodnik.Core.Diagnostics
       if (string.IsNullOrWhiteSpace(text))
         return null;
       var lower = text.ToLowerInvariant();
-      return Rules.FirstOrDefault(r => r.Patterns.Any(lower.Contains))?.Explanation;
+      return Rules.FirstOrDefault(r => r.Patterns.Any(lower.Contains)) is { } rule
+        ? new Explanation(L.T($"core.errors.{rule.Key}.meaning"), L.T($"core.errors.{rule.Key}.hint"))
+        : null;
     }
   }
 }

@@ -1,5 +1,6 @@
 using Provodnik.Core.Diagnostics;
 using Provodnik.Core.Downloads;
+using Provodnik.Core.Text;
 using Provodnik.Infrastructure.Processes;
 
 namespace Provodnik.Infrastructure.Tools
@@ -15,9 +16,9 @@ namespace Provodnik.Infrastructure.Tools
     {
       var cli = cliPath();
       if (!File.Exists(cli))
-        throw new DownloadException($"stalker-gamma-dl-cli não encontrado em {cli}");
+        throw new DownloadException(L.T("infra.modDb.notFound", cli));
 
-      console.Write("dl-cli", $"pedindo o link de {addonUrl}");
+      console.Write("dl-cli", L.T("infra.modDb.requesting", addonUrl));
       ProcessResult result;
       try
       {
@@ -33,14 +34,14 @@ namespace Provodnik.Infrastructure.Tools
       }
       catch (TimeoutException ex)
       {
-        throw new DownloadException("O ModDB não respondeu a tempo (2 min).", ex);
+        throw new DownloadException(L.T("infra.modDb.timeout"), ex);
       }
 
       var link = result.Output
         .Select(l => l.Trim())
         .LastOrDefault(l => l.StartsWith("http", StringComparison.OrdinalIgnoreCase));
       if (link is null)
-        throw new DownloadException($"O ModDB não devolveu o link de download. {result.Tail(2)}".Trim());
+        throw new DownloadException(L.T("infra.modDb.noLink", result.Tail(2)).Trim());
 
       return link;
     }

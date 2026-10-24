@@ -55,9 +55,9 @@ namespace Provodnik.Infrastructure.Tools
         if (result.ExitCode == 0)
           return;
         if (attempt >= retries)
-          throw new GitException($"git {command[0]} falhou ({result.ExitCode}): {result.Tail()}");
+          throw new GitException(L.T("infra.git.failed", command[0], result.ExitCode, result.Tail()));
 
-        progress?.Report($"git {command[0]} falhou, tentando de novo ({attempt + 1}/{retries})...");
+        progress?.Report(L.T("infra.git.retrying", command[0], attempt + 1, retries));
         await Task.Delay(TimeSpan.FromSeconds(3 * attempt), cancellationToken).ConfigureAwait(false);
       }
 

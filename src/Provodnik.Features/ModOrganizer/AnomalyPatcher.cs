@@ -1,6 +1,7 @@
 using Provodnik.Core.IO;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Modpack;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Features.ModOrganizer
 {
@@ -14,7 +15,7 @@ namespace Provodnik.Features.ModOrganizer
     {
       var anomaly = Mo2Config.Load(layout.ModOrganizerIni).GamePath;
       if (anomaly is null || !Directory.Exists(Path.Combine(anomaly, "bin")))
-        throw new DirectoryNotFoundException("O MO2 ainda não sabe onde está o Anomaly. Abra o MO2 uma vez, escolha a pasta do Anomaly e instale de novo.");
+        throw new DirectoryNotFoundException(L.T("features.patches.noAnomaly"));
       return anomaly;
     }
 

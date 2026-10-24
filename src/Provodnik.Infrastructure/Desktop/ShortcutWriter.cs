@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Provodnik.Core.Desktop;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Infrastructure.Desktop
 {
@@ -8,7 +9,7 @@ namespace Provodnik.Infrastructure.Desktop
   {
     public void Create(string shortcutPath, string target, string? icon = null, string? workingDirectory = null, string? arguments = null)
     {
-      var type = Type.GetTypeFromProgID("WScript.Shell") ?? throw new InvalidOperationException("WScript.Shell indisponível");
+      var type = Type.GetTypeFromProgID("WScript.Shell") ?? throw new InvalidOperationException(L.T("infra.shortcut.noShell"));
       dynamic shell = Activator.CreateInstance(type)!;
       try
       {

@@ -51,18 +51,18 @@ namespace Provodnik.Features.Install
       }
       catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
       {
-        reporter.Log(LogLevel.Warning, "Instalação cancelada. O que já entrou fica; é só rodar de novo pra continuar.");
+        reporter.Log(LogLevel.Warning, L.T("features.install.cancelled"));
         return run.Report(clock.Elapsed, cancelled: true);
       }
       catch (InstallAbortedException ex)
       {
         reporter.Log(LogLevel.Error, ex.Message);
-        run.Failures.Add(new ModFailure(0, "Instalação", ex.Message));
+        run.Failures.Add(new ModFailure(0, L.T("features.install.failure.install"), ex.Message));
       }
       catch (Exception ex) when (ex is not OperationCanceledException)
       {
-        reporter.Log(LogLevel.Error, $"Erro inesperado: {ex}");
-        run.Failures.Add(new ModFailure(0, "Instalação", ex.Message));
+        reporter.Log(LogLevel.Error, L.T("features.install.unexpected", ex));
+        run.Failures.Add(new ModFailure(0, L.T("features.install.failure.install"), ex.Message));
       }
       finally
       {
@@ -73,11 +73,13 @@ namespace Provodnik.Features.Install
       }
 
       var report = run.Report(clock.Elapsed, cancelled: false);
+      // as duas chaves e a ordem dos valores são fixas: o Registro reconhece o fim nos logs velhos (L.Variants)
+      var elapsed = clock.Elapsed.ToString(@"hh\:mm\:ss");
       reporter.Log(
         report.Succeeded ? LogLevel.Success : LogLevel.Warning,
         report.Succeeded
-          ? $"Pronto em {clock.Elapsed:hh\\:mm\\:ss}: {report.Installed} instalados, {report.UpToDate} já estavam em dia."
-          : $"Terminou em {clock.Elapsed:hh\\:mm\\:ss} com {report.Failures.Count} falha(s). Use \"Tentar de novo\" pra repetir só elas.");
+          ? L.T("features.install.finished.ok", elapsed, report.Installed, report.UpToDate)
+          : L.T("features.install.finished.failures", elapsed, report.Failures.Count));
       return report;
     }
 
@@ -118,7 +120,7 @@ namespace Provodnik.Features.Install
       var result = ActiveModsCheck.Run(run.Layout, run.Metadata);
       if (result.Expected == 0)
       {
-        run.Reporter.Stage(InstallStage.Verify, StageState.Warning, "modlist.txt não encontrado");
+        run.Reporter.Stage(InstallStage.Verify, StageState.Warning, L.T("features.verify.noModList"));
         return;
       }
 
@@ -130,7 +132,7 @@ namespace Provodnik.Features.Install
         if (dash > 0 && int.TryParse(name[..dash], out var index))
         {
           if (!failed.Contains(index))
-            run.Failures.Add(new ModFailure(index, name[(dash + 1)..].Trim(), "ativo no MO2, mas a pasta está vazia"));
+            run.Failures.Add(new ModFailure(index, name[(dash + 1)..].Trim(), L.T("features.verify.emptyFolder")));
         }
         else
         {
@@ -139,11 +141,11 @@ namespace Provodnik.Features.Install
       }
       // sem número: vêm do modpack_addons e dos arquivos grandes, que a instalação copia inteiros
       foreach (var name in loose)
-        run.Warn($"O modlist do GAMMA liga \"{name}\", mas a pasta dele está vazia ou não existe.");
+        run.Warn(L.T("features.verify.looseMissing", name));
 
       var numbered = result.Missing.Count - loose.Count;
-      var summary = $"{result.Found} de {result.Expected} mods ativos";
-      run.Reporter.Log(result.Missing.Count == 0 ? LogLevel.Success : LogLevel.Warning, $"Conferência: {summary} no MO2");
+      var summary = L.T("features.verify.summary", result.Found, result.Expected);
+      run.Reporter.Log(result.Missing.Count == 0 ? LogLevel.Success : LogLevel.Warning, L.T("features.verify.log", summary));
       run.Reporter.Stage(InstallStage.Verify, numbered > 0 ? StageState.Failed : loose.Count > 0 ? StageState.Warning : StageState.Done, summary);
     }
 
@@ -173,13 +175,13 @@ namespace Provodnik.Features.Install
       }
       catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
       {
-        reporter.Log(LogLevel.Warning, $"Não deu pra limpar a pasta de trabalho: {ex.Message}");
+        reporter.Log(LogLevel.Warning, L.T("features.install.workDirNotCleaned", ex.Message));
       }
       Directory.CreateDirectory(layout.WorkDir);
       Directory.CreateDirectory(layout.Downloads);
       Directory.CreateDirectory(layout.Mods);
 
-      reporter.Log(LogLevel.Info, $"GAMMA em {layout.Root}");
+      reporter.Log(LogLevel.Info, L.T("features.install.gammaAt", layout.Root));
       reporter.Stage(InstallStage.Preparing, StageState.Done);
     }
 
@@ -195,7 +197,7 @@ namespace Provodnik.Features.Install
       {
         var directory = run.Layout.Repository(repository.Name);
         var first = !Directory.Exists(Path.Combine(directory, ".git"));
-        reporter.Log(LogLevel.Info, first ? $"Clonando {repository.Name} (só na primeira vez; pode demorar)" : $"Atualizando {repository.Name}");
+        reporter.Log(LogLevel.Info, first ? L.T("features.repos.cloning", repository.Name) : L.T("features.repos.updating", repository.Name));
 
         var progress = new Progress<string>(line =>
         {
@@ -209,11 +211,11 @@ namespace Provodnik.Features.Install
         catch (GitException ex) when (!repository.Required || Directory.Exists(Path.Combine(run.Layout.Definition(run.Metadata.FolderName), "modpack_data")))
         {
           warned = true;
-          run.Warn($"{repository.Name} não atualizou, seguindo com a cópia que já existe: {ex.Message}");
+          run.Warn(L.T("features.repos.keptOld", repository.Name, ex.Message));
         }
         catch (GitException ex)
         {
-          throw new InstallAbortedException($"Não deu pra baixar a definição do GAMMA ({repository.Name}): {ex.Message}");
+          throw new InstallAbortedException(L.T("features.repos.definitionFailed", repository.Name, ex.Message));
         }
       }
 
@@ -222,10 +224,10 @@ namespace Provodnik.Features.Install
 
     private static string GitPhase(string phase) => phase switch
     {
-      "Receiving objects" => "baixando",
-      "Resolving deltas" => "montando",
-      "Updating files" or "Checking out files" => "escrevendo arquivos",
-      "Counting objects" or "Enumerating objects" or "Compressing objects" => "preparando",
+      "Receiving objects" => L.T("features.repos.phase.receiving"),
+      "Resolving deltas" => L.T("features.repos.phase.resolving"),
+      "Updating files" or "Checking out files" => L.T("features.repos.phase.writing"),
+      "Counting objects" or "Enumerating objects" or "Compressing objects" => L.T("features.repos.phase.preparing"),
       _ => phase.ToLowerInvariant(),
     };
 
@@ -250,9 +252,9 @@ namespace Provodnik.Features.Install
       }
 
       if (!Directory.Exists(Path.Combine(layout.Definition(run.Metadata.FolderName), "modpack_data")))
-        throw new InstallAbortedException("A definição do modpack (G.A.M.M.A\\modpack_data) não existe. Confira a conexão com o GitHub e tente de novo.");
+        throw new InstallAbortedException(L.T("features.definition.missing"));
 
-      reporter.Log(LogLevel.Info, $"Definição do GAMMA na versão {run.State.DefinitionVersion ?? "?"}");
+      reporter.Log(LogLevel.Info, L.T("features.definition.version", run.State.DefinitionVersion ?? "?"));
       reporter.Stage(InstallStage.Definition, StageState.Done, run.State.DefinitionVersion);
     }
 
@@ -269,16 +271,16 @@ namespace Provodnik.Features.Install
         var temp = layout.ModListFile + ".tmp";
         await File.WriteAllTextAsync(temp, text, cancellationToken).ConfigureAwait(false);
         File.Move(temp, layout.ModListFile, overwrite: true);
-        reporter.Stage(InstallStage.ModList, StageState.Done, $"{list.Mods.Count} addons");
+        reporter.Stage(InstallStage.ModList, StageState.Done, L.T("features.modList.count", list.Mods.Count));
         return list;
       }
       catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException && !cancellationToken.IsCancellationRequested)
       {
         if (!File.Exists(layout.ModListFile))
-          throw new InstallAbortedException($"Não deu pra baixar a lista de mods de stalker-gamma.com: {ex.Message}");
+          throw new InstallAbortedException(L.T("features.modList.failed", ex.Message));
 
-        run.Warn($"A lista de mods não baixou ({ex.Message}); usando o mods.txt que já existe.");
-        reporter.Stage(InstallStage.ModList, StageState.Warning, "lista local");
+        run.Warn(L.T("features.modList.usingLocal", ex.Message));
+        reporter.Stage(InstallStage.ModList, StageState.Warning, L.T("features.modList.local"));
         return ModList.Parse(await File.ReadAllTextAsync(layout.ModListFile, cancellationToken).ConfigureAwait(false));
       }
     }
@@ -286,7 +288,7 @@ namespace Provodnik.Features.Install
     private static ModList LoadLocalList(Run run)
     {
       if (!File.Exists(run.Layout.ModListFile))
-        throw new InstallAbortedException("Ainda não tem mods.txt: rode a instalação completa primeiro.");
+        throw new InstallAbortedException(L.T("features.modList.none"));
       return ModList.Parse(File.ReadAllText(run.Layout.ModListFile));
     }
 
@@ -306,7 +308,7 @@ namespace Provodnik.Features.Install
       var currentFolders = list.Entries.Select(e => e.FolderName).ToHashSet(StringComparer.OrdinalIgnoreCase);
       var mods = list.Mods.Where(m => options.OnlyMods?.Contains(m.Index) ?? true).ToList();
       foreach (var orphan in mods.Where(m => m.ArchiveName is null || m.Url is null))
-        run.Fail(orphan, "a linha do mods.txt não tem link ou nome de arquivo");
+        run.Fail(orphan, L.T("features.mods.badLine"));
       mods = mods.Where(m => m.ArchiveName is not null && m.Url is not null).ToList();
 
       // quem divide cada arquivo: o progresso do download aparece em todos eles
@@ -323,7 +325,7 @@ namespace Provodnik.Features.Install
       var installer = new ModInstaller(extractor);
 
       var done = 0;
-      void Tick() => reporter.Stage(InstallStage.Mods, StageState.Running, $"{Interlocked.Increment(ref done)} de {mods.Count}");
+      void Tick() => reporter.Stage(InstallStage.Mods, StageState.Running, L.T("features.mods.progress", Interlocked.Increment(ref done), mods.Count));
 
       Task<ArchiveOutcome> Fetch(ModEntry mod)
       {
@@ -357,7 +359,7 @@ namespace Provodnik.Features.Install
           }
           catch (Exception ex) when (ex is not OperationCanceledException)
           {
-            run.Fail(mod, $"download: {ex.Message}");
+            run.Fail(mod, L.T("features.mods.fail.download", ex.Message));
             Tick();
             return;
           }
@@ -383,18 +385,18 @@ namespace Provodnik.Features.Install
               Directory.Move(Path.Combine(layout.Mods, previous), folder);
               run.MarkInstalled(mod.FolderName, new InstalledMod(mod.ArchiveName!, fingerprint, DateTime.Now));
               Interlocked.Increment(ref run.UpToDate);
-              reporter.Mod(new ModProgress(mod.Index, ModStatus.UpToDate, Detail: $"era {previous}"));
-              reporter.Log(LogLevel.Info, $"#{mod.Index} {mod.Title}: pasta renomeada de \"{previous}\"");
+              reporter.Mod(new ModProgress(mod.Index, ModStatus.UpToDate, Detail: L.T("features.mods.was", previous)));
+              reporter.Log(LogLevel.Info, L.T("features.mods.renamed", mod.Index, mod.Title, previous));
               Tick();
               return;
             }
             catch (IOException ex)
             {
-              run.Warn($"{mod.Title}: não deu pra renomear \"{previous}\" ({ex.Message}); extraindo de novo");
+              run.Warn(L.T("features.mods.renameFailed", mod.Title, previous, ex.Message));
             }
           }
 
-          reporter.Mod(new ModProgress(mod.Index, ModStatus.WaitingExtraction, Detail: "na fila de extração"));
+          reporter.Mod(new ModProgress(mod.Index, ModStatus.WaitingExtraction, Detail: L.T("features.mods.extractQueue")));
           await extractGate.WaitAsync(token).ConfigureAwait(false);
           try
           {
@@ -406,7 +408,7 @@ namespace Provodnik.Features.Install
               run.MetaTemplate,
               new Progress<double>(f => reporter.Mod(new ModProgress(mod.Index, ModStatus.Extracting, f))),
               // pasta de instrução que não existe: o original também ignora calado; fica como informação, não aviso
-              message => reporter.Log(LogLevel.Info, $"{mod.Title}: {message} (igual ao launcher original)"),
+              message => reporter.Log(LogLevel.Info, L.T("features.mods.instruction", mod.Title, message)),
               token).ConfigureAwait(false);
 
             run.MarkInstalled(mod.FolderName, new InstalledMod(mod.ArchiveName!, fingerprint, DateTime.Now));
@@ -415,7 +417,7 @@ namespace Provodnik.Features.Install
           }
           catch (Exception ex) when (ex is not OperationCanceledException)
           {
-            run.Fail(mod, $"extração: {ex.Message}");
+            run.Fail(mod, L.T("features.mods.fail.extract", ex.Message));
           }
           finally
           {
@@ -425,7 +427,7 @@ namespace Provodnik.Features.Install
         }).ConfigureAwait(false);
 
       if (pacer.Cooldowns > 0)
-        run.Warn($"O ModDB pediu calma {pacer.Cooldowns} vez(es) e a fila esperou. Se acontecer sempre, deixe 2 downloads do ModDB nas Configurações.");
+        run.Warn(L.T("features.mods.cooldowns", pacer.Cooldowns));
 
       if (options.OnlyMods is null)
         RemoveOrphans(run, currentFolders);
@@ -436,7 +438,7 @@ namespace Provodnik.Features.Install
       reporter.Stage(
         InstallStage.Mods,
         failed > 0 ? StageState.Warning : StageState.Done,
-        failed > 0 ? $"{failed} com falha" : $"{run.Installed} instalados, {run.UpToDate} em dia");
+        failed > 0 ? L.T("features.mods.stage.failed", failed) : L.T("features.mods.stage.done", run.Installed, run.UpToDate));
     }
 
     /// <summary>
@@ -452,11 +454,11 @@ namespace Provodnik.Features.Install
         try
         {
           FileTree.Delete(Path.Combine(mods, folder));
-          run.Reporter.Log(LogLevel.Info, $"Removida \"{folder}\": saiu da lista do GAMMA");
+          run.Reporter.Log(LogLevel.Info, L.T("features.mods.orphanRemoved", folder));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-          run.Warn($"Não deu pra remover \"{folder}\", que saiu da lista: {ex.Message}");
+          run.Warn(L.T("features.mods.orphanFailed", folder, ex.Message));
         }
       }
 
@@ -476,9 +478,9 @@ namespace Provodnik.Features.Install
     private static void InstallExtras(Run run, CancellationToken cancellationToken)
     {
       var (layout, reporter) = (run.Layout, run.Reporter);
-      reporter.Stage(InstallStage.Extras, StageState.Running, "arquivos grandes");
+      reporter.Stage(InstallStage.Extras, StageState.Running, L.T("features.extras.largeFiles"));
       ExtrasInstaller.CopyLargeFiles(layout, cancellationToken);
-      reporter.Stage(InstallStage.Extras, StageState.Running, "armas do Gunslinger");
+      reporter.Stage(InstallStage.Extras, StageState.Running, L.T("features.extras.gunslinger"));
       ExtrasInstaller.CopyGunslinger(layout, run.List!, cancellationToken);
       reporter.Stage(InstallStage.Extras, StageState.Running, "modpack_addons");
       ExtrasInstaller.CopyModpackAddons(layout, run.Metadata, cancellationToken);
@@ -492,15 +494,15 @@ namespace Provodnik.Features.Install
       {
         var fixes = new List<(string From, string To)>();
         var profile = ProfileSetup.Apply(run.Layout, run.Metadata, fixes);
-        run.Reporter.Log(LogLevel.Info, $"Perfil do MO2 em {profile}");
+        run.Reporter.Log(LogLevel.Info, L.T("features.profile.at", profile));
         // erro de digitação no modlist do GAMMA: com o nome errado o MO2 desligava o mod
         foreach (var (from, to) in fixes)
-          run.Reporter.Log(LogLevel.Info, $"Nome corrigido no perfil: \"{from}\" -> \"{to}\" (erro de digitação no modlist do GAMMA; sem isso o MO2 deixava o mod desligado)");
+          run.Reporter.Log(LogLevel.Info, L.T("features.profile.nameFixed", from, to));
         run.Reporter.Stage(InstallStage.Profile, StageState.Done, run.Metadata.FolderName);
       }
       catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
       {
-        run.Failures.Add(new ModFailure(0, "Perfil do MO2", ex.Message));
+        run.Failures.Add(new ModFailure(0, L.T("features.install.failure.profile"), ex.Message));
         run.Reporter.Stage(InstallStage.Profile, StageState.Failed, ex.Message);
       }
     }
@@ -512,12 +514,12 @@ namespace Provodnik.Features.Install
       {
         var anomaly = AnomalyPatcher.FindAnomaly(run.Layout);
         AnomalyPatcher.Apply(run.Layout, run.Metadata, anomaly, run.Options.DeleteReshadeDlls);
-        run.Reporter.Log(LogLevel.Info, $"Patches aplicados no Anomaly em {anomaly}");
+        run.Reporter.Log(LogLevel.Info, L.T("features.patches.applied", anomaly));
         run.Reporter.Stage(InstallStage.Patches, StageState.Done, anomaly);
       }
       catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
       {
-        run.Failures.Add(new ModFailure(0, "Patches do Anomaly", ex.Message));
+        run.Failures.Add(new ModFailure(0, L.T("features.install.failure.patches"), ex.Message));
         run.Reporter.Stage(InstallStage.Patches, StageState.Failed, ex.Message);
       }
     }
@@ -544,7 +546,7 @@ namespace Provodnik.Features.Install
       }
       catch (Exception ex)
       {
-        run.Warn($"Atalhos não criados: {ex.Message}");
+        run.Warn(L.T("features.shortcuts.failed", ex.Message));
         run.Reporter.Stage(InstallStage.Shortcuts, StageState.Warning, ex.Message);
       }
     }
@@ -559,7 +561,7 @@ namespace Provodnik.Features.Install
       }
       catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
       {
-        run.Reporter.Log(LogLevel.Warning, $"Não deu pra gravar o estado da instalação: {ex.Message}");
+        run.Reporter.Log(LogLevel.Warning, L.T("features.install.stateNotSaved", ex.Message));
       }
     }
 

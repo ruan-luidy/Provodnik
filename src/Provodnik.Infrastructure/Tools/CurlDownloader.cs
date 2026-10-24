@@ -19,7 +19,7 @@ namespace Provodnik.Infrastructure.Tools
     {
       var curl = paths();
       if (!File.Exists(curl.Exe))
-        throw new DownloadException($"curl-impersonate não encontrado em {curl.Exe}");
+        throw new DownloadException(L.T("infra.curl.notFound", curl.Exe));
 
       Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
       var result = await RunAsync(curl, url, destination, resume: true, progress, cancellationToken).ConfigureAwait(false);
@@ -38,7 +38,7 @@ namespace Provodnik.Infrastructure.Tools
     private Task<ProcessResult> RunAsync(CurlPaths curl, string url, string destination, bool resume, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
     {
       var offset = resume && File.Exists(destination) ? new FileInfo(destination).Length : 0;
-      console.Write("curl", offset > 0 ? $"continuando {Path.GetFileName(destination)} a partir de {offset / 1048576} MB · {url}" : $"baixando {url}");
+      console.Write("curl", offset > 0 ? L.T("infra.curl.resuming", Path.GetFileName(destination), offset / 1048576, url) : L.T("infra.curl.downloading", url));
       var arguments = new List<string>
       {
         "--config", curl.Config,
@@ -73,15 +73,16 @@ namespace Provodnik.Infrastructure.Tools
         cancellationToken);
     }
 
+    // o "curl 56:" da frente fica igual em todo idioma: o ErrorExplainer reconhece por ele
     private static string Explain(int code) => code switch
     {
-      6 => "não achou o servidor (DNS).",
-      7 => "não conectou no servidor.",
-      18 => "o download veio cortado.",
-      22 => "o servidor respondeu com erro HTTP.",
-      28 => "o servidor parou de responder.",
-      35 or 60 => "falhou o TLS com o servidor.",
-      52 or 56 => "a conexão caiu no meio.",
+      6 => L.T("infra.curl.code.dns"),
+      7 => L.T("infra.curl.code.connect"),
+      18 => L.T("infra.curl.code.partial"),
+      22 => L.T("infra.curl.code.http"),
+      28 => L.T("infra.curl.code.timeout"),
+      35 or 60 => L.T("infra.curl.code.tls"),
+      52 or 56 => L.T("infra.curl.code.dropped"),
       _ => string.Empty,
     };
   }

@@ -15,10 +15,10 @@ namespace Provodnik.Infrastructure.Tools
     {
       var exe = sevenZipPath();
       if (!File.Exists(exe))
-        throw new ArchiveException($"7-Zip não encontrado em {exe}");
+        throw new ArchiveException(L.T("infra.sevenZip.notFound", exe));
 
       Directory.CreateDirectory(destination);
-      console.Write("7z", $"extraindo {Path.GetFileName(archive)}");
+      console.Write("7z", L.T("infra.sevenZip.extracting", Path.GetFileName(archive)));
       string[] arguments = ["x", archive, "-aoa", $"-o{destination}", "-y", "-bsp1", "-bso0", "-sccUTF-8"];
       var result = await ProcessRunner.RunAsync(
         exe,
@@ -36,7 +36,7 @@ namespace Provodnik.Infrastructure.Tools
 
       // 0 ok, 1 aviso (algum arquivo preso, o resto saiu), 2 erro fatal, 7 linha de comando, 8 memória
       if (result.ExitCode > 1)
-        throw new ArchiveException($"7-Zip parou com código {result.ExitCode}: {result.Tail()}");
+        throw new ArchiveException(L.T("infra.sevenZip.failed", result.ExitCode, result.Tail()));
     }
   }
 }
