@@ -50,7 +50,7 @@ namespace Provodnik.Tests
     private InstallPipeline Pipeline() => new(_api, new FakeGit(), _downloader, new FakeResolver(), _extractor, new NoShortcuts(), new FakeSystem());
 
     private Task<InstallReport> RunAsync(InstallOptions? options = null) =>
-      Pipeline().RunAsync(_layout, options ?? new InstallOptions { CreateShortcuts = false }, new NullReporter(), CancellationToken.None);
+      Pipeline().RunAsync(_layout, (options ?? new InstallOptions { CreateShortcuts = false }) with { ModDbSpacing = TimeSpan.Zero }, new NullReporter(), CancellationToken.None);
 
     private static string Line(string url, string instructions, string author, string name, string archive) =>
       $"{url}\t{instructions}\t - {author}\t {name}\thttps://www.moddb.com/mods/x\t{archive}\t";

@@ -21,8 +21,11 @@ namespace Provodnik.Core.Install
 
     public bool CreateShortcuts { get; init; } = true;
 
-    /// <summary>Downloads do ModDB ao mesmo tempo. Mais que isso o Cloudflare começa a desafiar.</summary>
+    /// <summary>Downloads do ModDB ao mesmo tempo, no CDN (os pedidos de link vão um por vez, no ritmo de <see cref="ModDbSpacing"/>).</summary>
     public int ModDbParallel { get; init; } = 3;
+
+    /// <summary>O respiro entre dois pedidos de link ao ModDB (a página que ele limita).</summary>
+    public TimeSpan ModDbSpacing { get; init; } = TimeSpan.FromSeconds(1.5);
 
     /// <summary>Downloads do GitHub e afins ao mesmo tempo.</summary>
     public int HttpParallel { get; init; } = 4;

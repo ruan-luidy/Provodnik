@@ -7,6 +7,7 @@
 - Administrador só quando precisa: oferece reabrir elevado se a pasta não deixa gravar. Elevado, o MO2 e o jogo abrem sem administrador.
 - Falhas da instalação mostram o que fazer.
 - Tela de Mods com o atalho pro MO2 (ligar, desligar e ordenar continua sendo lá).
+- Ritmo com o ModDB: os pedidos de link (o que ele limita) vão um por vez, e quando ele bloqueia a fila inteira espera junto em vez de cada mod insistir; os downloads no CDN continuam em paralelo.
 
 ## 0.1.0
 

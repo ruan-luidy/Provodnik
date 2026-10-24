@@ -316,7 +316,8 @@ namespace Provodnik.Features.Install
       using var httpGate = new SemaphoreSlim(Math.Max(1, options.HttpParallel));
       using var hashGate = new SemaphoreSlim(2);
       using var extractGate = new SemaphoreSlim(Math.Max(1, options.ExtractParallel));
-      var fetcher = new ArchiveFetcher(downloader, resolver, run.Hashes, layout.Downloads, options, modDbGate, httpGate, hashGate);
+      var pacer = new ModDbPacer(resolver, options.ModDbSpacing);
+      var fetcher = new ArchiveFetcher(downloader, pacer, run.Hashes, layout.Downloads, options, modDbGate, httpGate, hashGate);
       var installer = new ModInstaller(extractor);
 
       var done = 0;
@@ -418,6 +419,9 @@ namespace Provodnik.Features.Install
             Tick();
           }
         }).ConfigureAwait(false);
+
+      if (pacer.Cooldowns > 0)
+        run.Warn($"O ModDB pediu calma {pacer.Cooldowns} vez(es) e a fila esperou. Se acontecer sempre, deixe 2 downloads do ModDB nas Configurações.");
 
       if (options.OnlyMods is null)
         RemoveOrphans(run, currentFolders);

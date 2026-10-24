@@ -73,7 +73,7 @@
         Margin="0,20,0,8"
         Style="{StaticResource DialogFieldLabel}"
         Text="Ao mesmo tempo" />
-      <DockPanel Style="{StaticResource CountRow}" ToolTip="Mais que 3 e o Cloudflare do ModDB começa a pedir desafio">
+      <DockPanel Style="{StaticResource CountRow}" ToolTip="Downloads ao mesmo tempo no CDN do ModDB. Os pedidos de link vão um por vez, no ritmo que o ModDB aceita, e a fila esfria sozinha quando ele reclama">
         <hc:NumericUpDown
           Maximum="8"
           Style="{StaticResource Count}"
