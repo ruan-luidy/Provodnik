@@ -1,0 +1,100 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    ========================================
+    CORES BASE - NÃO USAR DIRETAMENTE
+    ========================================
+    Mesmos hex do StatusColors.xaml do rnzNegativeObserver: o verde de "OK" e o vermelho de "alerta"
+    viram aqui alta e baixa.
+  -->
+  <Color x:Key="ColorVerde">#2db84d</Color>
+  <Color x:Key="ColorVermelho">#db3340</Color>
+  <Color x:Key="ColorAmarelo">#e9af20</Color>
+
+  <!--
+    ========================================
+    MERCADO - alta / baixa
+    ========================================
+    O gráfico (ChartView.xaml.cs) lê Market.UpBrush e Market.DownBrush pra pintar os candles:
+    mudar a cor aqui muda na tela inteira.
+  -->
+  <SolidColorBrush x:Key="Market.UpBrush" Color="{StaticResource ColorVerde}" />
+  <SolidColorBrush x:Key="Market.DownBrush" Color="{StaticResource ColorVermelho}" />
+  <SolidColorBrush x:Key="Market.StaleBrush" Color="{StaticResource ColorAmarelo}" />
+
+  <!--  O dourado do Path of Exile 2: botão do modo, liga na barra do topo e o que mais for "do jogo"  -->
+
+  <!--  Fundos translúcidos pra destacar a variação sem gritar  -->
+  <SolidColorBrush x:Key="Market.UpBackgroundBrush" Color="#1A2DB84D" />
+  <SolidColorBrush x:Key="Market.DownBackgroundBrush" Color="#1ADB3340" />
+
+  <!--
+    Meio dos gradientes de legenda: o "zero" neutro entre baixa e alta. Um pouco acima do RegionBrush
+    pra régua não sumir no fundo do cartão.
+  -->
+  <Color x:Key="ColorNeutroLegenda">#2a2a2a</Color>
+
+  <!--  Régua da legenda do heatmap: -x% vermelho ... 0 neutro ... +x% verde  -->
+  <LinearGradientBrush x:Key="Market.DivergingLegendBrush" StartPoint="0,0" EndPoint="1,0">
+    <GradientStop Offset="0" Color="{StaticResource ColorVermelho}" />
+    <GradientStop Offset="0.5" Color="{StaticResource ColorNeutroLegenda}" />
+    <GradientStop Offset="1" Color="{StaticResource ColorVerde}" />
+  </LinearGradientBrush>
+
+  <!--  Régua da correlação: -1 vermelho (opostos) ... 0 neutro ... +1 azul do accent (juntos)  -->
+  <LinearGradientBrush x:Key="Market.CorrelationLegendBrush" StartPoint="0,0" EndPoint="1,0">
+    <GradientStop Offset="0" Color="{StaticResource ColorVermelho}" />
+    <GradientStop Offset="0.5" Color="{StaticResource ColorNeutroLegenda}" />
+    <GradientStop Offset="1" Color="{StaticResource ColorAccent}" />
+  </LinearGradientBrush>
+
+  <!--
+    Texto de variação: verde na alta, vermelho na baixa, cor normal quando zerado ou sem dado.
+    Funciona com qualquer DataContext que tenha IsUp/IsDown (QuotePanelViewModel e WatchlistItem têm).
+  -->
+  <Style x:Key="ChangeText" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource FontFamily.Numbers}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsUp}" Value="True">
+        <Setter Property="Foreground" Value="{StaticResource Market.UpBrush}" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding IsDown}" Value="True">
+        <Setter Property="Foreground" Value="{StaticResource Market.DownBrush}" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <!--
+    Número com lado mas que não é variação (Fear & Greed, consenso de analista, posição de especulador): mesma lógica
+    do ChangeText, só que sem lado ele fica na cor normal do texto em vez de cinza.
+  -->
+  <Style x:Key="DirectionText" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource FontFamily.Numbers}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsUp}" Value="True">
+        <Setter Property="Foreground" Value="{StaticResource Market.UpBrush}" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding IsDown}" Value="True">
+        <Setter Property="Foreground" Value="{StaticResource Market.DownBrush}" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <!--  Pílula de variação (fundo translúcido + texto colorido) usada no quote panel  -->
+  <Style x:Key="ChangePill" TargetType="Border">
+    <Setter Property="Padding" Value="8,2" />
+    <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}" />
+    <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsUp}" Value="True">
+        <Setter Property="Background" Value="{StaticResource Market.UpBackgroundBrush}" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding IsDown}" Value="True">
+        <Setter Property="Background" Value="{StaticResource Market.DownBackgroundBrush}" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+</ResourceDictionary>

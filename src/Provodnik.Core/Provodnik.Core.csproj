@@ -1,0 +1,17 @@
+<!--
+  Modelos, regras e contratos do Проводник. ZERO pacotes de terceiros: só a BCL.
+  Não sabe nada de curl, 7-Zip, git ou WPF.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Provodnik.Tests" />
+  </ItemGroup>
+
+</Project>

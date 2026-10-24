@@ -1,0 +1,12 @@
+<Project>
+
+  <!--  A versão do Проводник mora só aqui  -->
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Product>Provodnik</Product>
+    <Authors>Ruan Melo</Authors>
+    <Copyright>© 2026 Ruan Melo</Copyright>
+    <RepositoryUrl>https://github.com/ruan-luidy/Provodnik</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>

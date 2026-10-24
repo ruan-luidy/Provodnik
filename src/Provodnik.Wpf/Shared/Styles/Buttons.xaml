@@ -1,0 +1,774 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
+
+  <!--
+    Os botões do rnzNegativeObserver (Features/Shared/Presentation/Styles/ButtonStyles.xaml), copiados inteiros.
+    
+    ESTRATÉGIA:
+    ButtonBaseStyle é sobrescrito PRIMEIRO com hover fade (200ms) + press scale (100ms).
+    Todos os estilos coloridos (Primary, Success, etc.) ficam BasedOn="{StaticResource ButtonBaseStyle}"
+    que ao tempo de parse já aponta para o NOSSO override — animações herdadas automaticamente.
+    ButtonIcon / ButtonIconCircular têm template próprio: BasedOn do key HC + scale explícito.
+  -->
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    CORE — ButtonBaseStyle com animações (definidas UMA VEZ)
+    {StaticResource ButtonBaseStyle} resolve para o HC aqui pois
+    nosso override ainda não foi registrado — sem referência circular
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <Style
+    x:Key="ButtonBaseStyle"
+    BasedOn="{StaticResource ButtonBaseStyle}"
+    TargetType="Button">
+    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+    <!--
+      Provodnik: o ícone do hc:IconElement do tamanho do PackIcon do Negativo - um quadrado de 14. Só com a altura,
+      o template do HandyControl deixa a largura livre e os ícones largos cresciam (a nuvem de 14 saía com 19 x 14).
+    -->
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size}" />
+    <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+    <Setter Property="RenderTransform">
+      <Setter.Value>
+        <ScaleTransform />
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Trigger.EnterActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="Opacity"
+                To="0.9"
+                Duration="0:0:0.20" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.EnterActions>
+        <Trigger.ExitActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="Opacity"
+                To="1.0"
+                Duration="0:0:0.20" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.ExitActions>
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Trigger.EnterActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="Opacity"
+                To="0.6"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="0.95"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="0.95"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.EnterActions>
+        <Trigger.ExitActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="Opacity"
+                To="0.9"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="1.0"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="1.0"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.ExitActions>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    ButtonDefault — BasedOn NOSSO ButtonBaseStyle (registrado acima)
+    Preserva troca de Background no hover/press do HC original
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <Style
+    x:Key="ButtonDefault"
+    BasedOn="{StaticResource ButtonBaseStyle}"
+    TargetType="Button">
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style
+    x:Key="ButtonDefault.Small"
+    BasedOn="{StaticResource ButtonDefault}"
+    TargetType="Button">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <!--  Implicit style — botoes sem style explicito  -->
+  <Style BasedOn="{StaticResource ButtonDefault}" TargetType="Button" />
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    Estilos coloridos — BasedOn NOSSO ButtonBaseStyle
+    Animacoes herdadas automaticamente, sem repetir triggers
+    ═══════════════════════════════════════════════════════════════
+  -->
+
+  <Style
+    x:Key="ButtonPrimary"
+    BasedOn="{StaticResource ButtonBaseStyle}"
+    TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+  </Style>
+  <Style
+    x:Key="ButtonPrimary.Small"
+    BasedOn="{StaticResource ButtonPrimary}"
+    TargetType="Button">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <Style
+    x:Key="ButtonSuccess"
+    BasedOn="{StaticResource ButtonBaseStyle}"
+    TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
+  </Style>
+  <Style
+    x:Key="ButtonSuccess.Small"
+    BasedOn="{StaticResource ButtonSuccess}"
+    TargetType="Button">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <Style
+    x:Key="ButtonInfo"
+    BasedOn="{StaticResource ButtonBaseStyle}"
+    TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource InfoBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource InfoBrush}" />
+  </Style>
+  <Style
+    x:Key="ButtonInfo.Small"
+    BasedOn="{StaticResource ButtonInfo}"
+    TargetType="Button">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <Style
+    x:Key="ButtonWarning"
+    BasedOn="{StaticResource ButtonBaseStyle}"
+    TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}" />
+  </Style>
+  <Style
+    x:Key="ButtonWarning.Small"
+    BasedOn="{StaticResource ButtonWarning}"
+    TargetType="Button">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <Style
+    x:Key="ButtonDanger"
+    BasedOn="{StaticResource ButtonBaseStyle}"
+    TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DangerBrush}" />
+  </Style>
+  <Style
+    x:Key="ButtonDanger.Small"
+    BasedOn="{StaticResource ButtonDanger}"
+    TargetType="Button">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    ButtonListItem — botão "linha de lista" com hover Surface
+    Pattern: machine picker, menu de seleção, sidebar item
+    Stretch horizontal + padding compacto + hover SecondaryRegion
+    Antes vivia inline em 4 XAMLs (MoveToMachineDialog, OrderGridView,
+    ChangeHistoryView, ScheduleAdherenceView) — consolidado aqui
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <Style x:Key="ButtonListItem" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border
+            Padding="{TemplateBinding Padding}"
+            Background="{TemplateBinding Background}"
+            CornerRadius="{StaticResource Radius.Sm}">
+            <ContentPresenter VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    ToggleButtonDropdown — botão "abre popup" estilo dropdown
+    Conteúdo + caret right; hover/checked trocam pra SecondaryRegion
+    BorderThickness/FontSize via TemplateBinding pra cobrir variantes
+    (Visualization sem borda+Lg, Adherence/LoadAnalysis com borda+Sm)
+    Antes vivia inline em 8 ToggleButton.Template (3 Adherence,
+    2 LoadAnalysis, 3 Visualization).
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <Style x:Key="ToggleButtonDropdown" TargetType="ToggleButton">
+    <!--  Sem isto o WPF desenha o retangulo pontilhado padrao depois do clique  -->
+    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Padding" Value="10,5" />
+    <Setter Property="FontSize" Value="{StaticResource FontSize.Sm}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Border
+            Padding="{TemplateBinding Padding}"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="{StaticResource Radius.Sm}"
+            Cursor="Hand">
+            <Grid VerticalAlignment="Center">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <ContentPresenter
+                VerticalAlignment="Center"
+                RecognizesAccessKey="True"
+                TextElement.FontSize="{TemplateBinding FontSize}"
+                TextElement.FontWeight="{TemplateBinding FontWeight}"
+                TextElement.Foreground="{TemplateBinding Foreground}" />
+              <iconPacks:PackIconPhosphorIcons
+                Grid.Column="1"
+                Width="12"
+                Height="12"
+                Margin="6,0,0,0"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource SecondaryTextBrush}"
+                Kind="CaretDownBold" />
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    ButtonIcon / ButtonIconCircular — template proprio do HC
+    BasedOn do key HC (preserva template) + scale explicito
+    Sem hover opacity (fundo transparente por padrao)
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <Style
+    x:Key="ButtonIcon"
+    BasedOn="{StaticResource ButtonIcon}"
+    TargetType="Button">
+    <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+    <Setter Property="RenderTransform">
+      <Setter.Value>
+        <ScaleTransform />
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsPressed" Value="True">
+        <Trigger.EnterActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="0.95"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="0.95"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.EnterActions>
+        <Trigger.ExitActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="1.0"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="1.0"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.ExitActions>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <Style
+    x:Key="ButtonIcon.Small"
+    BasedOn="{StaticResource ButtonIcon}"
+    TargetType="Button">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <Style
+    x:Key="ButtonIconCircular"
+    BasedOn="{StaticResource ButtonIconCircular}"
+    TargetType="Button">
+    <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+    <Setter Property="RenderTransform">
+      <Setter.Value>
+        <ScaleTransform />
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsPressed" Value="True">
+        <Trigger.EnterActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="0.95"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="0.95"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.EnterActions>
+        <Trigger.ExitActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="1.0"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="1.0"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.ExitActions>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <Style
+    x:Key="ButtonIconCircular.Small"
+    BasedOn="{StaticResource ButtonIconCircular}"
+    TargetType="Button">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="1" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Small}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+  </Style>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    ButtonIconCustom — icone personalizado (PackIconPhosphorIcons)
+    So scale no press (opacity gerenciada pelo ControlTemplate)
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <Style x:Key="ButtonIconCustom" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+    <Setter Property="RenderTransform">
+      <Setter.Value>
+        <ScaleTransform />
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border
+            Padding="{TemplateBinding Padding}"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+            <ContentPresenter
+              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+              RecognizesAccessKey="True"
+              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter Property="Opacity" Value="0.8" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsPressed" Value="True">
+        <Trigger.EnterActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="0.95"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="0.95"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.EnterActions>
+        <Trigger.ExitActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="1.0"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="1.0"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.ExitActions>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style
+    x:Key="ButtonIconCustom.Small"
+    BasedOn="{StaticResource ButtonIconCustom}"
+    TargetType="Button">
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="Height" Value="20" />
+  </Style>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    hc:TabItem — substitui botao de fechar (Path) por PhosphorIcon
+    Copia o TabItemPlusBaseStyle e troca apenas o conteudo do botao
+    ═══════════════════════════════════════════════════════════════
+  -->
+  <Style
+    x:Key="TabItemCustom"
+    BasedOn="{StaticResource TabItemPlusBaseStyle}"
+    TargetType="hc:TabItem">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="hc:TabItem">
+          <Grid
+            x:Name="templateRoot"
+            ContextMenu="{TemplateBinding Menu}"
+            SnapsToDevicePixels="true">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Border
+              x:Name="mainBorder"
+              Grid.ColumnSpan="3"
+              Margin="0"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}">
+              <Border
+                x:Name="innerBorder"
+                Margin="0,0,0,-1"
+                Background="{DynamicResource RegionBrush}"
+                Visibility="Collapsed" />
+            </Border>
+            <Path
+              x:Name="PathMain"
+              Grid.Column="0"
+              Width="{TemplateBinding hc:IconElement.Width}"
+              Height="{TemplateBinding hc:IconElement.Height}"
+              Margin="10,0,0,0"
+              Data="{TemplateBinding hc:IconElement.Geometry}"
+              Fill="{TemplateBinding Foreground}"
+              SnapsToDevicePixels="True"
+              Stretch="Uniform" />
+            <ContentPresenter
+              x:Name="contentPresenter"
+              Grid.Column="1"
+              Margin="{TemplateBinding Padding}"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Center"
+              ContentSource="Header"
+              Focusable="False"
+              RecognizesAccessKey="True"
+              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+            <Border
+              x:Name="BorderMask"
+              Grid.Column="1"
+              Width="20"
+              Margin="0,0,1,1"
+              HorizontalAlignment="Right"
+              Background="{TemplateBinding Background}">
+              <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                  <GradientStop Offset="0" />
+                  <GradientStop Offset="1" Color="White" />
+                </LinearGradientBrush>
+              </Border.OpacityMask>
+            </Border>
+            <Button
+              Grid.Column="2"
+              Width="22"
+              Height="22"
+              Margin="4,0,2,0"
+              Padding="0"
+              VerticalAlignment="Center"
+              Background="Transparent"
+              BorderThickness="0"
+              Command="{x:Static hc:ControlCommands.Close}"
+              Cursor="Hand"
+              Focusable="False"
+              Style="{StaticResource ButtonIconCustom}"
+              Visibility="{TemplateBinding ShowCloseButton,
+                                           Converter={StaticResource Boolean2VisibilityConverter}}">
+              <iconPacks:PackIconPhosphorIcons
+                Width="11"
+                Height="11"
+                Foreground="{DynamicResource SecondaryTextBrush}"
+                Kind="XBold" />
+            </Button>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="true">
+              <Setter Property="Panel.ZIndex" Value="1" />
+              <Setter TargetName="innerBorder" Property="Visibility" Value="Visible" />
+              <Setter TargetName="BorderMask" Property="Background" Value="{DynamicResource RegionBrush}" />
+            </Trigger>
+            <Trigger Property="hc:IconElement.Geometry" Value="{x:Null}">
+              <Setter TargetName="PathMain" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="ShowCloseButton" Value="True">
+              <Setter TargetName="BorderMask" Property="Margin" Value="0,0,0,1" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="contentPresenter" Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!--
+    ===== BOTÕES POR PAPEL =====
+    Os botões do Negativo como ele usa, cada um com um nome que diz onde vai - nenhuma tela põe altura, padding ou
+    fonte num botão:
+    - Action, Action.Primary, Action.Danger: o ButtonDefault/Primary/Danger do Negativo, sem mexer (30 de altura,
+    o padding e a fonte do HandyControl, ícone 14) - ação de formulário, de diálogo, a principal da tela;
+    - Action.Small, Action.Primary.Small: o .Small do Negativo - ação em cabeçalho de seção, faixa de status e
+    barra de tabela;
+    - Action.Icon: só ícone ao lado de um campo, quadrado da altura dele;
+    - Action.Icon.Small: só ícone, sem caixa (engrenagem, +, X de diálogo e de toast);
+    - Action.Icon.Inline: o X dentro de chip e de tag.
+    Rodapé de diálogo: Action.Dialog e Action.Dialog.Primary (com a largura de 96 do Negativo).
+  -->
+  <Style
+    x:Key="Action"
+    BasedOn="{StaticResource ButtonDefault}"
+    TargetType="Button" />
+
+  <Style
+    x:Key="Action.Primary"
+    BasedOn="{StaticResource ButtonPrimary}"
+    TargetType="Button" />
+
+  <Style
+    x:Key="Action.Danger"
+    BasedOn="{StaticResource ButtonDanger}"
+    TargetType="Button" />
+
+  <Style
+    x:Key="Action.Small"
+    BasedOn="{StaticResource ButtonDefault.Small}"
+    TargetType="Button" />
+
+  <Style
+    x:Key="Action.Primary.Small"
+    BasedOn="{StaticResource ButtonPrimary.Small}"
+    TargetType="Button" />
+
+  <!--
+    Liga/desliga só de ícone (o fixar da mini janela do Finder): o ToggleButtonIconTransparent do HandyControl, do
+    tamanho do Action.Icon.Small; ligado fica azul (e troca pro ícone cheio, pelo IconSwitchElement.GeometrySelected).
+  -->
+  <Style
+    x:Key="Action.Toggle.Icon"
+    BasedOn="{StaticResource ToggleButtonIconTransparent}"
+    TargetType="ToggleButton">
+    <Setter Property="Width" Value="{StaticResource Control.Height.Small}" />
+    <Setter Property="Height" Value="{StaticResource Control.Height.Small}" />
+    <Setter Property="Padding" Value="5" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size}" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+      </Trigger>
+      <Trigger Property="IsChecked" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!--  O formato que existe de uma peça no Finder ("PDF", "DWG"): o .Small do HandyControl, todos da mesma largura  -->
+  <Style
+    x:Key="Action.Format"
+    BasedOn="{StaticResource ButtonDefault.Small}"
+    TargetType="Button">
+    <Setter Property="MinWidth" Value="36" />
+    <Setter Property="Margin" Value="4,0,0,0" />
+    <Setter Property="FontSize" Value="{StaticResource FontSize.XS}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <Style
+    x:Key="Action.Icon"
+    BasedOn="{StaticResource ButtonDefault}"
+    TargetType="Button">
+    <Setter Property="Width" Value="{StaticResource Control.Height}" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style
+    x:Key="Action.Icon.Small"
+    BasedOn="{StaticResource ButtonIcon}"
+    TargetType="Button">
+    <Setter Property="Width" Value="{StaticResource Control.Height.Small}" />
+    <Setter Property="Height" Value="{StaticResource Control.Height.Small}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <!--  O ButtonIcon do HandyControl não herda o ButtonBaseStyle: sem isso o ícone enche o botão  -->
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size}" />
+  </Style>
+
+  <!--  O X de fechar (diálogo, toast): glifo de 10, o tamanho do X dos botões da janela do Windows  -->
+  <Style
+    x:Key="Action.Icon.Close"
+    BasedOn="{StaticResource Action.Icon.Small}"
+    TargetType="Button">
+    <Setter Property="hc:IconElement.Width" Value="10" />
+    <Setter Property="hc:IconElement.Height" Value="10" />
+  </Style>
+
+  <Style
+    x:Key="Action.Icon.Inline"
+    BasedOn="{StaticResource Action.Icon.Small}"
+    TargetType="Button">
+    <Setter Property="Width" Value="18" />
+    <Setter Property="Height" Value="18" />
+    <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size.Inline}" />
+    <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Inline}" />
+  </Style>
+
+  <Style
+    x:Key="Action.Dialog"
+    BasedOn="{StaticResource Action}"
+    TargetType="Button">
+    <Setter Property="MinWidth" Value="96" />
+  </Style>
+
+  <Style
+    x:Key="Action.Dialog.Primary"
+    BasedOn="{StaticResource Action.Primary}"
+    TargetType="Button">
+    <Setter Property="MinWidth" Value="96" />
+  </Style>
+
+</ResourceDictionary>

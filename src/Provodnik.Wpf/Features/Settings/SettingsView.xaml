@@ -1,0 +1,137 @@
+<UserControl
+  x:Class="Provodnik.Wpf.Features.Settings.SettingsView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:settings="clr-namespace:Provodnik.Wpf.Features.Settings"
+  Width="480"
+  d:DataContext="{d:DesignInstance Type=settings:SettingsViewModel}"
+  Background="Transparent"
+  mc:Ignorable="d">
+
+  <UserControl.Resources>
+    <!--  Linha "rótulo ..... número" dos downloads simultâneos  -->
+    <Style x:Key="CountRow" TargetType="DockPanel">
+      <Setter Property="Margin" Value="0,0,0,8" />
+    </Style>
+    <Style x:Key="CountLabel" TargetType="TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    </Style>
+    <Style
+      x:Key="Count"
+      BasedOn="{StaticResource NumericUpDownExtend}"
+      TargetType="hc:NumericUpDown">
+      <Setter Property="Width" Value="96" />
+      <Setter Property="Minimum" Value="1" />
+      <Setter Property="DockPanel.Dock" Value="Right" />
+    </Style>
+    <Style
+      x:Key="Option"
+      BasedOn="{StaticResource {x:Type CheckBox}}"
+      TargetType="CheckBox">
+      <Setter Property="Margin" Value="0,0,0,10" />
+    </Style>
+  </UserControl.Resources>
+
+  <controls:DialogFrame
+    CloseClick="Cancel_Click"
+    Subtitle="Valem pra próxima instalação"
+    Title="Configurações">
+    <StackPanel>
+      <TextBlock Style="{StaticResource DialogFieldLabel}" Text="Pasta do GAMMA" />
+      <DockPanel>
+        <Button
+          Margin="6,0,0,0"
+          hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
+          Command="{Binding BrowseCommand}"
+          DockPanel.Dock="Right"
+          IsEnabled="{Binding IsPortable, Converter={StaticResource Boolean2BooleanReConverter}}"
+          Style="{StaticResource Action}" />
+        <hc:TextBox
+          hc:InfoElement.Placeholder="D:\GAMMA"
+          IsReadOnly="{Binding IsPortable}"
+          Text="{Binding GammaRoot}" />
+      </DockPanel>
+      <TextBlock
+        Margin="0,4,0,0"
+        Style="{StaticResource CaptionText}"
+        Text="O Проводник está dentro dessa pasta, então ela é fixa."
+        Visibility="{Binding IsPortable, Converter={StaticResource Boolean2VisibilityConverter}}" />
+      <TextBlock
+        Margin="0,4,0,0"
+        Foreground="{DynamicResource DangerBrush}"
+        Text="{Binding Error}"
+        TextWrapping="Wrap"
+        Visibility="{Binding Error, Converter={StaticResource String2VisibilityConverter}}" />
+
+      <TextBlock
+        Margin="0,20,0,8"
+        Style="{StaticResource DialogFieldLabel}"
+        Text="Ao mesmo tempo" />
+      <DockPanel Style="{StaticResource CountRow}" ToolTip="Mais que 3 e o Cloudflare do ModDB começa a pedir desafio">
+        <hc:NumericUpDown
+          Maximum="8"
+          Style="{StaticResource Count}"
+          Value="{Binding ModDbParallel}" />
+        <TextBlock Style="{StaticResource CountLabel}" Text="Downloads do ModDB" />
+      </DockPanel>
+      <DockPanel Style="{StaticResource CountRow}">
+        <hc:NumericUpDown
+          Maximum="16"
+          Style="{StaticResource Count}"
+          Value="{Binding HttpParallel}" />
+        <TextBlock Style="{StaticResource CountLabel}" Text="Downloads do GitHub" />
+      </DockPanel>
+      <DockPanel Style="{StaticResource CountRow}" ToolTip="O gargalo é o disco: em HD, deixe 1">
+        <hc:NumericUpDown
+          Maximum="8"
+          Style="{StaticResource Count}"
+          Value="{Binding ExtractParallel}" />
+        <TextBlock Style="{StaticResource CountLabel}" Text="Extrações" />
+      </DockPanel>
+
+      <TextBlock
+        Margin="0,12,0,8"
+        Style="{StaticResource DialogFieldLabel}"
+        Text="Opções" />
+      <CheckBox
+        Content="Conferir o md5 dos arquivos"
+        IsChecked="{Binding CheckMd5}"
+        Style="{StaticResource Option}"
+        ToolTip="Arquivo baixado que não bate com a lista é baixado de novo. Desligar é inseguro." />
+      <CheckBox
+        Content="Atualizar os addons do GitHub"
+        IsChecked="{Binding UpdateGitHubAddons}"
+        Style="{StaticResource Option}"
+        ToolTip="Pergunta pro GitHub se o zip mudou e baixa só quando mudou" />
+      <CheckBox
+        Content="Apagar as DLLs do Reshade (dxgi.dll e d3d9.dll)"
+        IsChecked="{Binding DeleteReshadeDlls}"
+        Style="{StaticResource Option}" />
+      <CheckBox
+        Content="Criar atalhos na área de trabalho"
+        IsChecked="{Binding CreateShortcuts}"
+        Style="{StaticResource Option}" />
+    </StackPanel>
+
+    <controls:DialogFrame.Footer>
+      <hc:UniformSpacingPanel Style="{StaticResource DialogActions}">
+        <Button
+          Click="Cancel_Click"
+          Content="Cancelar"
+          IsCancel="True"
+          Style="{StaticResource Action.Dialog}" />
+        <Button
+          Click="Save_Click"
+          Content="Salvar"
+          IsDefault="True"
+          Style="{StaticResource Action.Dialog.Primary}" />
+      </hc:UniformSpacingPanel>
+    </controls:DialogFrame.Footer>
+  </controls:DialogFrame>
+</UserControl>

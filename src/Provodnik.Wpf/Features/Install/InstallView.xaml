@@ -1,0 +1,313 @@
+<UserControl
+  x:Class="Provodnik.Wpf.Features.Install.InstallView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
+  xmlns:core="clr-namespace:Provodnik.Core.Install;assembly=Provodnik.Core"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:install="clr-namespace:Provodnik.Wpf.Features.Install"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  d:DataContext="{d:DesignInstance Type=install:InstallViewModel}"
+  mc:Ignorable="d">
+
+  <UserControl.Resources>
+    <!--  O ícone da etapa pelo estado: círculo vazio na fila, carregando rodando, ✓ verde, ! amarelo, ✕ vermelho  -->
+    <Style x:Key="StageIcon" TargetType="Path">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Data" Value="{icons:Phosphor CircleBold}" />
+      <Setter Property="Fill" Value="{DynamicResource ThirdlyTextBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Running}">
+          <Setter Property="Visibility" Value="Collapsed" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Done}">
+          <Setter Property="Data" Value="{icons:Phosphor CheckCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Warning}">
+          <Setter Property="Data" Value="{icons:Phosphor WarningCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource WarningBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Failed}">
+          <Setter Property="Data" Value="{icons:Phosphor XCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource DangerBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Skipped}">
+          <Setter Property="Data" Value="{icons:Phosphor MinusCircleBold}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="StageTitle" TargetType="TextBlock">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsRunning}" Value="True">
+          <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding IsDone}" Value="True">
+          <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <!--  Número grande do resumo, com o rótulo pequeno embaixo  -->
+    <Style x:Key="BigNumber" TargetType="TextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource FontFamily.Numbers}" />
+      <Setter Property="FontSize" Value="{StaticResource FontSize.Title}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    </Style>
+  </UserControl.Resources>
+
+  <Grid Margin="16">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <controls:PageHeader Title="Instalar e atualizar" Subtitle="{Binding Service.Headline}">
+      <controls:PageHeader.Actions>
+        <StackPanel Orientation="Horizontal">
+          <CheckBox
+            Margin="0,0,16,0"
+            VerticalAlignment="Center"
+            Content="Reextrair tudo"
+            IsChecked="{Binding ForceExtract}"
+            ToolTip="Extrai de novo todo mod, mesmo os que não mudaram. Use quando o jogo estiver quebrado; demora bem mais."
+            Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}" />
+          <Button
+            Margin="0,0,8,0"
+            hc:IconElement.Geometry="{icons:Phosphor FileTextBold}"
+            Command="{Binding OpenLogCommand}"
+            Content="Log"
+            Style="{StaticResource Action}"
+            ToolTip="Abre o log desta instalação (.provodnik\logs)" />
+          <Button
+            hc:IconElement.Geometry="{icons:Phosphor StopBold}"
+            Command="{Binding CancelCommand}"
+            Content="Cancelar"
+            IsEnabled="{Binding Service.IsCancelling, Converter={StaticResource Boolean2BooleanReConverter}}"
+            Style="{StaticResource Action.Danger}"
+            Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
+          <Button
+            hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
+            Command="{Binding StartCommand}"
+            Content="Instalar / atualizar"
+            Style="{StaticResource Action.Primary}"
+            Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}" />
+        </StackPanel>
+      </controls:PageHeader.Actions>
+    </controls:PageHeader>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="290" />
+        <ColumnDefinition Width="16" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <!--  ===== Etapas =====  -->
+      <Border VerticalAlignment="Top" Style="{StaticResource SurfaceCard}">
+        <StackPanel>
+          <TextBlock
+            Margin="0,0,0,10"
+            Style="{StaticResource StatLabel}"
+            Text="ETAPAS" />
+          <ItemsControl ItemsSource="{Binding Service.Stages}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="{x:Type install:StageRow}">
+                <DockPanel Margin="0,0,0,12" ToolTip="{Binding Description}">
+                  <Grid
+                    Width="18"
+                    Height="18"
+                    Margin="0,1,10,0"
+                    VerticalAlignment="Top"
+                    DockPanel.Dock="Left">
+                    <Path Style="{StaticResource StageIcon}" />
+                    <hc:CircleProgressBar
+                      Width="16"
+                      Height="16"
+                      IsIndeterminate="True"
+                      Style="{StaticResource BusyCircle}"
+                      Visibility="{Binding IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                  </Grid>
+                  <StackPanel>
+                    <TextBlock Style="{StaticResource StageTitle}" Text="{Binding Title}" />
+                    <TextBlock
+                      Margin="0,1,0,0"
+                      Style="{StaticResource CaptionText}"
+                      Text="{Binding Detail}"
+                      TextTrimming="CharacterEllipsis"
+                      Visibility="{Binding Detail, Converter={StaticResource String2VisibilityConverter}}" />
+                  </StackPanel>
+                </DockPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <!--  ===== O total, as falhas e o que está trabalhando agora =====  -->
+      <DockPanel Grid.Column="2">
+        <Border DockPanel.Dock="Top" Style="{StaticResource SurfaceCard}">
+          <StackPanel>
+            <DockPanel>
+              <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <StackPanel Margin="24,0,0,0">
+                  <TextBlock Style="{StaticResource BigNumber}" Text="{Binding Service.Downloading}" />
+                  <TextBlock Style="{StaticResource CaptionText}" Text="baixando" />
+                </StackPanel>
+                <StackPanel Margin="24,0,0,0">
+                  <TextBlock Style="{StaticResource BigNumber}" Text="{Binding Service.Extracting}" />
+                  <TextBlock Style="{StaticResource CaptionText}" Text="extraindo" />
+                </StackPanel>
+                <StackPanel MinWidth="90" Margin="24,0,0,0">
+                  <TextBlock Style="{StaticResource BigNumber}" Text="{Binding Service.SpeedText}" />
+                  <TextBlock Style="{StaticResource CaptionText}" Text="velocidade" />
+                </StackPanel>
+              </StackPanel>
+              <StackPanel>
+                <TextBlock Style="{StaticResource BigNumber}">
+                  <Run Text="{Binding Service.Done, Mode=OneWay}" /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text=" / " /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding Service.Total, Mode=OneWay}" />
+                </TextBlock>
+                <TextBlock Style="{StaticResource CaptionText}" Text="addons prontos" />
+              </StackPanel>
+            </DockPanel>
+            <ProgressBar
+              Height="6"
+              Margin="0,14,0,0"
+              Maximum="1"
+              Value="{Binding Service.Overall, Mode=OneWay}" />
+          </StackPanel>
+        </Border>
+
+        <!--  Falhas: cada uma com o motivo; "Tentar de novo" repete só elas, sem baixar a lista e os repositórios de novo  -->
+        <Border
+          Margin="0,16,0,0"
+          DockPanel.Dock="Top"
+          Style="{StaticResource SurfaceCard}"
+          Visibility="{Binding HasFailures, Converter={StaticResource Boolean2VisibilityConverter}}">
+          <DockPanel>
+            <DockPanel Margin="0,0,0,8" DockPanel.Dock="Top">
+              <Button
+                hc:IconElement.Geometry="{icons:Phosphor ArrowClockwiseBold}"
+                Command="{Binding RetryCommand}"
+                Content="Tentar de novo as falhas"
+                DockPanel.Dock="Right"
+                Style="{StaticResource Action.Small}" />
+              <TextBlock
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource DangerBrush}"
+                Style="{StaticResource StatLabel}"
+                Text="{Binding Service.Failures.Count, StringFormat=FALHAS ({0})}" />
+            </DockPanel>
+            <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
+              <ItemsControl ItemsSource="{Binding Service.Failures}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="{x:Type install:ModRow}">
+                    <DockPanel Margin="0,3">
+                      <TextBlock
+                        Width="40"
+                        DockPanel.Dock="Left"
+                        FontFamily="{StaticResource FontFamily.Numbers}"
+                        Foreground="{DynamicResource SecondaryTextBrush}"
+                        Text="{Binding Index, StringFormat=#{0}}" />
+                      <TextBlock
+                        Width="230"
+                        DockPanel.Dock="Left"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource PrimaryTextBrush}"
+                        Text="{Binding Title}"
+                        TextTrimming="CharacterEllipsis" />
+                      <TextBlock
+                        Foreground="{DynamicResource DangerBrush}"
+                        Text="{Binding Detail}"
+                        TextTrimming="CharacterEllipsis"
+                        ToolTip="{Binding Detail}" />
+                    </DockPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </DockPanel>
+        </Border>
+
+        <Border Margin="0,16,0,0" Style="{StaticResource SurfaceCard}">
+          <DockPanel>
+            <TextBlock
+              Margin="0,0,0,8"
+              DockPanel.Dock="Top"
+              Style="{StaticResource StatLabel}"
+              Text="AGORA" />
+            <Grid>
+              <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Service.Active}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type install:ModRow}">
+                      <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="*" />
+                          <ColumnDefinition Width="110" />
+                          <ColumnDefinition Width="160" />
+                          <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                          <TextBlock
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource PrimaryTextBrush}"
+                            TextTrimming="CharacterEllipsis">
+                            <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding Index, StringFormat=#{0} , Mode=OneWay}" /><Run Text="{Binding Title, Mode=OneWay}" />
+                          </TextBlock>
+                          <TextBlock
+                            Style="{StaticResource CaptionText}"
+                            Text="{Binding Detail}"
+                            TextTrimming="CharacterEllipsis"
+                            ToolTip="{Binding Detail}"
+                            Visibility="{Binding Detail, Converter={StaticResource String2VisibilityConverter}}" />
+                        </StackPanel>
+                        <Border
+                          Grid.Column="1"
+                          HorizontalAlignment="Left"
+                          Style="{StaticResource TonePill}">
+                          <TextBlock Text="{Binding StatusText}" />
+                        </Border>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                          <ProgressBar
+                            Height="6"
+                            IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}"
+                            Value="{Binding Percent, Mode=OneWay}" />
+                          <TextBlock
+                            Margin="0,2,0,0"
+                            FontFamily="{StaticResource FontFamily.Numbers}"
+                            Style="{StaticResource CaptionText}"
+                            Text="{Binding ProgressText}" />
+                        </StackPanel>
+                        <TextBlock
+                          Grid.Column="3"
+                          VerticalAlignment="Center"
+                          FontFamily="{StaticResource FontFamily.Numbers}"
+                          Foreground="{DynamicResource SecondaryTextBrush}"
+                          Text="{Binding SpeedText}"
+                          TextAlignment="Right" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+              <controls:EmptyState
+                Icon="{icons:Phosphor CompassBold}"
+                Text="{Binding Service.Headline}"
+                Visibility="{Binding Service.Active.Count, Converter={StaticResource WhenEmpty}}" />
+            </Grid>
+          </DockPanel>
+        </Border>
+      </DockPanel>
+    </Grid>
+  </Grid>
+</UserControl>

@@ -1,0 +1,58 @@
+<Application
+  x:Class="Provodnik.Wpf.App"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:converters="clr-namespace:Provodnik.Wpf.Shared.Converters"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:home="clr-namespace:Provodnik.Wpf.Features.Home"
+  xmlns:install="clr-namespace:Provodnik.Wpf.Features.Install"
+  xmlns:logs="clr-namespace:Provodnik.Wpf.Features.Logs"
+  xmlns:mods="clr-namespace:Provodnik.Wpf.Features.Mods">
+
+  <!--  Sem StartupUri: a MainWindow sai do container de DI em App.xaml.cs  -->
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <!--  Tema e cor da casa: HandyControl escuro com o azul #3778bf  -->
+        <hc:ThemeResources AccentColor="#3778bf" RequestedTheme="Dark" />
+        <hc:Theme />
+        <!--  Espaçamento, raio, fonte e cores base: antes de tudo, os estilos abaixo usam  -->
+        <ResourceDictionary Source="/Shared/Styles/Tokens.xaml" />
+        <!--  Botões do Negativo (fade no hover, "afundar" no clique), antes do DesignSystem que monta em cima deles  -->
+        <ResourceDictionary Source="/Shared/Styles/Buttons.xaml" />
+        <!--  Cartões, textos, tabela e campos (a versão do Windfinder)  -->
+        <ResourceDictionary Source="/Shared/Styles/DesignSystem.xaml" />
+        <!--  Barra de rolagem, menu, tooltip e combo  -->
+        <ResourceDictionary Source="/Shared/Styles/Components.xaml" />
+        <ResourceDictionary Source="/Shared/Styles/StatusColors.xaml" />
+        <!--  O checkbox do Negativo, em todo CheckBox  -->
+        <ResourceDictionary Source="/Shared/Styles/CheckBoxes.xaml" />
+        <!--  Moldura dos diálogos (DialogFrame) e o rodapé de botões  -->
+        <ResourceDictionary Source="/Shared/Styles/Dialogs.xaml" />
+        <!--  Painel lateral, pílulas de estado, cartões de número  -->
+        <ResourceDictionary Source="/Shared/Styles/Provodnik.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <converters:EnumToBooleanConverter x:Key="Is" />
+      <converters:CountToVisibilityConverter x:Key="WhenAny" />
+      <converters:CountToVisibilityConverter x:Key="WhenEmpty" Inverted="True" />
+      <converters:KeepSpaceConverter x:Key="KeepSpace" />
+      <converters:ValueOrDashConverter x:Key="ValueOrDash" />
+      <converters:TaskbarStateConverter x:Key="TaskbarState" />
+
+      <!--  ViewModel da tela → View: o shell mostra a aba certa sem conhecer nenhuma  -->
+      <DataTemplate DataType="{x:Type home:HomeViewModel}">
+        <home:HomeView />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type install:InstallViewModel}">
+        <install:InstallView />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type mods:ModsViewModel}">
+        <mods:ModsView />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type logs:LogsViewModel}">
+        <logs:LogsView />
+      </DataTemplate>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

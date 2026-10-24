@@ -1,0 +1,117 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons">
+
+  <!--
+    DialogFrame: a moldura única dos diálogos, como no rnzNegativeObserver. Cartão com a animação de entrada,
+    cabeçalho cinza com título, subtítulo e X, corpo, e rodapé cinza com os botões. Ver DialogFrame.cs.
+  -->
+  <Style TargetType="controls:DialogFrame">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="controls:DialogFrame">
+          <Border
+            Background="{DynamicResource RegionBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{StaticResource Radius.Lg}"
+            Style="{StaticResource DialogBorderAnimated}">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+              </Grid.RowDefinitions>
+
+              <Border
+                Padding="20,14"
+                Background="{DynamicResource SecondaryRegionBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,0,0,1"
+                CornerRadius="7,7,0,0">
+                <DockPanel>
+                  <Button
+                    x:Name="PART_Close"
+                    VerticalAlignment="Top"
+                    hc:IconElement.Geometry="{icons:Phosphor XBold}"
+                    DockPanel.Dock="Right"
+                    Style="{StaticResource Action.Icon.Close}"
+                    ToolTip="Fechar"
+                    Visibility="{TemplateBinding ShowClose, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                  <StackPanel VerticalAlignment="Center">
+                    <ContentPresenter
+                      Content="{TemplateBinding Title}"
+                      TextElement.FontSize="{StaticResource FontSize.Md}"
+                      TextElement.FontWeight="SemiBold"
+                      TextElement.Foreground="{DynamicResource PrimaryTextBrush}" />
+                    <ContentPresenter
+                      x:Name="Subtitle"
+                      Margin="0,3,0,0"
+                      Content="{TemplateBinding Subtitle}"
+                      TextElement.FontSize="{StaticResource FontSize.Sm}"
+                      TextElement.Foreground="{DynamicResource SecondaryTextBrush}" />
+                  </StackPanel>
+                </DockPanel>
+              </Border>
+
+              <ContentPresenter
+                Grid.Row="1"
+                Margin="{TemplateBinding BodyPadding}"
+                Content="{TemplateBinding Content}"
+                ContentTemplate="{TemplateBinding ContentTemplate}" />
+
+              <Border
+                x:Name="Footer"
+                Grid.Row="2"
+                Padding="20,12"
+                Background="{DynamicResource SecondaryRegionBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,1,0,0"
+                CornerRadius="0,0,7,7">
+                <ContentPresenter Content="{TemplateBinding Footer}" />
+              </Border>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="Subtitle" Value="{x:Null}">
+              <Setter TargetName="Subtitle" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="Subtitle" Value="">
+              <Setter TargetName="Subtitle" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="Footer" Value="{x:Null}">
+              <Setter TargetName="Footer" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!--  Botões do rodapé: à direita, 8 de espaço entre eles (sem Margin em cada botão)  -->
+  <Style x:Key="DialogActions" TargetType="hc:UniformSpacingPanel">
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="Orientation" Value="Horizontal" />
+    <Setter Property="Spacing" Value="8" />
+  </Style>
+
+  <!--  Rótulo de campo dentro do diálogo (em cima do controle)  -->
+  <Style x:Key="DialogFieldLabel" TargetType="TextBlock">
+    <Setter Property="Margin" Value="0,0,0,6" />
+    <Setter Property="FontSize" Value="{StaticResource FontSize.Sm}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+  </Style>
+
+  <!--  Faixa cinza de informação dentro do diálogo (o item, o resumo)  -->
+  <Style x:Key="DialogInfoCard" TargetType="Border">
+    <Setter Property="Padding" Value="12,10" />
+    <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+  </Style>
+
+</ResourceDictionary>

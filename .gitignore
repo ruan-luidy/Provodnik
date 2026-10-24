@@ -1,0 +1,41 @@
+# Build
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ll]og/
+[Ll]ogs/
+publish/
+artifacts/
+TestResults/
+*.binlog
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Sistema
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Conexão do banco (windfinder_app): o .env do Debug e o cifrado do Release nunca vão pro git
+.env
+.env.encrypted
+
+# Cache do Python (o build_tool)
+__pycache__/

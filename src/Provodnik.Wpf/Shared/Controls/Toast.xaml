@@ -1,0 +1,175 @@
+<UserControl
+  x:Class="Provodnik.Wpf.Shared.Controls.Toast"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  HorizontalAlignment="Center"
+  VerticalAlignment="Top">
+
+  <UserControl.Resources>
+    <!--  Entra descendo com um leve "quique" e sai subindo (o UpdateToast do rnzNegativeObserver)  -->
+    <Storyboard x:Key="SlideIn">
+      <DoubleAnimation
+        Storyboard.TargetName="Card"
+        Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+        From="-60"
+        To="0"
+        Duration="0:0:0.35">
+        <DoubleAnimation.EasingFunction>
+          <BackEase Amplitude="0.3" EasingMode="EaseOut" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+      <DoubleAnimation
+        Storyboard.TargetName="Card"
+        Storyboard.TargetProperty="Opacity"
+        From="0"
+        To="1"
+        Duration="0:0:0.25" />
+    </Storyboard>
+
+    <Storyboard x:Key="SlideOut">
+      <DoubleAnimation
+        Storyboard.TargetName="Card"
+        Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+        From="0"
+        To="-60"
+        Duration="0:0:0.2">
+        <DoubleAnimation.EasingFunction>
+          <CubicEase EasingMode="EaseIn" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+      <DoubleAnimation
+        Storyboard.TargetName="Card"
+        Storyboard.TargetProperty="Opacity"
+        From="1"
+        To="0"
+        Duration="0:0:0.2" />
+    </Storyboard>
+  </UserControl.Resources>
+
+  <!--
+    As medidas do UpdateToast do Negativo, sem mexer: 380 de largura mínima, raio XL, círculo de 36 com ícone de 20,
+    título Body, o X de 28 no meio da altura e, embaixo, a faixa da ação com o botão padrão de 30 (largura 100)
+  -->
+  <Grid
+    x:Name="Card"
+    MinWidth="380"
+    MaxWidth="480"
+    Margin="0,8,0,0"
+    Opacity="0"
+    RenderTransformOrigin="0.5,0"
+    UseLayoutRounding="True">
+    <Grid.RenderTransform>
+      <TranslateTransform Y="-60" />
+    </Grid.RenderTransform>
+    <!--
+      A sombra num cartão só dela, atrás: com o efeito no cartão do texto, o WPF desenha tudo como imagem e o texto
+      borra (mais ainda na janela pequena do Finder, que é transparente)
+    -->
+    <Border Background="{DynamicResource RegionBrush}" CornerRadius="{StaticResource Radius.XL}">
+      <Border.Effect>
+        <DropShadowEffect
+          BlurRadius="24"
+          Direction="270"
+          Opacity="0.4"
+          ShadowDepth="8"
+          Color="Black" />
+      </Border.Effect>
+    </Border>
+    <Border
+      Background="{DynamicResource RegionBrush}"
+      BorderBrush="{DynamicResource BorderBrush}"
+      BorderThickness="1"
+      CornerRadius="{StaticResource Radius.XL}">
+
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="16,10,12,10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+
+          <Border
+            x:Name="IconDisc"
+            Width="36"
+            Height="36"
+            Margin="0,0,14,0"
+            VerticalAlignment="Center"
+            Background="{DynamicResource PrimaryBrush}"
+            CornerRadius="18">
+            <Path
+              x:Name="IconPath"
+              Width="20"
+              Height="20"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Fill="White"
+              Stretch="Uniform" />
+          </Border>
+
+          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock
+              x:Name="TitleText"
+              FontSize="{StaticResource FontSize.Body}"
+              FontWeight="SemiBold"
+              Foreground="{DynamicResource PrimaryTextBrush}"
+              TextTrimming="CharacterEllipsis" />
+            <TextBlock
+              x:Name="MessageText"
+              Margin="0,3,0,0"
+              FontSize="{StaticResource FontSize.Sm}"
+              Foreground="{DynamicResource SecondaryTextBrush}"
+              TextWrapping="Wrap" />
+          </StackPanel>
+
+          <Button
+            Grid.Column="2"
+            Width="28"
+            Height="28"
+            Margin="12,0,0,0"
+            Padding="0"
+            VerticalAlignment="Center"
+            BorderThickness="0"
+            Click="Close_Click"
+            Cursor="Hand">
+            <Path
+              Width="14"
+              Height="14"
+              Data="{icons:Phosphor XBold}"
+              Fill="{DynamicResource SecondaryTextBrush}"
+              Stretch="Uniform" />
+          </Button>
+        </Grid>
+
+        <Border
+          x:Name="ActionsBar"
+          Grid.Row="1"
+          Padding="12,8"
+          Background="{DynamicResource SecondaryRegionBrush}"
+          CornerRadius="0,0,11,11"
+          Visibility="Collapsed">
+          <Button
+            x:Name="ActionButton"
+            Height="30"
+            MinWidth="100"
+            Padding="14,0"
+            HorizontalAlignment="Left"
+            Click="Action_Click"
+            Cursor="Hand">
+            <TextBlock
+              x:Name="ActionText"
+              FontSize="{StaticResource FontSize.Sm}"
+              FontWeight="Medium"
+              Foreground="{DynamicResource PrimaryTextBrush}" />
+          </Button>
+        </Border>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

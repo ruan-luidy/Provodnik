@@ -1,0 +1,138 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+  <!--
+    Os tokens do design system, separados do resto pra carregar ANTES de qualquer estilo: StaticResource só enxerga
+    o que já foi carregado, e os botões do Negativo (Buttons.xaml) usam Radius.Sm e FontSize.Sm.
+  -->
+  <!--
+    ========================================
+    DESIGN SYSTEM - TOKENS CENTRAIS
+    ========================================
+    Mesma base do rnzNegativeObserver (spacing, radius, fontes), enxugada pro que o MVP usa.
+    Cores de tema vêm do HandyControl (RegionBrush, PrimaryTextBrush...) - aqui não se redefine nenhuma.
+    Sempre prefira estes tokens a valores soltos no XAML.
+  -->
+
+  <!--  Escala de espaçamento (múltiplos de 4)  -->
+  <system:Double x:Key="Spacing.XS">4</system:Double>
+  <system:Double x:Key="Spacing.Sm">8</system:Double>
+  <system:Double x:Key="Spacing.Md">12</system:Double>
+  <system:Double x:Key="Spacing.Lg">16</system:Double>
+  <system:Double x:Key="Spacing.XL">20</system:Double>
+  <system:Double x:Key="Spacing.XXL">24</system:Double>
+
+  <!--  Thickness (margins/paddings prontos)  -->
+  <Thickness x:Key="Padding.XS">4</Thickness>
+  <Thickness x:Key="Padding.Sm">8</Thickness>
+  <Thickness x:Key="Padding.Md">12</Thickness>
+  <Thickness x:Key="Padding.Lg">16</Thickness>
+  <Thickness x:Key="Padding.Card">12,10</Thickness>
+  <Thickness x:Key="Padding.Section">16,12</Thickness>
+
+  <!--
+    Border radius. A regra do Negativo: região (painel, cartão, caixa de fundo cinza, popup) é Lg; controle da altura
+    da barra (campo, botão, segmentado) e o que mora dentro de linha (chip, selo, pílula, destaque) é Sm.
+  -->
+  <CornerRadius x:Key="Radius.Sm">4</CornerRadius>
+  <CornerRadius x:Key="Radius.Md">6</CornerRadius>
+  <CornerRadius x:Key="Radius.Lg">8</CornerRadius>
+  <CornerRadius x:Key="Radius.XL">12</CornerRadius>
+  <CornerRadius x:Key="Radius.Pill">999</CornerRadius>
+  <!--  Tag: pílula da altura pequena (metade de Control.Height.Small)  -->
+  <CornerRadius x:Key="Radius.Tag">12</CornerRadius>
+
+  <!--
+    ===== TAMANHOS =====
+    Duas alturas pra tudo que é clicável, escolhidas pelo LUGAR, não pelo controle:
+      - Control.Height (28): linha de formulário - campo (a altura padrão do TextBox/PasswordBox e do botão do
+        HandyControl, medida no print: 28, não 30),
+        o seletor, o chip de seleção, a ação ao lado do campo e a ação principal da tela ou do diálogo;
+      - Control.Height.Small (24): o que mora dentro de outra coisa - cabeçalho de seção, faixa de status, barra do
+        filtro da tabela, dentro de uma caixa de campo (os chips de número).
+    Ícone (sempre num quadrado, como o PackIcon do Negativo): Icon.Size (14) nos botões normais, Icon.Size.Small (13)
+    nos .Small, Icon.Size.Inline (9) no X de chip e de tag, Icon.Size.Nav (16) no painel lateral.
+    Os botões por papel (Action, Action.Small... no fim do Buttons.xaml) já vêm com altura, padding, fonte e ícone.
+  -->
+  <system:Double x:Key="Control.Height">28</system:Double>
+  <system:Double x:Key="Control.Height.Small">24</system:Double>
+  <system:Double x:Key="Nav.ItemHeight">32</system:Double>
+  <system:Double x:Key="Icon.Size">14</system:Double>
+  <system:Double x:Key="Icon.Size.Small">13</system:Double>
+  <system:Double x:Key="Icon.Size.Inline">9</system:Double>
+  <system:Double x:Key="Icon.Size.Nav">16</system:Double>
+
+  <!--  O nome que os estilos vindos do Терминал (DesignSystem.xaml) usam pra Control.Height.Small  -->
+  <system:Double x:Key="Toolbar.ControlHeight">24</system:Double>
+
+  <!--  Font sizes (escala clara)  -->
+  <system:Double x:Key="FontSize.XS">10</system:Double>
+  <system:Double x:Key="FontSize.Sm">12</system:Double>
+  <system:Double x:Key="FontSize.Body">13</system:Double>
+  <system:Double x:Key="FontSize.Md">14</system:Double>
+  <system:Double x:Key="FontSize.Lg">16</system:Double>
+  <system:Double x:Key="FontSize.XL">18</system:Double>
+  <system:Double x:Key="FontSize.Title">22</system:Double>
+  <system:Double x:Key="FontSize.Display">28</system:Double>
+
+  <!--
+    Fundo do workspace, atrás dos cartões. O BackgroundBrush do tema escuro do HandyControl continua claro
+    (#EEEEEE), então a tela do terminal tem o seu: um degrau abaixo do RegionBrush (#1C1C1C) dos cartões.
+  -->
+  <SolidColorBrush x:Key="Workspace.BackgroundBrush" Color="#111113" />
+
+  <!--
+    O azul do accent como Color nomeada: é o mesmo hex do AccentColor do App.xaml (que o HandyControl só expõe
+    como Brush). Gradiente e brush com opacidade precisam da Color crua, então ela mora aqui.
+  -->
+  <Color x:Key="ColorAccent">#3778bf</Color>
+
+  <!--  Linha selecionada de tabela: o azul do accent bem apagado, o texto verde/vermelho continua legível  -->
+  <SolidColorBrush
+    x:Key="Selection.RowBrush"
+    Opacity="0.28"
+    Color="{StaticResource ColorAccent}" />
+
+  <!--  O vermelho e o amarelo do HandyControl (#DB3340, #E9AF20, os do StatusColors) apagados, pro fundo da pílula  -->
+  <SolidColorBrush
+    x:Key="Danger.SoftBrush"
+    Opacity="0.18"
+    Color="#DB3340" />
+  <SolidColorBrush
+    x:Key="Warning.SoftBrush"
+    Opacity="0.18"
+    Color="#E9AF20" />
+
+  <!--  Borda do widget com foco de teclado: accent a meia luz (o arraste usa o PrimaryBrush cheio)  -->
+  <SolidColorBrush
+    x:Key="Accent.DimBrush"
+    Opacity="0.55"
+    Color="{StaticResource ColorAccent}" />
+  <SolidColorBrush
+    x:Key="Hover.RowBrush"
+    Opacity="0.06"
+    Color="#FFFFFF" />
+
+  <!--  Linha vertical entre as colunas da tabela: quase invisível, só pra guiar o olho  -->
+  <SolidColorBrush
+    x:Key="Grid.LineBrush"
+    Opacity="0.05"
+    Color="#FFFFFF" />
+
+  <!--  Fundo escurecido de overlay (command palette) e sombra de cartão flutuante  -->
+  <SolidColorBrush x:Key="OverlayScrimBrush" Color="#A0000000" />
+  <DropShadowEffect
+    x:Key="Shadow.Card"
+    BlurRadius="28"
+    Direction="315"
+    Opacity="0.5"
+    ShadowDepth="10"
+    Color="Black" />
+
+  <!--  Font family padrão e a de números (tabular: os dígitos não "dançam" quando o preço muda)  -->
+  <FontFamily x:Key="FontFamily.Default">Segoe UI</FontFamily>
+  <FontFamily x:Key="FontFamily.Numbers">Consolas</FontFamily>
+
+</ResourceDictionary>

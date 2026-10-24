@@ -1,0 +1,21 @@
+<!--
+  As fatias do launcher sem tela: Install, Download, Verify, ModOrganizer, Update, Launch e Mods.
+  Só conhece o Core (os contratos); quem liga nas ferramentas de verdade é o Wpf, na injeção de dependência.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Provodnik.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Provodnik.Core\Provodnik.Core.csproj" />
+  </ItemGroup>
+
+</Project>

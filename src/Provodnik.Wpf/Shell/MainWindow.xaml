@@ -1,0 +1,169 @@
+<hc:Window
+  x:Class="Provodnik.Wpf.Shell.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:services="clr-namespace:Provodnik.Wpf.Shared.Services"
+  xmlns:shell="clr-namespace:Provodnik.Wpf.Shell"
+  Title="{Binding Title}"
+  Width="1180"
+  Height="760"
+  MinWidth="900"
+  MinHeight="560"
+  d:DataContext="{d:DesignInstance Type=shell:MainViewModel}"
+  hc:Dialog.Token="{x:Static services:DialogService.Token}"
+  BorderBrush="{DynamicResource BorderBrush}"
+  Icon="/Provodnik;component/Assets/provodnik.ico"
+  ShowTitle="True"
+  WindowStartupLocation="CenterScreen"
+  mc:Ignorable="d">
+
+  <!--  A barra de tarefas mostra o andamento da instalação, mesmo com a janela minimizada  -->
+  <hc:Window.TaskbarItemInfo>
+    <TaskbarItemInfo ProgressState="{Binding Install.IsRunning, Converter={StaticResource TaskbarState}}" ProgressValue="{Binding Install.Overall}" />
+  </hc:Window.TaskbarItemInfo>
+
+  <!--
+    Barra de título: o nome do app é o Title do próprio hc:Window; à direita, enquanto instala, a pílula com o
+    andamento, que leva pra tela de instalação. Sem fundo: o resto da barra continua arrastando a janela.
+  -->
+  <hc:Window.NonClientAreaContent>
+    <Grid>
+      <Button
+        Height="25"
+        Margin="0,0,10,0"
+        Padding="10,0"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"
+        Background="{StaticResource Selection.RowBrush}"
+        BorderThickness="0"
+        Command="{Binding GoInstallCommand}"
+        Cursor="Hand"
+        ToolTip="Ver a instalação"
+        Visibility="{Binding Install.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
+        <Button.Template>
+          <ControlTemplate TargetType="Button">
+            <Border
+              Padding="{TemplateBinding Padding}"
+              Background="{TemplateBinding Background}"
+              CornerRadius="{StaticResource Radius.Pill}">
+              <ContentPresenter VerticalAlignment="Center" />
+            </Border>
+          </ControlTemplate>
+        </Button.Template>
+        <StackPanel Orientation="Horizontal">
+          <hc:CircleProgressBar
+            Width="12"
+            Height="12"
+            Margin="0,0,8,0"
+            IsIndeterminate="True"
+            Style="{StaticResource BusyCircle}" />
+          <TextBlock
+            FontFamily="{StaticResource FontFamily.Numbers}"
+            Foreground="{DynamicResource PrimaryBrush}">
+            <Run Text="Instalando " /><Run Text="{Binding Install.Done, Mode=OneWay}" /><Run Text=" / " /><Run Text="{Binding Install.Total, Mode=OneWay}" />
+          </TextBlock>
+        </StackPanel>
+      </Button>
+    </Grid>
+  </hc:Window.NonClientAreaContent>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <!--  O painel: 200 aberto, 52 recolhido (só os ícones)  -->
+      <ColumnDefinition>
+        <ColumnDefinition.Style>
+          <Style TargetType="ColumnDefinition">
+            <Setter Property="Width" Value="200" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding PaneCompact}" Value="True">
+                <Setter Property="Width" Value="52" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ColumnDefinition.Style>
+      </ColumnDefinition>
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!--  ===== Painel lateral: as telas em cima, Configurações no rodapé =====  -->
+    <Border
+      Background="{DynamicResource RegionBrush}"
+      BorderBrush="{DynamicResource BorderBrush}"
+      BorderThickness="0,0,1,0">
+      <DockPanel Margin="8,8">
+        <Border
+          Margin="0,6,0,0"
+          Padding="0,6,0,0"
+          BorderBrush="{DynamicResource BorderBrush}"
+          BorderThickness="0,1,0,0"
+          DockPanel.Dock="Bottom">
+          <Button
+            Command="{Binding OpenSettingsCommand}"
+            Content="Configurações"
+            Style="{StaticResource SideNavButton}"
+            Tag="{icons:Phosphor GearSixBold}" />
+        </Border>
+
+        <StackPanel DockPanel.Dock="Top">
+          <Button
+            Margin="0,0,0,4"
+            hc:IconElement.Geometry="{icons:Phosphor ListBold}"
+            Command="{Binding TogglePaneCommand}"
+            Style="{StaticResource PaneToggle}"
+            ToolTip="Recolher ou abrir o painel" />
+          <RadioButton
+            Content="Início"
+            GroupName="Nav"
+            IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Home}}"
+            Style="{StaticResource SideNavItem}"
+            Tag="{icons:Phosphor HouseBold}" />
+          <RadioButton
+            controls:NavBadge.Count="{Binding Install.Failures.Count}"
+            controls:NavBadge.IsAlert="True"
+            Content="Instalar"
+            GroupName="Nav"
+            IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Install}}"
+            Style="{StaticResource SideNavItem}"
+            Tag="{icons:Phosphor DownloadSimpleBold}" />
+          <RadioButton
+            Content="Mods"
+            GroupName="Nav"
+            IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Mods}}"
+            Style="{StaticResource SideNavItem}"
+            Tag="{icons:Phosphor PackageBold}" />
+          <RadioButton
+            Content="Registro"
+            GroupName="Nav"
+            IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter={x:Static services:Tab.Logs}}"
+            Style="{StaticResource SideNavItem}"
+            Tag="{icons:Phosphor ScrollBold}" />
+        </StackPanel>
+
+        <Grid />
+      </DockPanel>
+    </Border>
+
+    <!--  Linha entre a barra de título e a área da janela  -->
+    <Border
+      Grid.ColumnSpan="2"
+      Height="1"
+      VerticalAlignment="Top"
+      Panel.ZIndex="1"
+      Background="{DynamicResource BorderBrush}"
+      IsHitTestVisible="False" />
+
+    <!--  A tela aberta; por cima, o erro e o carregando  -->
+    <Grid Grid.Column="1" Background="{DynamicResource RegionBrush}">
+      <ContentControl x:Name="Page" Content="{Binding Current}" />
+
+      <controls:ErrorState RetryCommand="{Binding Current.ReloadCommand}" Text="{Binding Current.Error}" />
+
+      <controls:LoadingOverlay Visibility="{Binding Current.IsLoading, Converter={StaticResource Boolean2VisibilityConverter}}" />
+    </Grid>
+  </Grid>
+</hc:Window>

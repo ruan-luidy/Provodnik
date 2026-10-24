@@ -1,0 +1,56 @@
+<UserControl
+  x:Class="Provodnik.Wpf.Shared.Controls.EmptyState"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  x:Name="Root"
+  HorizontalAlignment="Center"
+  VerticalAlignment="Center"
+  IsTabStop="False">
+
+  <!--
+    Estado vazio de painel: ícone, recado e (quando faz sentido) um botão de ação. Ícone e recado no
+    SecondaryTextBrush: o ThirdlyTextBrush do tema escuro é #3F3F46, a cor da borda, e some em cima da grade cinza.
+    Substitui o TextBlock solto com EmptyStateText:
+
+      <controls:EmptyState
+        Icon="{icons:Phosphor MagnifyingGlassBold}"
+        Text="Nada por aqui"
+        Visibility="..." />
+  -->
+  <StackPanel MaxWidth="380" Margin="24,12">
+    <Path
+      Width="26"
+      Height="26"
+      HorizontalAlignment="Center"
+      Data="{Binding Icon, ElementName=Root}"
+      Fill="{DynamicResource SecondaryTextBrush}"
+      Opacity="0.55"
+      Stretch="Uniform">
+      <Path.Style>
+        <Style TargetType="Path">
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding Icon, ElementName=Root}" Value="{x:Null}">
+              <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </Path.Style>
+    </Path>
+
+    <TextBlock
+      Margin="0,8,0,0"
+      FontSize="{StaticResource FontSize.Sm}"
+      Foreground="{DynamicResource SecondaryTextBrush}"
+      Text="{Binding Text, ElementName=Root}"
+      TextAlignment="Center"
+      TextWrapping="Wrap" />
+
+    <Button
+      Margin="0,10,0,0"
+      HorizontalAlignment="Center"
+      Command="{Binding ActionCommand, ElementName=Root}"
+      Content="{Binding ActionText, ElementName=Root}"
+      Style="{StaticResource Action.Small}"
+      Visibility="{Binding ActionText, ElementName=Root, Converter={StaticResource String2VisibilityConverter}}" />
+  </StackPanel>
+</UserControl>
