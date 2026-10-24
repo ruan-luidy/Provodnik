@@ -1,0 +1,44 @@
+<hc:Window
+  x:Class="Provodnik.Wpf.Features.Install.ConsoleWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:install="clr-namespace:Provodnik.Wpf.Features.Install"
+  Title="Console · Проводник"
+  Width="900"
+  Height="480"
+  MinWidth="500"
+  MinHeight="240"
+  Background="#0F1012"
+  BorderBrush="{DynamicResource BorderBrush}"
+  Icon="/Provodnik;component/Assets/provodnik.ico"
+  ShowTitle="True"
+  WindowStartupLocation="CenterOwner">
+
+  <!--  O console solto, como o cmd do launcher original: dá pra deixar num canto (ou por cima de tudo) enquanto instala  -->
+  <hc:Window.NonClientAreaContent>
+    <StackPanel
+      Margin="0,0,10,0"
+      HorizontalAlignment="Right"
+      VerticalAlignment="Center"
+      Orientation="Horizontal">
+      <ToggleButton
+        x:Name="Pin"
+        Margin="0,0,6,0"
+        hc:IconElement.Geometry="{icons:Phosphor PushPinBold}"
+        hc:IconSwitchElement.GeometrySelected="{icons:Phosphor PushPinFill}"
+        Checked="Pin_Changed"
+        Style="{StaticResource Action.Toggle.Icon}"
+        ToolTip="Sempre por cima"
+        Unchecked="Pin_Changed" />
+      <Button
+        hc:IconElement.Geometry="{icons:Phosphor CopyBold}"
+        Click="Copy_Click"
+        Style="{StaticResource Action.Icon.Small}"
+        ToolTip="Copiar tudo" />
+    </StackPanel>
+  </hc:Window.NonClientAreaContent>
+
+  <install:ConsolePanel x:Name="Panel" Margin="6" />
+</hc:Window>

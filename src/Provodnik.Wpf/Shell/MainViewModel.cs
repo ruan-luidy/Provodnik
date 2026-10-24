@@ -34,11 +34,13 @@ namespace Provodnik.Wpf.Shell
       InstallService installService,
       GammaSession session,
       SettingsStore settings,
-      Navigator navigator)
+      Navigator navigator,
+      ElevationService elevation)
     {
       _settings = settings;
       _session = session;
       Install = installService;
+      IsElevated = elevation.IsElevated;
       _pages = new()
       {
         [Tab.Home] = home,
@@ -54,6 +56,9 @@ namespace Provodnik.Wpf.Shell
     }
 
     public InstallService Install { get; }
+
+    /// <summary>Rodando como administrador: a barra de título avisa (o MO2 e o jogo abrem sem).</summary>
+    public bool IsElevated { get; }
 
     public string Title => _session.Layout is null ? "Проводник" : $"Проводник · {_session.Metadata.Name}";
 

@@ -1,3 +1,4 @@
+using Provodnik.Core.Diagnostics;
 using Provodnik.Core.Downloads;
 using Provodnik.Core.Text;
 using Provodnik.Infrastructure.Processes;
@@ -12,7 +13,7 @@ namespace Provodnik.Infrastructure.Tools
   /// navegador. Diferente do original: continua de onde parou (-C -), desiste de conexão parada (menos de 1 KB/s por
   /// um minuto) e o código de saída vira erro com explicação.
   /// </summary>
-  public sealed class CurlDownloader(Func<CurlPaths> paths)
+  public sealed class CurlDownloader(Func<CurlPaths> paths, IToolConsole console)
   {
     public async Task DownloadAsync(string url, string destination, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
     {
@@ -34,9 +35,10 @@ namespace Provodnik.Infrastructure.Tools
         throw new DownloadException($"curl {result.ExitCode}: {Explain(result.ExitCode)} {result.Tail(2)}".Trim());
     }
 
-    private static Task<ProcessResult> RunAsync(CurlPaths curl, string url, string destination, bool resume, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
+    private Task<ProcessResult> RunAsync(CurlPaths curl, string url, string destination, bool resume, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
     {
       var offset = resume && File.Exists(destination) ? new FileInfo(destination).Length : 0;
+      console.Write("curl", offset > 0 ? $"continuando {Path.GetFileName(destination)} a partir de {offset / 1048576} MB · {url}" : $"baixando {url}");
       var arguments = new List<string>
       {
         "--config", curl.Config,
@@ -64,6 +66,8 @@ namespace Provodnik.Infrastructure.Tools
             // o medidor conta só a parte que falta: soma o que já estava no disco
             if (ProgressLines.TryParseCurl(line, out var received, out var total, out var speed))
               progress?.Report(new TransferProgress(offset + received, total is { } t ? offset + t : null, speed));
+            else if (!line.Contains("% Total") && !line.Contains("Dload"))
+              console.Write("curl", line);
           }),
         cancellationToken);
     }

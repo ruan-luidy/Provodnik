@@ -33,6 +33,22 @@
   -->
   <hc:Window.NonClientAreaContent>
     <Grid>
+      <!--  Etiqueta ADMIN encostada no nome do app, só quando elevado  -->
+      <Border
+        Margin="6,0,0,0"
+        Padding="6,1"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Center"
+        Background="{DynamicResource WarningBrush}"
+        CornerRadius="{StaticResource Radius.Sm}"
+        ToolTip="Rodando como administrador. O MO2 e o jogo abrem sem administrador mesmo assim."
+        Visibility="{Binding IsElevated, Converter={StaticResource Boolean2VisibilityConverter}}">
+        <TextBlock
+          FontSize="{StaticResource FontSize.XS}"
+          FontWeight="Bold"
+          Foreground="Black"
+          Text="ADMIN" />
+      </Border>
       <Button
         Height="25"
         Margin="0,0,10,0"

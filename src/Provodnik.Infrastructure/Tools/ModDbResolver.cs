@@ -1,3 +1,4 @@
+using Provodnik.Core.Diagnostics;
 using Provodnik.Core.Downloads;
 using Provodnik.Infrastructure.Processes;
 
@@ -8,7 +9,7 @@ namespace Provodnik.Infrastructure.Tools
   /// a página "addons/start/123" e devolve na última linha o link direto do mirror. O original aceitava a resposta
   /// errada e baixava " "; aqui sem link é erro.
   /// </summary>
-  public sealed class ModDbResolver(Func<string> cliPath) : IModDbResolver
+  public sealed class ModDbResolver(Func<string> cliPath, IToolConsole console) : IModDbResolver
   {
     public async Task<string> ResolveAsync(string addonUrl, CancellationToken cancellationToken)
     {
@@ -16,13 +17,18 @@ namespace Provodnik.Infrastructure.Tools
       if (!File.Exists(cli))
         throw new DownloadException($"stalker-gamma-dl-cli não encontrado em {cli}");
 
+      console.Write("dl-cli", $"pedindo o link de {addonUrl}");
       ProcessResult result;
       try
       {
         result = await ProcessRunner.RunAsync(
           cli,
           [addonUrl],
-          new ProcessOptions(WorkingDirectory: Path.GetDirectoryName(cli), Timeout: TimeSpan.FromMinutes(2)),
+          new ProcessOptions(
+            WorkingDirectory: Path.GetDirectoryName(cli),
+            OnOutput: line => console.Write("dl-cli", line),
+            OnError: line => console.Write("dl-cli", line),
+            Timeout: TimeSpan.FromMinutes(2)),
           cancellationToken).ConfigureAwait(false);
       }
       catch (TimeoutException ex)

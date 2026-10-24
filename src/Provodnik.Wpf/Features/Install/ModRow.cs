@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Provodnik.Core.Diagnostics;
 using Provodnik.Core.Install;
 using Provodnik.Core.Modpack;
 using Provodnik.Core.Text;
@@ -10,7 +11,7 @@ namespace Provodnik.Wpf.Features.Install
   public sealed partial class ModRow(int index, ModEntry? entry, string? title = null) : ObservableObject
   {
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(StatusText), nameof(Tone), nameof(IsActive), nameof(IsFinished), nameof(IsIndeterminate))]
+    [NotifyPropertyChangedFor(nameof(StatusText), nameof(Tone), nameof(IsActive), nameof(IsFinished), nameof(IsIndeterminate), nameof(Hint))]
     private ModStatus _status;
 
     [ObservableProperty]
@@ -19,7 +20,9 @@ namespace Provodnik.Wpf.Features.Install
 
     [ObservableProperty] private string _progressText = string.Empty;
     [ObservableProperty] private string _speedText = string.Empty;
-    [ObservableProperty] private string? _detail;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Hint))]
+    private string? _detail;
 
     public int Index { get; } = index;
 
@@ -37,6 +40,9 @@ namespace Provodnik.Wpf.Features.Install
     };
 
     public double BytesPerSecond { get; private set; }
+
+    /// <summary>O que fazer com a falha, quando o erro é conhecido.</summary>
+    public string? Hint => Status == ModStatus.Failed ? ErrorExplainer.Explain(Detail)?.Hint : null;
 
     public double Percent => (Fraction ?? 0) * 100;
 

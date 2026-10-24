@@ -12,7 +12,13 @@ Launcher próprio para o **S.T.A.L.K.E.R. G.A.M.M.A.**, no lugar do `G.A.M.M.A. 
 - **Para e continua.** Fechou no meio, caiu a internet, saiu atualização: rodar de novo continua de onde parou.
 - **Confere a instalação:** todo mod ligado no `modlist.txt` do GAMMA (a "regra dos 5xx mods ativos") precisa ter pasta com conteúdo. O que faltar vira falha com "tentar de novo".
 - **Jogar** direto no executável escolhido (DX11-AVX, DX11, DX9...) pelo MO2.
+- **Console** das ferramentas (como o cmd do launcher original), com cada erro conhecido explicado em português embaixo dele. Na tela de instalação ou numa janela separada.
+- **Checagem antes de instalar** (permissão, Anomaly, MO2 fechado, espaço, antivírus, caminhos longos), com o conserto num botão. Administrador só quando a pasta não deixa gravar; o MO2 e o jogo sempre abrem sem.
 - Tela de **Mods** com o arquivo e a pasta de cada addon, e **Registro** com o passo a passo (e um log por instalação em `.provodnik\logs`).
+
+## E o Mod Organizer?
+
+Continua sendo ele. O jogo só enxerga os mods pela pasta virtual do MO2, e ligar, desligar, ordenar, buscar e ver conflitos é trabalho dele. O Jogar do Проводник abre o MO2 direto no executável escolhido, e a tela de Mods daqui só diz se cada addon foi baixado e extraído.
 
 ## Usando direto na pasta do GAMMA
 

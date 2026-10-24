@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
@@ -5,6 +6,7 @@ using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Provodnik.Core.Archives;
 using Provodnik.Core.Desktop;
+using Provodnik.Core.Diagnostics;
 using Provodnik.Core.Downloads;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Remote;
@@ -57,6 +59,24 @@ namespace Provodnik.Wpf
       MainWindow = window;
       ListenForSecondInstance(window);
       window.Show();
+      DemoConsole(_services.GetRequiredService<IToolConsole>());
+    }
+
+    /// <summary>Só no Debug: --demo-console enche o console com linhas típicas (pra ver as explicações sem instalar).</summary>
+    [Conditional("DEBUG")]
+    private static void DemoConsole(IToolConsole console)
+    {
+      if (!Environment.GetCommandLineArgs().Contains("--demo-console"))
+        return;
+      console.Write("git", "$ git fetch --progress --depth 1 origin main");
+      console.Write("git", "error: RPC failed; curl 56 Recv failure: Connection was reset");
+      console.Write("git", "fatal: early EOF");
+      console.Write("dl-cli", "pedindo o link de https://www.moddb.com/addons/start/222467");
+      console.Write("dl-cli", "https://cdn.dbolical.com/cache/mods/1/addons/Groks_main_menu_theme.zip");
+      console.Write("curl", "baixando https://cdn.dbolical.com/cache/mods/1/addons/Groks_main_menu_theme.zip");
+      console.Write("curl", "curl: (22) The requested URL returned error: 403");
+      console.Write("7z", "extraindo Soundscape_Overhaul_3.0.zip");
+      console.Write("7z", "ERROR: Headers Error : D:\\GAMMA\\downloads\\Soundscape_Overhaul_3.0.zip");
     }
 
     private void ListenForSecondInstance(Window window)
@@ -76,6 +96,25 @@ namespace Provodnik.Wpf
       })
       { IsBackground = true, Name = "Provodnik.Wake" };
       thread.Start();
+    }
+
+    /// <summary>Reabre como administrador: solta a instância única pra nova pegar e sai. Falso se o UAC foi recusado.</summary>
+    public bool RestartElevated()
+    {
+      _instance?.ReleaseMutex();
+      _instance?.Dispose();
+      _instance = null;
+      try
+      {
+        Process.Start(new ProcessStartInfo(Environment.ProcessPath!) { Verb = "runas", UseShellExecute = true })?.Dispose();
+      }
+      catch (System.ComponentModel.Win32Exception)
+      {
+        _instance = new Mutex(true, InstanceName, out _);
+        return false;
+      }
+      Shutdown();
+      return true;
     }
 
     protected override void OnExit(ExitEventArgs e)
@@ -103,22 +142,26 @@ namespace Provodnik.Wpf
       services.AddSingleton<Navigator>();
       services.AddSingleton<LogBook>();
       services.AddSingleton<GammaSession>();
+      services.AddSingleton<ToolConsole>();
+      services.AddSingleton<IToolConsole>(sp => sp.GetRequiredService<ToolConsole>());
+      services.AddSingleton<ISystemInfo, SystemInfo>();
+      services.AddSingleton<ElevationService>();
 
       // as ferramentas moram na pasta do GAMMA, que pode mudar nas configurações: o caminho é lido na hora de usar
       static GammaLayout Layout(IServiceProvider provider) =>
         provider.GetRequiredService<GammaSession>().Layout ?? throw new InvalidOperationException("A pasta do GAMMA não foi escolhida.");
 
       services.AddSingleton<IGammaApi>(new GammaApi(api));
-      services.AddSingleton<IGitClient>(sp => new GitClient(() => Layout(sp).Git));
+      services.AddSingleton<IGitClient>(sp => new GitClient(() => Layout(sp).Git, sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton(sp => new CurlDownloader(() =>
       {
         var layout = Layout(sp);
         return new CurlPaths(layout.Curl, layout.CurlConfig, layout.CurlHeader);
-      }));
+      }, sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton(new HttpDownloader(download));
       services.AddSingleton<IFileDownloader, FileDownloader>();
-      services.AddSingleton<IModDbResolver>(sp => new ModDbResolver(() => Layout(sp).ModDbCli));
-      services.AddSingleton<IArchiveExtractor>(sp => new SevenZipExtractor(() => Layout(sp).SevenZip));
+      services.AddSingleton<IModDbResolver>(sp => new ModDbResolver(() => Layout(sp).ModDbCli, sp.GetRequiredService<IToolConsole>()));
+      services.AddSingleton<IArchiveExtractor>(sp => new SevenZipExtractor(() => Layout(sp).SevenZip, sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton<IShortcutWriter, ShortcutWriter>();
       services.AddSingleton<InstallPipeline>();
       services.AddSingleton<UpdateChecker>();

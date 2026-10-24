@@ -21,13 +21,20 @@
 
     <controls:PageHeader Title="Mods">
       <controls:PageHeader.Subtitle>
-        <MultiBinding StringFormat="{}{0} instalados · {1} com a pasta vazia">
+        <MultiBinding StringFormat="{}{0} instalados · {1} com a pasta vazia · ligar, desligar e ordenar é no MO2">
           <Binding Path="Installed" />
           <Binding Path="Missing" />
         </MultiBinding>
       </controls:PageHeader.Subtitle>
       <controls:PageHeader.Actions>
         <StackPanel Orientation="Horizontal">
+          <Button
+            Margin="0,0,8,0"
+            hc:IconElement.Geometry="{icons:Phosphor SlidersHorizontalBold}"
+            Command="{Binding OpenModOrganizerCommand}"
+            Content="Abrir no MO2"
+            Style="{StaticResource Action}"
+            ToolTip="O Mod Organizer: busca, conflitos, ligar e desligar mods" />
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"

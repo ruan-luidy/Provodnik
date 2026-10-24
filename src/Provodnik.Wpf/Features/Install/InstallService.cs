@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -23,6 +24,7 @@ namespace Provodnik.Wpf.Features.Install
     private readonly GammaSession _session;
     private readonly LogBook _log;
     private readonly SettingsStore _settings;
+    private readonly ToolConsole _console;
     private readonly DispatcherTimer _timer;
     private readonly ConcurrentDictionary<int, ModProgress> _pendingMods = new();
     private readonly ConcurrentQueue<(InstallStage Stage, StageState State, string? Detail)> _pendingStages = new();
@@ -43,12 +45,13 @@ namespace Provodnik.Wpf.Features.Install
     /// <summary>De 0 a 1, pra barra grande e pra barra de tarefas.</summary>
     [ObservableProperty] private double _overall;
 
-    public InstallService(InstallPipeline pipeline, GammaSession session, LogBook log, SettingsStore settings)
+    public InstallService(InstallPipeline pipeline, GammaSession session, LogBook log, SettingsStore settings, ToolConsole console)
     {
       _pipeline = pipeline;
       _session = session;
       _log = log;
       _settings = settings;
+      _console = console;
       _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(150), DispatcherPriority.Background, (_, _) => Flush(), Application.Current.Dispatcher);
       _timer.Stop();
       // parado, o total é o tamanho da lista que está no disco
@@ -110,6 +113,8 @@ namespace Provodnik.Wpf.Features.Install
       _cancel = new CancellationTokenSource();
       _pipeline.LauncherPath = Environment.ProcessPath;
       KeepAwake(true);
+      _console.RecordTo(Path.Combine(layout.LogsDir, $"console-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log"));
+      _console.Write("provodnik", $"instalação começou em {layout.Root}");
       _timer.Start();
 
       InstallReport report;
@@ -124,6 +129,7 @@ namespace Provodnik.Wpf.Features.Install
       {
         Flush();
         _timer.Stop();
+        _console.RecordTo(null);
         KeepAwake(false);
         _cancel.Dispose();
         _cancel = null;

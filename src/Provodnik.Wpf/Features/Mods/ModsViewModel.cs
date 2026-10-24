@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Features.Launch;
 using Provodnik.Features.Mods;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared;
@@ -18,6 +19,7 @@ namespace Provodnik.Wpf.Features.Mods
   {
     private readonly GammaSession _session;
     private readonly Navigator _navigator;
+    private readonly ElevationService _elevation;
 
     [ObservableProperty] private ObservableCollection<ModItemRow> _items = [];
     [ObservableProperty] private ModItemRow? _selected;
@@ -25,10 +27,11 @@ namespace Provodnik.Wpf.Features.Mods
     [ObservableProperty] private int _missing;
     [ObservableProperty] private bool _onlyMissing;
 
-    public ModsViewModel(GammaSession session, InstallService install, Navigator navigator)
+    public ModsViewModel(GammaSession session, InstallService install, Navigator navigator, ElevationService elevation)
     {
       _session = session;
       _navigator = navigator;
+      _elevation = elevation;
       Install = install;
       session.Reloaded += (_, _) => Stale = true;
       install.Finished += (_, _) => _ = RunAsync(LoadAsync);
@@ -59,6 +62,14 @@ namespace Provodnik.Wpf.Features.Mods
 
     private void ApplyFilter() =>
       Items = new ObservableCollection<ModItemRow>(OnlyMissing ? _all.Where(r => r.IsMissing) : _all);
+
+    /// <summary>Ligar, desligar, ordenar e buscar é com o MO2: esta tela só diz se o addon foi baixado e extraído.</summary>
+    [RelayCommand]
+    private void OpenModOrganizer()
+    {
+      if (_session.Layout is { } layout)
+        GameLauncher.OpenModOrganizer(layout, _elevation.Unelevated);
+    }
 
     [RelayCommand]
     private void OpenPage(ModItemRow? row) => FolderOpener.Browse(row?.WebPage);

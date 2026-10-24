@@ -81,6 +81,19 @@
             IsChecked="{Binding ForceExtract}"
             ToolTip="Extrai de novo todo mod, mesmo os que não mudaram. Use quando o jogo estiver quebrado; demora bem mais."
             Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}" />
+          <ToggleButton
+            Margin="0,0,4,0"
+            hc:IconElement.Geometry="{icons:Phosphor TerminalWindowBold}"
+            hc:IconSwitchElement.GeometrySelected="{icons:Phosphor TerminalWindowFill}"
+            IsChecked="{Binding ShowConsole}"
+            Style="{StaticResource Action.Toggle.Icon}"
+            ToolTip="Mostrar o console das ferramentas aqui embaixo" />
+          <Button
+            Margin="0,0,8,0"
+            hc:IconElement.Geometry="{icons:Phosphor ArrowSquareOutBold}"
+            Command="{Binding PopOutConsoleCommand}"
+            Style="{StaticResource Action.Icon.Small}"
+            ToolTip="Abrir o console numa janela separada (como o cmd do launcher original)" />
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor FileTextBold}"
@@ -225,11 +238,20 @@
                         Foreground="{DynamicResource PrimaryTextBrush}"
                         Text="{Binding Title}"
                         TextTrimming="CharacterEllipsis" />
-                      <TextBlock
-                        Foreground="{DynamicResource DangerBrush}"
-                        Text="{Binding Detail}"
-                        TextTrimming="CharacterEllipsis"
-                        ToolTip="{Binding Detail}" />
+                      <StackPanel>
+                        <TextBlock
+                          Foreground="{DynamicResource DangerBrush}"
+                          Text="{Binding Detail}"
+                          TextTrimming="CharacterEllipsis"
+                          ToolTip="{Binding Detail}" />
+                        <!--  O que fazer, quando o erro é conhecido  -->
+                        <TextBlock
+                          Margin="0,1,0,0"
+                          Foreground="{DynamicResource WarningBrush}"
+                          Text="{Binding Hint, StringFormat=→ {0}}"
+                          TextWrapping="Wrap"
+                          Visibility="{Binding Hint, Converter={StaticResource String2VisibilityConverter}}" />
+                      </StackPanel>
                     </DockPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -238,14 +260,101 @@
           </DockPanel>
         </Border>
 
+        <!--  O console das ferramentas, embaixo de tudo (liga e desliga no cabeçalho)  -->
+        <Border
+          Height="210"
+          Margin="0,16,0,0"
+          DockPanel.Dock="Bottom"
+          Style="{StaticResource SurfaceCard}"
+          Visibility="{Binding ShowConsole, Converter={StaticResource Boolean2VisibilityConverter}}">
+          <DockPanel>
+            <DockPanel Margin="0,0,0,8" DockPanel.Dock="Top">
+              <Button
+                hc:IconElement.Geometry="{icons:Phosphor TrashBold}"
+                Command="{Binding ClearConsoleCommand}"
+                DockPanel.Dock="Right"
+                Style="{StaticResource Action.Icon.Small}"
+                ToolTip="Limpar" />
+              <TextBlock
+                VerticalAlignment="Center"
+                Style="{StaticResource StatLabel}"
+                Text="CONSOLE" />
+              <TextBlock
+                Margin="10,0,0,0"
+                VerticalAlignment="Center"
+                Style="{StaticResource CaptionText}"
+                Text="o que o git, o curl, o 7-Zip e o dl-cli escrevem · erros conhecidos ganham a explicação em amarelo" />
+            </DockPanel>
+            <install:ConsolePanel Lines="{Binding Console.Lines}" />
+          </DockPanel>
+        </Border>
+
         <Border Margin="0,16,0,0" Style="{StaticResource SurfaceCard}">
           <DockPanel>
+            <!--  Parado: a checagem antes de instalar, com o conserto num botão  -->
+            <DockPanel
+              Margin="0,0,0,8"
+              DockPanel.Dock="Top"
+              Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}">
+              <Button
+                hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
+                Command="{Binding CheckAgainCommand}"
+                DockPanel.Dock="Right"
+                Style="{StaticResource Action.Icon.Small}"
+                ToolTip="Conferir de novo" />
+              <TextBlock
+                VerticalAlignment="Center"
+                Style="{StaticResource StatLabel}"
+                Text="ANTES DE INSTALAR" />
+            </DockPanel>
+            <ScrollViewer
+              DockPanel.Dock="Top"
+              VerticalScrollBarVisibility="Auto"
+              Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}">
+              <ItemsControl ItemsSource="{Binding Checks}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="{x:Type install:PreflightRow}">
+                    <DockPanel Margin="0,0,0,7">
+                      <Ellipse
+                        Width="8"
+                        Height="8"
+                        Margin="2,6,12,0"
+                        VerticalAlignment="Top"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource ToneDot}" />
+                      <Button
+                        Margin="12,0,0,0"
+                        VerticalAlignment="Center"
+                        Command="{Binding DataContext.FixCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}"
+                        Content="{Binding FixText}"
+                        DockPanel.Dock="Right"
+                        Style="{StaticResource Action.Small}"
+                        Visibility="{Binding HasFix, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                      <StackPanel>
+                        <TextBlock
+                          FontWeight="SemiBold"
+                          Foreground="{DynamicResource PrimaryTextBrush}"
+                          Text="{Binding Title}" />
+                        <TextBlock
+                          Style="{StaticResource CaptionText}"
+                          Text="{Binding Message}"
+                          TextTrimming="None"
+                          TextWrapping="Wrap" />
+                      </StackPanel>
+                    </DockPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+
             <TextBlock
               Margin="0,0,0,8"
               DockPanel.Dock="Top"
               Style="{StaticResource StatLabel}"
-              Text="AGORA" />
-            <Grid>
+              Text="AGORA"
+              Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
+            <Grid Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
               <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding Service.Active}">
                   <ItemsControl.ItemTemplate>

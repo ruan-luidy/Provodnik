@@ -24,6 +24,7 @@ namespace Provodnik.Wpf.Shared.Services
     string ModListKey = "",
     string? Tab = null,
     bool PaneCompact = false,
+    bool ShowConsole = true,
     bool DarkTheme = true)
   {
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };

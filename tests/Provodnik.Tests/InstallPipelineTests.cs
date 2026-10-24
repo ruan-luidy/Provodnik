@@ -47,7 +47,7 @@ namespace Provodnik.Tests
       }
     }
 
-    private InstallPipeline Pipeline() => new(_api, new FakeGit(), _downloader, new FakeResolver(), _extractor, new NoShortcuts());
+    private InstallPipeline Pipeline() => new(_api, new FakeGit(), _downloader, new FakeResolver(), _extractor, new NoShortcuts(), new FakeSystem());
 
     private Task<InstallReport> RunAsync(InstallOptions? options = null) =>
       Pipeline().RunAsync(_layout, options ?? new InstallOptions { CreateShortcuts = false }, new NullReporter(), CancellationToken.None);
@@ -218,9 +218,16 @@ namespace Provodnik.Tests
       }
     }
 
+    private sealed class FakeSystem : ISystemInfo
+    {
+      public bool IsElevated => false;
+
+      public bool? LongPathsEnabled => true;
+    }
+
     private sealed class NoShortcuts : IShortcutWriter
     {
-      public void Create(string shortcutPath, string target, string? icon = null, string? workingDirectory = null)
+      public void Create(string shortcutPath, string target, string? icon = null, string? workingDirectory = null, string? arguments = null)
       {
       }
     }

@@ -23,6 +23,7 @@ namespace Provodnik.Wpf.Features.Home
     private readonly SettingsStore _settings;
     private readonly UpdateChecker _updates;
     private readonly Navigator _navigator;
+    private readonly ElevationService _elevation;
 
     [ObservableProperty] private string _statusTitle = "Conferindo...";
     [ObservableProperty] private string _statusText = string.Empty;
@@ -41,12 +42,13 @@ namespace Provodnik.Wpf.Features.Home
     [ObservableProperty] private IReadOnlyList<string> _executables = [];
     [ObservableProperty] private string? _selectedExecutable;
 
-    public HomeViewModel(GammaSession session, SettingsStore settings, UpdateChecker updates, Navigator navigator, InstallService install)
+    public HomeViewModel(GammaSession session, SettingsStore settings, UpdateChecker updates, Navigator navigator, InstallService install, ElevationService elevation)
     {
       _session = session;
       _settings = settings;
       _updates = updates;
       _navigator = navigator;
+      _elevation = elevation;
       Install = install;
       session.Reloaded += (_, _) =>
       {
@@ -175,7 +177,7 @@ namespace Provodnik.Wpf.Features.Home
       }
       try
       {
-        GameLauncher.Play(layout, SelectedExecutable);
+        GameLauncher.Play(layout, SelectedExecutable, _elevation.Unelevated);
         ToastService.Info(SelectedExecutable is null ? "Abrindo o Mod Organizer" : $"Abrindo {SelectedExecutable} pelo MO2", "Boa caçada, stalker");
       }
       catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception)
@@ -188,7 +190,7 @@ namespace Provodnik.Wpf.Features.Home
     private void OpenModOrganizer()
     {
       if (_session.Layout is { } layout)
-        GameLauncher.OpenModOrganizer(layout);
+        GameLauncher.OpenModOrganizer(layout, _elevation.Unelevated);
     }
 
     [RelayCommand]

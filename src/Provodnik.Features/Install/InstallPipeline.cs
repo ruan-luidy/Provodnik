@@ -33,7 +33,8 @@ namespace Provodnik.Features.Install
     IFileDownloader downloader,
     IModDbResolver resolver,
     IArchiveExtractor extractor,
-    IShortcutWriter shortcuts)
+    IShortcutWriter shortcuts,
+    ISystemInfo system)
   {
     /// <summary>O exe do Проводник, pro atalho da área de trabalho (nulo: não cria).</summary>
     public string? LauncherPath { get; set; }
@@ -82,7 +83,7 @@ namespace Provodnik.Features.Install
 
     private async Task RunStagesAsync(Run run, CancellationToken cancellationToken)
     {
-      Prepare(run);
+      Prepare(run, system);
 
       if (run.Options.SkipPreparation)
       {
@@ -146,20 +147,17 @@ namespace Provodnik.Features.Install
 
     // ===== Preparando =====
 
-    private static void Prepare(Run run)
+    private static void Prepare(Run run, ISystemInfo system)
     {
       var (layout, reporter) = (run.Layout, run.Reporter);
       reporter.Stage(InstallStage.Preparing, StageState.Running);
 
-      if (!layout.Exists)
-        throw new InstallAbortedException($"{layout.Root} não parece a pasta do GAMMA (falta o ModOrganizer.exe ou a pasta {GammaLayout.InstallerFolderName}).");
-      if (GameLauncher.IsModOrganizerRunning())
-        throw new InstallAbortedException("Feche o Mod Organizer antes de instalar: ele segura os arquivos dos mods.");
-
-      var missing = new[] { layout.SevenZip, layout.Curl, layout.CurlConfig, layout.ModDbCli }.Where(f => !File.Exists(f)).ToList();
-      if (missing.Count > 0)
-        throw new InstallAbortedException($"Faltam ferramentas do GAMMA em resources\\: {string.Join(", ", missing.Select(Path.GetFileName))}. Baixe o instalador do GAMMA de novo.");
-
+      // a mesma checagem que a tela mostra antes de começar: o que falhar para aqui, explicado
+      var checks = Preflight.Run(layout, system);
+      foreach (var check in checks.Where(c => c.Level == CheckLevel.Warning))
+        run.Warn($"{check.Title}: {check.Message}");
+      if (checks.FirstOrDefault(c => c.Level == CheckLevel.Failed) is { } failed)
+        throw new InstallAbortedException($"{failed.Title}: {failed.Message}");
       run.Metadata = File.Exists(layout.MetadataFile)
         ? ModpackMetadata.Parse(File.ReadAllText(layout.MetadataFile))
         : ModpackMetadata.Gamma;
@@ -178,10 +176,6 @@ namespace Provodnik.Features.Install
       Directory.CreateDirectory(layout.WorkDir);
       Directory.CreateDirectory(layout.Downloads);
       Directory.CreateDirectory(layout.Mods);
-
-      var free = new DriveInfo(Path.GetPathRoot(layout.Root)!).AvailableFreeSpace;
-      if (free < 20L * 1024 * 1024 * 1024)
-        run.Warn($"Pouco espaço livre no disco ({ByteSize.Format(free)}). Uma instalação do zero precisa de uns 150 GB.");
 
       reporter.Log(LogLevel.Info, $"GAMMA em {layout.Root}");
       reporter.Stage(InstallStage.Preparing, StageState.Done);

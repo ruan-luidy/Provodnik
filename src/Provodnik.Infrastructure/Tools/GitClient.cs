@@ -1,5 +1,7 @@
+using Provodnik.Core.Diagnostics;
 using Provodnik.Core.IO;
 using Provodnik.Core.Repos;
+using Provodnik.Core.Text;
 using Provodnik.Infrastructure.Processes;
 
 namespace Provodnik.Infrastructure.Tools
@@ -10,7 +12,7 @@ namespace Provodnik.Infrastructure.Tools
   /// baixa só a versão atual em vez do histórico inteiro), fetch + reset --hard + clean pra ficar igual ao remoto, nova
   /// tentativa quando a rede falha e erro de verdade quando não dá.
   /// </summary>
-  public sealed class GitClient(Func<string> gitPath) : IGitClient
+  public sealed class GitClient(Func<string> gitPath, IToolConsole console) : IGitClient
   {
     private static readonly IReadOnlyDictionary<string, string> Environment = new Dictionary<string, string>
     {
@@ -42,6 +44,7 @@ namespace Provodnik.Infrastructure.Tools
       var exe = File.Exists(git) ? git : "git";
       string[] arguments = ["-c", "safe.directory=*", "-c", "core.longpaths=true", "-c", "http.postBuffer=524288000", .. command];
 
+      console.Write("git", $"$ git {string.Join(' ', command)}");
       for (var attempt = 1; ; attempt++)
       {
         var result = await ProcessRunner.RunAsync(
@@ -58,7 +61,12 @@ namespace Provodnik.Infrastructure.Tools
         await Task.Delay(TimeSpan.FromSeconds(3 * attempt), cancellationToken).ConfigureAwait(false);
       }
 
-      void Report(string line) => progress?.Report(line);
+      void Report(string line)
+      {
+        progress?.Report(line);
+        if (!ProgressLines.TryParseGit(line, out _, out _))
+          console.Write("git", line);
+      }
     }
   }
 }
