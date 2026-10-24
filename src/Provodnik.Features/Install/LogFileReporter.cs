@@ -9,12 +9,15 @@ namespace Provodnik.Features.Install
   public sealed class LogFileReporter : IInstallReporter, IDisposable
   {
     private readonly IInstallReporter _inner;
+    private readonly Func<int, string?> _titleOf;
     private readonly StreamWriter? _writer;
     private readonly Lock _gate = new();
 
-    public LogFileReporter(IInstallReporter inner, string logsDir)
+    /// <param name="titleOf">O nome do mod pelo número, pra linha do arquivo dizer qual é ("#312 (Nome) Installed").</param>
+    public LogFileReporter(IInstallReporter inner, string logsDir, Func<int, string?>? titleOf = null)
     {
       _inner = inner;
+      _titleOf = titleOf ?? (_ => null);
       try
       {
         Directory.CreateDirectory(logsDir);
@@ -43,7 +46,10 @@ namespace Provodnik.Features.Install
     {
       _inner.Mod(progress);
       if (progress.Status is ModStatus.Installed or ModStatus.UpToDate or ModStatus.Failed)
-        Write($"#{progress.Index} {progress.Status}{(progress.Detail is null ? string.Empty : $" · {progress.Detail}")}");
+      {
+        var title = _titleOf(progress.Index) is { Length: > 0 } name ? $" ({name})" : string.Empty;
+        Write($"#{progress.Index}{title} {progress.Status}{(progress.Detail is null ? string.Empty : $" · {progress.Detail}")}");
+      }
     }
 
     public void Log(LogLevel level, string message)

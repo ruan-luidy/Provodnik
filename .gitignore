@@ -7,6 +7,8 @@ x64/
 x86/
 [Ll]og/
 [Ll]ogs/
+# a tela de Registro do app mora em Features/Logs: não é pasta de log
+!src/Provodnik.Wpf/Features/Logs/
 publish/
 artifacts/
 TestResults/

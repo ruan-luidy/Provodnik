@@ -125,7 +125,7 @@ namespace Provodnik.Wpf.Features.Install
       InstallReport report;
       try
       {
-        using var reporter = new LogFileReporter(new QueueReporter(this), layout.LogsDir);
+        using var reporter = new LogFileReporter(new QueueReporter(this), layout.LogsDir, index => _session.ModList?.Entries.ElementAtOrDefault(index - 1)?.Title);
         LastLogFile = reporter.Path;
         var token = _cancel.Token;
         report = await Task.Run(() => _pipeline.RunAsync(layout, options, reporter, token)).ConfigureAwait(true);
