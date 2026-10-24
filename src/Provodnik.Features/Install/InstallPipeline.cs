@@ -137,15 +137,18 @@ namespace Provodnik.Features.Install
           loose.Add(name);
         }
       }
-      // sem número e sem pasta: nome que o próprio modlist do GAMMA escreveu errado ("DarkasleQif's..."); o MO2 mostra
-      // igual pra todo mundo, não tem o que reinstalar
+      // sem número: vêm do modpack_addons e dos arquivos grandes, que a instalação copia inteiros
       foreach (var name in loose)
-        run.Warn($"O modlist do GAMMA liga \"{name}\", que não existe em pasta nenhuma (erro de digitação na lista do GAMMA; o MO2 mostra igual pra todo mundo).");
+        run.Warn($"O modlist do GAMMA liga \"{name}\", mas a pasta dele está vazia ou não existe.");
+      // nome que o próprio modlist do GAMMA escreveu errado ("DarkasleQif's..."): o MO2 descarta a linha pra todo mundo,
+      // não tem o que reinstalar
+      foreach (var name in result.Misnamed)
+        run.Warn($"O modlist do GAMMA liga \"{name}\", que não existe com esse nome (erro de digitação na lista do GAMMA; o MO2 descarta a linha pra todo mundo).");
 
       var numbered = result.Missing.Count - loose.Count;
       var summary = $"{result.Found} de {result.Expected} mods ativos";
-      run.Reporter.Log(numbered == 0 ? LogLevel.Success : LogLevel.Warning, $"Conferência: {summary} no MO2{(loose.Count > 0 ? $" ({loose.Count} com o nome errado na lista do GAMMA)" : string.Empty)}");
-      run.Reporter.Stage(InstallStage.Verify, numbered > 0 ? StageState.Failed : loose.Count > 0 ? StageState.Warning : StageState.Done, summary);
+      run.Reporter.Log(result.Missing.Count == 0 ? LogLevel.Success : LogLevel.Warning, $"Conferência: {summary} no MO2{(result.Misnamed.Count > 0 ? $" ({result.Misnamed.Count} com o nome errado na lista do GAMMA, fora da conta)" : string.Empty)}");
+      run.Reporter.Stage(InstallStage.Verify, numbered > 0 ? StageState.Failed : loose.Count + result.Misnamed.Count > 0 ? StageState.Warning : StageState.Done, summary);
     }
 
     // ===== Preparando =====

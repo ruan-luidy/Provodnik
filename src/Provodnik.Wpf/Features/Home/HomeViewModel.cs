@@ -48,6 +48,7 @@ namespace Provodnik.Wpf.Features.Home
     [NotifyPropertyChangedFor(nameof(ActiveFraction), nameof(ActiveComplete))]
     private int _activeExpected;
     [ObservableProperty] private int _archivesMissing;
+    [ObservableProperty] private string _activeCaption = "a regra dos 5xx";
     [ObservableProperty] private string _lastInstallText = "ainda não";
     [ObservableProperty] private IReadOnlyList<string> _executables = [];
     [ObservableProperty] private string? _selectedExecutable;
@@ -121,6 +122,12 @@ namespace Provodnik.Wpf.Features.Home
       var active = await Task.Run(() => ActiveModsCheck.Run(layout, metadata));
       ActiveExpected = active.Expected;
       ActiveFound = active.Found;
+      ActiveCaption = active.Misnamed.Count switch
+      {
+        0 => "a regra dos 5xx",
+        1 => "1 nome errado na lista do GAMMA",
+        var n => $"{n} nomes errados na lista do GAMMA",
+      };
 
       IsChecking = true;
       try

@@ -347,8 +347,8 @@
               </ProgressBar>
               <TextBlock
                 Style="{StaticResource CaptionText}"
-                Text="a regra dos 5xx"
-                ToolTip="A regra dos 5xx mods: o número de mods ativos que o MO2 tem que mostrar muda a cada versão do GAMMA; aqui ele sai do modlist.txt do GAMMA" />
+                Text="{Binding ActiveCaption}"
+                ToolTip="A regra dos 5xx mods: o número de mods ativos que o MO2 tem que mostrar muda a cada versão do GAMMA; aqui ele sai do modlist.txt do GAMMA. Linha com nome errado na lista (sem pasta com esse nome) fica fora da conta: o MO2 descarta ela pra todo mundo." />
             </StackPanel>
           </Border>
           <Border Style="{StaticResource StatCard}">
