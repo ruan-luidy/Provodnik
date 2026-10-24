@@ -107,6 +107,25 @@ namespace Provodnik.Tests
     }
 
     [Fact]
+    public async Task Separador_renumerado_sai_e_o_de_outro_pacote_fica()
+    {
+      _api.List = string.Join('\n', " Audio", Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip"));
+      await RunAsync();
+      // um pacote instalado por cima do GAMMA (o Romeo) traz o separador dele, também só com o meta.ini
+      var other = Path.Combine(_layout.Mods, "900- ROMEO_separator");
+      Directory.CreateDirectory(other);
+      File.WriteAllText(Path.Combine(other, "meta.ini"), "[General]");
+
+      // a atualização põe outro separador na frente: o Audio vira o 2
+      _api.List = string.Join('\n', " Armas", " Audio", Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip"));
+      await RunAsync();
+
+      Assert.False(Directory.Exists(Path.Combine(_layout.Mods, "1- Audio_separator")));
+      Assert.True(Has(@"2- Audio_separator\meta.ini"));
+      Assert.True(Has(@"900- ROMEO_separator\meta.ini"));
+    }
+
+    [Fact]
     public async Task Download_que_falha_nao_estraga_os_outros_e_entra_no_relatorio()
     {
       _api.List = string.Join('\n', Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip"), Line("https://www.moddb.com/addons/start/666", "0", "Dan", "Quebrado", "quebrado.zip"));

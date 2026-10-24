@@ -464,13 +464,23 @@ namespace Provodnik.Features.Install
 
       if (!Directory.Exists(mods))
         return;
+      // separador velho é o do GAMMA que mudou de número: o mesmo nome existe na lista com outro número. Separador de
+      // outro pacote instalado por cima do GAMMA (o nome não está na lista) não é tocado
+      var currentSeparators = currentFolders.Where(f => f.EndsWith("_separator", StringComparison.OrdinalIgnoreCase)).Select(WithoutNumber).ToHashSet(StringComparer.OrdinalIgnoreCase);
       foreach (var separator in Directory.EnumerateDirectories(mods, "*_separator"))
       {
         var name = Path.GetFileName(separator);
         var onlyMeta = Directory.EnumerateFileSystemEntries(separator).All(e => Path.GetFileName(e).Equals("meta.ini", StringComparison.OrdinalIgnoreCase));
-        if (!currentFolders.Contains(name) && char.IsAsciiDigit(name[0]) && onlyMeta)
+        if (!currentFolders.Contains(name) && char.IsAsciiDigit(name[0]) && onlyMeta && currentSeparators.Contains(WithoutNumber(name)))
           FileTree.Delete(separator);
       }
+    }
+
+    // "12- Armas_separator" -> "Armas_separator"
+    private static string WithoutNumber(string folder)
+    {
+      var dash = folder.IndexOf('-');
+      return dash > 0 && folder[..dash].All(char.IsAsciiDigit) ? folder[(dash + 1)..].TrimStart() : folder;
     }
 
     // ===== Extras, perfil, patches, atalhos =====
