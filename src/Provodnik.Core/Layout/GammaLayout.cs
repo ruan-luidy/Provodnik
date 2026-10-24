@@ -71,7 +71,8 @@ namespace Provodnik.Core.Layout
     /// </summary>
     public static GammaLayout? Find(string start)
     {
-      var dir = new DirectoryInfo(start);
+      // o AppContext.BaseDirectory vem com a barra no fim ("D:\GAMMA\")
+      var dir = new DirectoryInfo(Path.TrimEndingDirectorySeparator(Path.GetFullPath(start)));
       for (var depth = 0; dir is not null && depth < 5; depth++, dir = dir.Parent)
       {
         var layout = new GammaLayout(dir.FullName);
