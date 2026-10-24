@@ -2,7 +2,8 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:behaviors="clr-namespace:Provodnik.Wpf.Shared.Behaviors"
-  xmlns:hc="https://handyorg.github.io/handycontrol">
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons">
 
   <!--
     A grade do rnzNegativeObserver (o StandardDataGrid do Windfinder): fundo cinza, raio Lg, sem borda, linha pequena
@@ -11,9 +12,23 @@
     (QuickFilter) faz o serviço.
   -->
 
+  <!--  Alça de arrastar a largura da coluna: invisível, só o cursor de redimensionar  -->
+  <Style x:Key="ColumnHeaderGripper" TargetType="Thumb">
+    <Setter Property="Width" Value="8" />
+    <Setter Property="Cursor" Value="SizeWE" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Border Background="Transparent" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!--
     Cabeçalho com a mesma linha fraca das células: separador na direita (no mesmo x) e a linha de baixo. A última
-    coluna e o pedaço que sobra depois dela ficam sem o da direita.
+    coluna e o pedaço que sobra depois dela ficam sem o da direita. Template próprio pra seta de ordenar ser o caret
+    do Phosphor (a do HandyControl era um triângulo de outro traço), logo depois do nome; a coluna ordenada fica azul.
   -->
   <Style
     x:Key="StandardColumnHeader"
@@ -21,7 +36,67 @@
     TargetType="DataGridColumnHeader">
     <Setter Property="BorderThickness" Value="0,0,1,1" />
     <Setter Property="BorderBrush" Value="{DynamicResource Grid.DividerBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="DataGridColumnHeader">
+          <Grid>
+            <Border
+              Padding="{TemplateBinding Padding}"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              SnapsToDevicePixels="True">
+              <StackPanel
+                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                Orientation="Horizontal">
+                <ContentPresenter
+                  VerticalAlignment="Center"
+                  RecognizesAccessKey="True"
+                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                <Path
+                  x:Name="SortIcon"
+                  Width="9"
+                  Height="9"
+                  Margin="6,1,0,0"
+                  VerticalAlignment="Center"
+                  Fill="{TemplateBinding Foreground}"
+                  Stretch="Uniform"
+                  Visibility="Collapsed" />
+              </StackPanel>
+            </Border>
+            <Thumb
+              x:Name="PART_LeftHeaderGripper"
+              Margin="-4,0,0,0"
+              HorizontalAlignment="Left"
+              Style="{StaticResource ColumnHeaderGripper}" />
+            <Thumb
+              x:Name="PART_RightHeaderGripper"
+              Margin="0,0,-4,0"
+              HorizontalAlignment="Right"
+              Style="{StaticResource ColumnHeaderGripper}" />
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="SortDirection" Value="Ascending">
+              <Setter TargetName="SortIcon" Property="Data" Value="{icons:Phosphor CaretUpBold}" />
+              <Setter TargetName="SortIcon" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="SortDirection" Value="Descending">
+              <Setter TargetName="SortIcon" Property="Data" Value="{icons:Phosphor CaretDownBold}" />
+              <Setter TargetName="SortIcon" Property="Visibility" Value="Visible" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
     <Style.Triggers>
+      <Trigger Property="SortDirection" Value="Ascending">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+      </Trigger>
+      <Trigger Property="SortDirection" Value="Descending">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+      </Trigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
           <MultiBinding Converter="{StaticResource IsLastColumn}">
