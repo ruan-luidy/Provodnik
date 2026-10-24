@@ -42,7 +42,7 @@
             Content="Recarregar"
             Style="{StaticResource Action}" />
           <Button
-            hc:IconElement.Geometry="{icons:Phosphor WrenchBold}"
+            hc:IconElement.Geometry="{icons:Phosphor MagicWandBold}"
             Command="{Binding ReinstallMissingCommand}"
             Content="Completar os vazios"
             IsEnabled="{Binding Install.IsRunning, Converter={StaticResource Boolean2BooleanReConverter}}"
