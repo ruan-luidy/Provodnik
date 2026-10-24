@@ -7,6 +7,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   Width="520"
   d:DataContext="{d:DesignInstance Type=about:AboutViewModel}"
@@ -21,8 +22,8 @@
   <controls:DialogFrame
     BodyPadding="20,0,20,16"
     CloseClick="Close_Click"
-    Subtitle="O launcher do S.T.A.L.K.E.R. G.A.M.M.A."
-    Title="Sobre o Проводник">
+    Subtitle="{loc:Tr about.subtitle}"
+    Title="{loc:Tr about.title}">
     <StackPanel>
       <!--  O selo: o ícone grande, o nome e a versão  -->
       <DockPanel Margin="0,16,0,2">
@@ -44,14 +45,14 @@
             FontSize="{StaticResource FontSize.Lg}"
             FontWeight="SemiBold"
             Foreground="{DynamicResource PrimaryTextBrush}"
-            Text="Проводник" />
+            Text="{loc:Tr shell.appName}" />
           <TextBlock Margin="0,2,0,0" Style="{StaticResource CaptionText}">
-            <Run FontFamily="{StaticResource FontFamily.Numbers}" Text="{Binding Version, Mode=OneWay, StringFormat=versão {0}}" /><Run Text=" · " /><Run Text="{Binding BuildText, Mode=OneWay}" />
+            <Run FontFamily="{StaticResource FontFamily.Numbers}" Text="{Binding VersionText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding BuildText, Mode=OneWay}" />
           </TextBlock>
         </StackPanel>
       </DockPanel>
 
-      <TextBlock Style="{StaticResource SettingSection}" Text="ATUALIZAÇÃO" />
+      <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr about.update.section}" />
       <Border Style="{StaticResource SettingGroup}">
         <Border Style="{StaticResource SettingRow}">
           <DockPanel>
@@ -63,15 +64,15 @@
               <Button
                 hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
                 Command="{Binding CheckCommand}"
-                Content="Procurar"
+                Content="{loc:Tr about.update.check}"
                 Style="{StaticResource Action}"
-                ToolTip="Procurar versão nova" />
+                ToolTip="{loc:Tr about.update.checkTip}" />
               <!--  Instalado pelo Setup.exe: a versão nova já baixou, é só reiniciar  -->
               <Button
                 Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor ArrowCircleUpBold}"
                 Command="{Binding Update.ApplyAndRestartCommand}"
-                Content="Reiniciar e atualizar"
+                Content="{loc:Tr about.update.restart}"
                 Style="{StaticResource Action.Primary}"
                 Visibility="{Binding Update.IsReady, Converter={StaticResource Boolean2VisibilityConverter}}" />
               <!--  A cópia solta na pasta do GAMMA: abre o release novo pra baixar  -->
@@ -79,7 +80,7 @@
                 Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
                 Command="{Binding DownloadCommand}"
-                Content="Baixar"
+                Content="{loc:Tr about.update.download}"
                 Style="{StaticResource Action.Primary}"
                 Visibility="{Binding HasDownload, Converter={StaticResource Boolean2VisibilityConverter}}" />
             </StackPanel>
@@ -98,39 +99,39 @@
               </TextBlock>
               <TextBlock
                 Style="{StaticResource SettingCaption}"
-                Text="Esta cópia não se atualiza sozinha: a versão nova sai nos Releases do GitHub."
+                Text="{loc:Tr about.update.portableNote}"
                 Visibility="{Binding IsPortable, Converter={StaticResource Boolean2VisibilityConverter}}" />
             </StackPanel>
           </DockPanel>
         </Border>
       </Border>
 
-      <TextBlock Style="{StaticResource SettingSection}" Text="LINKS" />
+      <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr about.links.section}" />
       <StackPanel Orientation="Horizontal">
         <Button
           Margin="0,0,8,0"
           hc:IconElement.Geometry="{icons:Phosphor GithubLogoBold}"
           Command="{Binding OpenRepositoryCommand}"
-          Content="Código no GitHub"
+          Content="{loc:Tr about.links.code}"
           Style="{StaticResource Action}" />
         <Button
           Margin="0,0,8,0"
           hc:IconElement.Geometry="{icons:Phosphor PackageBold}"
           Command="{Binding OpenReleasesCommand}"
-          Content="Releases"
+          Content="{loc:Tr about.links.releases}"
           Style="{StaticResource Action}" />
         <Button
           hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
           Command="{Binding OpenDataFolderCommand}"
-          Content="Pasta de dados"
+          Content="{loc:Tr about.links.data}"
           Style="{StaticResource Action}"
-          ToolTip="Logs, estado da instalação e cache (.provodnik dentro do instalador do GAMMA)" />
+          ToolTip="{loc:Tr about.links.dataTip}" />
       </StackPanel>
 
       <TextBlock
         Margin="2,16,0,0"
         Style="{StaticResource CaptionText}"
-        Text="Feito por fã, não é oficial do G.A.M.M.A. O modpack, a lista de mods e o launcher original são do Grok e da equipe do GAMMA."
+        Text="{loc:Tr about.disclaimer}"
         TextTrimming="None"
         TextWrapping="Wrap" />
     </StackPanel>
@@ -139,7 +140,7 @@
       <hc:UniformSpacingPanel Style="{StaticResource DialogActions}">
         <Button
           Click="Close_Click"
-          Content="Fechar"
+          Content="{loc:Tr about.close}"
           IsCancel="True"
           IsDefault="True"
           Style="{StaticResource Action.Dialog}" />

@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Features.AppUpdate;
 using Provodnik.Wpf.Shared.Services;
 
@@ -16,7 +17,7 @@ namespace Provodnik.Wpf.Features.About
   {
     private static readonly HttpClient Http = CreateHttp();
 
-    [ObservableProperty] private string _portableStatus = "Procure pra ver se saiu versão nova.";
+    [ObservableProperty] private string _portableStatus = L.T("about.update.idle");
     [ObservableProperty] private string? _latestUrl;
 
     [ObservableProperty]
@@ -27,7 +28,9 @@ namespace Provodnik.Wpf.Features.About
 
     public string Version => AppInfo.Version;
 
-    public string BuildText => AppInfo.BuildDate is { } date ? $"build de {date:dd/MM/yyyy}" : "build local";
+    public string VersionText => L.T("about.version", AppInfo.Version);
+
+    public string BuildText => AppInfo.BuildDate is { } date ? L.T("about.build", date.ToString("d", L.Culture)) : L.T("about.buildLocal");
 
     /// <summary>O exe solto na pasta do GAMMA (ou rodando do código): não se atualiza sozinho.</summary>
     public bool IsPortable => !Update.IsInstalled;
@@ -47,29 +50,29 @@ namespace Provodnik.Wpf.Features.About
       }
 
       IsChecking = true;
-      PortableStatus = "Procurando versão nova...";
+      PortableStatus = L.T("about.update.checking");
       try
       {
         var release = await Http.GetFromJsonAsync<Release>("releases/latest");
         var latest = release?.TagName?.TrimStart('v', 'V');
         if (latest is null)
         {
-          PortableStatus = "O GitHub não respondeu com uma versão.";
+          PortableStatus = L.T("about.update.noAnswer");
         }
         else if (IsNewer(latest, Version))
         {
-          PortableStatus = $"Saiu a {latest}. Baixe e troque o Provodnik.exe da pasta do GAMMA.";
+          PortableStatus = L.T("about.update.newer", latest);
           LatestUrl = release!.HtmlUrl;
         }
         else
         {
-          PortableStatus = "Você está na versão mais nova.";
+          PortableStatus = L.T("about.update.latest");
           LatestUrl = null;
         }
       }
       catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
       {
-        PortableStatus = "Não deu pra procurar agora (sem internet ou o GitHub fora).";
+        PortableStatus = L.T("about.update.failed");
       }
       finally
       {
