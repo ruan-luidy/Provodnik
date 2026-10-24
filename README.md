@@ -1,67 +1,97 @@
-# Проводник
+# Provodnik
 
-Launcher próprio para o **S.T.A.L.K.E.R. G.A.M.M.A.**, no lugar do `G.A.M.M.A. Launcher.exe`. Instala e atualiza a mesma lista de mods, nas mesmas pastas e com o mesmo perfil do MO2, mas sem os problemas do original: mod que fica vazio, download que não volta, tudo em sequência e reextraído a cada atualização.
+A community launcher and installer for **S.T.A.L.K.E.R. G.A.M.M.A.**, a drop-in alternative to `G.A.M.M.A. Launcher.exe`.
+It installs and updates the exact same mod list, into the same folders, with the same MO2 profile, but without the
+usual pain: empty mod folders, downloads that never come back, everything running one after another, and every addon
+re-extracted on each update.
 
-> *Проводник* (pra-va-DNIK) = guia.
+> *Проводник* (pra-vad-NEEK) means "guide" in Russian.
 
-## O que faz
+**Not an official G.A.M.M.A. tool.** The modpack, the mod list and the original launcher belong to Grok and the GAMMA
+team. Provodnik reads the same files and produces the same install; you can keep using both.
 
-- **Instala e atualiza** o GAMMA: repositórios, definição, os ~470 addons, arquivos grandes, perfil do MO2 e patches do Anomaly.
-- **Downloads em paralelo** (ModDB limitado pra não acordar o Cloudflare), continuando de onde pararam, com novas tentativas e md5 conferido antes de extrair.
-- **Só reextrai o que mudou.** Pasta de mod nunca fica pela metade; arquivo quebrado deixa a versão anterior no lugar.
-- **Para e continua.** Fechou no meio, caiu a internet, saiu atualização: rodar de novo continua de onde parou.
-- **Confere a instalação:** todo mod ligado no `modlist.txt` do GAMMA (a "regra dos 5xx mods ativos") precisa ter pasta com conteúdo. O que faltar vira falha com "tentar de novo".
-- **Jogar** direto no executável escolhido (DX11-AVX, DX11, DX9...) pelo MO2.
-- **Console** das ferramentas (como o cmd do launcher original), com cada erro conhecido explicado em português embaixo dele. Na tela de instalação ou numa janela separada.
-- **Checagem antes de instalar** (permissão, Anomaly, MO2 fechado, espaço, antivírus, caminhos longos), com o conserto num botão. Administrador só quando a pasta não deixa gravar; o MO2 e o jogo sempre abrem sem.
-- Tela de **Mods** com o arquivo e a pasta de cada addon, e **Registro** com o passo a passo (e um log por instalação em `.provodnik\logs`).
+Available in English, Português and Русский. [Leia em português](docs/README.pt-BR.md).
 
-## E o Mod Organizer?
+## Why
 
-Continua sendo ele. O jogo só enxerga os mods pela pasta virtual do MO2, e ligar, desligar, ordenar, buscar e ver conflitos é trabalho dele. O Jogar do Проводник abre o MO2 direto no executável escolhido, e a tela de Mods daqui só diz se cada addon foi baixado e extraído.
+- **Parallel downloads** that resume where they stopped, retry on their own and check the md5 before extracting.
+  ModDB is paced so Cloudflare doesn't start blocking you, and it goes through a real browser engine (WebView2), which
+  ModDB now requires.
+- **Only re-extracts what changed.** A mod folder is never left half-done; a broken archive keeps the previous version.
+- **Stop and continue.** Closed it halfway, lost internet, a new GAMMA update came out: run it again and it picks up
+  where it left off.
+- **Checks the result.** Every mod enabled in GAMMA's `modlist.txt` (the "5xx active mods" rule) must have a folder
+  with content. Anything missing becomes a failure with a **Retry** button. It also fixes a typo in GAMMA's own mod list
+  that leaves one mod disabled in MO2.
+- **Readable tool console.** The git, curl, 7-Zip and ModDB output, like the original's command window, with every
+  known error explained right below it (disk full, antivirus, Cloudflare, corrupted archive, path too long...).
+- **Pre-install checks** for folder permissions, Anomaly, MO2/game closed, disk space, antivirus and long paths, with
+  the fix one click away. Admin rights only when the folder really needs them; MO2 and the game always start without.
+- **Mods screen** with the archive and folder of every addon (and one click to redo a single one), and a **Log** of
+  this session and of every past install.
+- **Play** straight into the executable you pick (DX11-AVX, DX11, DX9...) through MO2.
 
-## Usando direto na pasta do GAMMA
+## What about Mod Organizer?
 
-O jeito pensado: publicar um exe só e deixar ele ao lado do `ModOrganizer.exe`.
+It's still MO2. The game only sees mods through MO2's virtual folder, and enabling, disabling, ordering, searching and
+checking conflicts is MO2's job. Provodnik's **Play** opens MO2 straight into your chosen executable, and its Mods
+screen only tells you whether each addon was downloaded and extracted.
 
-```powershell
-python tools\build_tool.py --gamma D:\GAMMA
-```
+## Install
 
-Isso gera `D:\GAMMA\Provodnik.exe`, com o .NET dentro (não precisa instalar nada). Ele acha a pasta sozinho e usa as ferramentas que o GAMMA já traz em `.Grok's Modpack Installer\resources` (7-Zip, curl-impersonate, stalker-gamma-dl-cli e Git). O launcher original pode continuar lá: os dois leem e escrevem os mesmos arquivos.
+**Option 1, installer (updates itself):** download `Provodnik-win-Setup.exe` from the
+[latest release](https://github.com/ruan-luidy/Provodnik/releases/latest). New versions download in the background and
+apply when you close the app (or right away with **Restart now**).
 
-Pra rodar do código:
+**Option 2, inside the GAMMA folder:** download `Provodnik.exe` from the release and put it next to `ModOrganizer.exe`
+(for example `C:\GAMMA\Provodnik.exe`). It finds everything on its own and uses the tools GAMMA already ships in
+`.Grok's Modpack Installer\resources` (7-Zip, curl-impersonate, Git). This copy doesn't update itself: **About →
+Check** tells you when a new version is out.
+
+Requirements: Windows 10/11 x64. .NET is bundled, nothing else to install. WebView2 ships with Windows 11 and recent
+Windows 10.
+
+Then open it, check the **Install** screen and press **Install / update**. A first install takes a while (around 150 GB
+of downloads); after that, updates only fetch what changed.
+
+## FAQ
+
+**Can I use it on an install made with the official launcher?** Yes. It reads the same folders and state; the first
+run checks everything and only fixes what's wrong.
+
+**Does it change my MO2 profile?** Like the official launcher, an install rewrites the `G.A.M.M.A` profile's mod list
+from GAMMA's definition. Your own profiles (for example a copy named "GAMMA Custom") are never touched.
+
+**Where are the logs?** `.Grok's Modpack Installer\.provodnik\logs` (one file per install, plus the tool console), also
+browsable in the **Log** screen.
+
+**Something failed.** Press **Retry** on the Install screen first; most ModDB hiccups go away. If not, open the log and
+bring it to the GAMMA Discord, or open an issue here.
+
+## Build from source
 
 ```powershell
 dotnet run --project src/Provodnik.Wpf
-dotnet run --project src/Provodnik.Wpf -- --demo        # simulação: GAMMA de mentira em %TEMP%, nada é baixado
-dotnet run --project src/Provodnik.Wpf -- --demo-novo   # simulação começando do zero
+dotnet run --project src/Provodnik.Wpf -- --demo        # simulation: fake GAMMA in %TEMP%, nothing is downloaded
+dotnet run --project src/Provodnik.Wpf -- --demo-novo   # simulation from scratch
 dotnet test
 ```
 
-## Releases e atualização
-
-Quem instala pelo `Provodnik-win-Setup.exe` do [GitHub Releases](https://github.com/ruan-luidy/Provodnik/releases/latest) recebe as versões novas sozinho, pelo [Velopack](https://velopack.io): o Проводник procura no GitHub, baixa e avisa com "Reiniciar agora"; sem clique, a versão nova entra quando ele fechar. O exe solto na pasta do GAMMA não se atualiza: é só gerar de novo com `--gamma`.
-
-O `tools/build_tool.py` faz tudo (o mesmo do Otmetka):
+Releases are built with `tools/build_tool.py` (Velopack):
 
 ```powershell
 pip install -r tools\requirements.txt
-python tools\build_tool.py                     # menu
-python tools\build_tool.py --bump patch        # sobe a versão no Directory.Build.props e abre a seção no CHANGELOG
-python tools\build_tool.py --build             # testes, publish e pacote do Velopack em artifacts\releases
-python tools\build_tool.py --build --github    # e publica o release no GitHub
-python tools\build_tool.py --gamma D:\GAMMA    # o exe único na pasta do GAMMA
+python tools\build_tool.py --bump patch        # bump the version and open a CHANGELOG section
+python tools\build_tool.py --build --github    # tests, publish, Velopack package and GitHub release
+python tools\build_tool.py --gamma C:\GAMMA    # the single exe straight into a GAMMA folder
 ```
 
-A versão mora no `Directory.Build.props` e a nota do release sai da seção dela no `docs/CHANGELOG.md` (sem ela o build não sai). Pra subir pro GitHub, o token vem de `GITHUB_TOKEN` ou do `gh auth login`.
-
-## Estrutura
-
-| Projeto | O que é |
+| Project | What it is |
 |---|---|
-| `Provodnik.Core` | Modelos e contratos (mods.txt, meta.ini, ModOrganizer.ini, modlist.txt, estado). Zero dependências. |
-| `Provodnik.Features` | O pipeline de instalação, downloads, verificação, perfil, patches e o Jogar. |
-| `Provodnik.Infrastructure` | HttpClient e as ferramentas do GAMMA rodadas como processo. |
-| `Provodnik.Wpf` | A interface (HandyControl + CommunityToolkit.Mvvm), em fatias por `Features/`. |
+| `Provodnik.Core` | Models and contracts (mods.txt, meta.ini, ModOrganizer.ini, modlist.txt, install state, texts). No dependencies. |
+| `Provodnik.Features` | The install pipeline, downloads, verification, MO2 profile, patches and Play. |
+| `Provodnik.Infrastructure` | HttpClient and the GAMMA tools run as processes. |
+| `Provodnik.Wpf` | The UI (HandyControl + CommunityToolkit.Mvvm), sliced by `Features/`. |
 
+Translations live in `Localization/*.{pt,en,ru}.json` inside each project. Pull requests with fixes or new languages
+are welcome.
