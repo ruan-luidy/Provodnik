@@ -63,7 +63,7 @@ namespace Provodnik.Wpf.Features.Settings
     [RelayCommand]
     private void Browse()
     {
-      var dialog = new OpenFolderDialog { Title = "A pasta do GAMMA (a que tem o ModOrganizer.exe)" };
+      var dialog = new OpenFolderDialog { Title = L.T("settings.folder.browse.title") };
       if (!string.IsNullOrEmpty(GammaRoot))
         dialog.InitialDirectory = GammaRoot;
       if (dialog.ShowDialog() == true)
