@@ -92,7 +92,7 @@
           Binding="{Binding Source}"
           Header="Origem" />
         <DataGridTextColumn
-          Width="220"
+          Width="190"
           Binding="{Binding ArchiveName}"
           Header="Arquivo" />
         <DataGridTextColumn
