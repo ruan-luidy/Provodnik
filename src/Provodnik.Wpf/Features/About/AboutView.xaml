@@ -3,7 +3,6 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:about="clr-namespace:Provodnik.Wpf.Features.About"
-  xmlns:behaviors="clr-namespace:Provodnik.Wpf.Shared.Behaviors"
   xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
@@ -15,9 +14,9 @@
   mc:Ignorable="d">
 
   <!--
-    Sobre: o selo do app com a versão, a atualização do próprio Проводник (procurar, ou reiniciar com a versão que
-    já baixou; o exe solto na pasta do GAMMA aponta pros Releases), o que mudou nesta versão e os links. Os grupos são
-    os cartões das Configurações.
+    Sobre: o selo do app com a versão, a procura de versão nova (instalado pelo Setup.exe, baixa e reinicia; o exe
+    solto na pasta do GAMMA pergunta pro GitHub e oferece o download) e os links. Os grupos são os cartões das
+    Configurações.
   -->
   <controls:DialogFrame
     BodyPadding="20,0,20,16"
@@ -61,13 +60,13 @@
               VerticalAlignment="Center"
               DockPanel.Dock="Right"
               Orientation="Horizontal">
-              <!--  Instalado pelo Setup.exe: procurar agora, ou reiniciar com a versão que já baixou  -->
               <Button
                 hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
-                Command="{Binding Update.CheckNowCommand}"
+                Command="{Binding CheckCommand}"
                 Content="Procurar"
                 Style="{StaticResource Action}"
-                Visibility="{Binding Update.CanUpdate, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                ToolTip="Procurar versão nova" />
+              <!--  Instalado pelo Setup.exe: a versão nova já baixou, é só reiniciar  -->
               <Button
                 Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor ArrowCircleUpBold}"
@@ -75,16 +74,28 @@
                 Content="Reiniciar e atualizar"
                 Style="{StaticResource Action.Primary}"
                 Visibility="{Binding Update.IsReady, Converter={StaticResource Boolean2VisibilityConverter}}" />
-              <!--  O exe solto na pasta do GAMMA: a versão nova se baixa nos Releases  -->
+              <!--  A cópia solta na pasta do GAMMA: abre o release novo pra baixar  -->
               <Button
-                hc:IconElement.Geometry="{icons:Phosphor ArrowSquareOutBold}"
-                Command="{Binding OpenReleasesCommand}"
-                Content="Releases"
-                Style="{StaticResource Action}"
-                Visibility="{Binding IsPortable, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                Margin="8,0,0,0"
+                hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
+                Command="{Binding DownloadCommand}"
+                Content="Baixar"
+                Style="{StaticResource Action.Primary}"
+                Visibility="{Binding HasDownload, Converter={StaticResource Boolean2VisibilityConverter}}" />
             </StackPanel>
             <StackPanel VerticalAlignment="Center">
-              <TextBlock Style="{StaticResource SettingTitle}" Text="{Binding Update.Status}" />
+              <TextBlock>
+                <TextBlock.Style>
+                  <Style BasedOn="{StaticResource SettingTitle}" TargetType="TextBlock">
+                    <Setter Property="Text" Value="{Binding Update.Status}" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsPortable}" Value="True">
+                        <Setter Property="Text" Value="{Binding PortableStatus}" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
               <TextBlock
                 Style="{StaticResource SettingCaption}"
                 Text="Esta cópia não se atualiza sozinha: a versão nova sai nos Releases do GitHub."
@@ -92,61 +103,6 @@
             </StackPanel>
           </DockPanel>
         </Border>
-      </Border>
-
-      <TextBlock
-        Style="{StaticResource SettingSection}"
-        Text="{Binding Version, StringFormat=O QUE MUDOU NA {0}}"
-        Visibility="{Binding Changes.Count, Converter={StaticResource WhenAny}}" />
-      <Border
-        Padding="14,0"
-        Style="{StaticResource SettingGroup}"
-        Visibility="{Binding Changes.Count, Converter={StaticResource WhenAny}}">
-        <Grid>
-          <ScrollViewer
-            MaxHeight="170"
-            Margin="0,0,-10,0"
-            behaviors:ScrollFade.Cover="{Binding ElementName=ChangesFade}"
-            behaviors:ScrollFade.IsEnabled="True"
-            VerticalScrollBarVisibility="Auto">
-            <ItemsControl Margin="0,10,10,10" ItemsSource="{Binding Changes}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <DockPanel Margin="0,0,0,6">
-                    <Ellipse
-                      Width="4"
-                      Height="4"
-                      Margin="0,7,9,0"
-                      VerticalAlignment="Top"
-                      DockPanel.Dock="Left"
-                      Fill="{DynamicResource SecondaryTextBrush}" />
-                    <TextBlock
-                      FontSize="{StaticResource FontSize.Sm}"
-                      Foreground="{DynamicResource PrimaryTextBrush}"
-                      Text="{Binding}"
-                      TextWrapping="Wrap" />
-                  </DockPanel>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-          <!--  A ponta cortada some no fundo do cartão  -->
-          <!--  As duas camadas do fundo (o diálogo e o branco fraco do cartão), pra cor casar com a do cartão  -->
-          <Grid
-            x:Name="ChangesFade"
-            Height="24"
-            VerticalAlignment="Bottom"
-            IsHitTestVisible="False">
-            <Grid.OpacityMask>
-              <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                <GradientStop Offset="0" Color="Transparent" />
-                <GradientStop Offset="1" Color="Black" />
-              </LinearGradientBrush>
-            </Grid.OpacityMask>
-            <Border Background="{DynamicResource RegionBrush}" />
-            <Border Background="{DynamicResource Card.BackgroundBrush}" />
-          </Grid>
-        </Grid>
       </Border>
 
       <TextBlock Style="{StaticResource SettingSection}" Text="LINKS" />
