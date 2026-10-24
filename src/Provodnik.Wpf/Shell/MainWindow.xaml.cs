@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using HandyControl.Data;
 using HandyControl.Tools;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared.Controls;
 using Provodnik.Wpf.Shared.Services;
@@ -37,9 +38,9 @@ namespace Provodnik.Wpf.Shell
         if (report.Cancelled)
           return;
         if (report.Succeeded)
-          ToastService.Show(DialogKind.Success, "GAMMA pronto", $"{report.Installed} instalados, {report.UpToDate} já em dia. É só jogar.", TimeSpan.FromSeconds(8), desktop: desktop);
+          ToastService.Show(DialogKind.Success, L.T("shell.done.title"), L.T("shell.done.message", report.Installed, report.UpToDate), TimeSpan.FromSeconds(8), desktop: desktop);
         else
-          ToastService.Show(DialogKind.Warning, "Terminou com falhas", $"{report.Failures.Count} item(ns) não entraram. Veja na tela de instalação e use \"Tentar de novo\".", TimeSpan.FromSeconds(10), desktop: desktop);
+          ToastService.Show(DialogKind.Warning, L.T("shell.failed.title"), L.T("shell.failed.message", report.Failures.Count), TimeSpan.FromSeconds(10), desktop: desktop);
       };
     }
 
@@ -71,7 +72,7 @@ namespace Provodnik.Wpf.Shell
       }
 
       e.Cancel = true;
-      if (!await DialogService.ConfirmAsync("Parar a instalação?", "O que já foi baixado e extraído fica. Da próxima vez ela continua de onde parou.", "Parar e sair", "Continuar instalando"))
+      if (!await DialogService.ConfirmAsync(L.T("shell.close.title"), L.T("shell.close.message"), L.T("shell.close.stop"), L.T("shell.close.continue")))
         return;
 
       _closing = true;

@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared.Controls;
 using Provodnik.Wpf.Shared.Services;
@@ -119,7 +120,7 @@ namespace Provodnik.Wpf.Features.AppUpdate
 
       if (_install.IsRunning)
       {
-        ToastService.Warning("Espere a instalação terminar. Ou deixe: a versão nova entra quando o Проводник fechar.");
+        ToastService.Warning(L.T("appUpdate.busyInstalling"));
         return;
       }
 
@@ -133,7 +134,7 @@ namespace Provodnik.Wpf.Features.AppUpdate
       catch (Exception ex)
       {
         AppLog.Error(ex, "Aplicando a atualização do Проводник");
-        ToastService.Error("Não deu pra atualizar agora. A versão nova entra quando o Проводник fechar.");
+        ToastService.Error(L.T("appUpdate.applyFailed"));
       }
     }
 
@@ -171,14 +172,14 @@ namespace Provodnik.Wpf.Features.AppUpdate
       if (CanUpdate)
       {
         State = AppUpdateState.Idle;
-        Status = "Atualiza sozinho pelo GitHub.";
+        Status = L.T("appUpdate.idle");
         ShortStatus = string.Empty;
         return;
       }
 
       State = AppUpdateState.Unavailable;
-      Status = _demo ? "A simulação não procura versão nova." : "Atualização automática só na versão instalada (Setup.exe).";
-      ShortStatus = _demo ? "simulação" : "sem atualização aqui";
+      Status = L.T(_demo ? "appUpdate.demo" : "appUpdate.notInstalled");
+      ShortStatus = L.T(_demo ? "appUpdate.short.demo" : "appUpdate.short.notInstalled");
     }
 
     private async Task CheckAsync(bool announce)
@@ -201,38 +202,38 @@ namespace Provodnik.Wpf.Features.AppUpdate
 
       IsChecking = true;
       State = AppUpdateState.Checking;
-      Status = "Procurando versão nova...";
-      ShortStatus = "procurando...";
+      Status = L.T("appUpdate.checking");
+      ShortStatus = L.T("appUpdate.short.checking");
       try
       {
         var update = await _manager!.CheckForUpdatesAsync();
         if (update is null)
         {
           State = AppUpdateState.UpToDate;
-          Status = "Você está na versão mais nova.";
-          ShortStatus = "em dia";
+          Status = L.T("appUpdate.upToDate");
+          ShortStatus = L.T("appUpdate.short.upToDate");
           return;
         }
 
         var version = update.TargetFullRelease.Version.ToString();
         State = AppUpdateState.Downloading;
         Progress = 0;
-        Status = $"Baixando a {version}...";
-        ShortStatus = "baixando";
+        Status = L.T("appUpdate.downloading", version);
+        ShortStatus = L.T("appUpdate.short.downloading");
         var dispatcher = Application.Current.Dispatcher;
         await _manager.DownloadUpdatesAsync(update, percent => dispatcher.InvokeAsync(() =>
         {
           Progress = percent;
-          Status = $"Baixando a {version}... {percent}%";
-          ShortStatus = $"baixando {percent}%";
+          Status = L.T("appUpdate.downloadingPercent", version, percent);
+          ShortStatus = L.T("appUpdate.short.downloadingPercent", percent);
         }));
 
         _pending = update;
         _timer.Stop();
         PendingVersion = version;
         State = AppUpdateState.Ready;
-        Status = $"A {version} está pronta: entra quando o Проводник fechar.";
-        ShortStatus = $"{version} pronta";
+        Status = L.T("appUpdate.ready", version);
+        ShortStatus = L.T("appUpdate.short.ready", version);
         IsReady = true;
         AnnounceReady();
       }
@@ -241,8 +242,8 @@ namespace Provodnik.Wpf.Features.AppUpdate
         // sem internet, GitHub fora ou limite da API: só tenta de novo na próxima volta, nada de caixa de erro
         AppLog.Error(ex, "Procurando versão nova do Проводник");
         State = AppUpdateState.Failed;
-        Status = "Não deu pra procurar agora (sem internet ou o GitHub fora).";
-        ShortStatus = "sem conexão";
+        Status = L.T("appUpdate.failed");
+        ShortStatus = L.T("appUpdate.short.failed");
       }
       finally
       {
@@ -253,10 +254,10 @@ namespace Provodnik.Wpf.Features.AppUpdate
     private void AnnounceReady() =>
       ToastService.Show(
         DialogKind.Info,
-        "Versão nova do Проводник",
-        $"A {PendingVersion} já foi baixada. Entra quando o Проводник fechar, ou agora:",
+        L.T("appUpdate.toast.title"),
+        L.T("appUpdate.toast.message", PendingVersion),
         null,
-        "Reiniciar agora",
+        L.T("appUpdate.toast.restart"),
         ApplyAndRestart,
         desktop: true);
   }

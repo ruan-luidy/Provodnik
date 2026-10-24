@@ -1,5 +1,6 @@
 using System.Windows;
 using HandyControl.Controls;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Controls;
 
 namespace Provodnik.Wpf.Shared.Services
@@ -40,13 +41,13 @@ namespace Provodnik.Wpf.Shared.Services
         return;
       }
 
-      await ShowAsync(new AlertDialog(kind, title, message, "OK", details: details));
+      await ShowAsync(new AlertDialog(kind, title, message, L.T("shared.ok"), details: details));
     }
 
     /// <summary>Dois botões: true no principal (confirmar), false no secundário ou no Esc.</summary>
     public static async Task<bool> ConfirmAsync(string title, string message, string confirmText, string? cancelText = null, DialogKind kind = DialogKind.Warning)
     {
-      cancelText ??= "Cancelar";
+      cancelText ??= L.T("shared.cancel");
       if (!CanShowOverlay())
         return System.Windows.MessageBox.Show(message, title, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
 

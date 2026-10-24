@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Provodnik.Core.Install;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Modpack;
+using Provodnik.Core.Text;
 using Provodnik.Features.Install;
 
 namespace Provodnik.Wpf.Shared.Services
@@ -64,7 +65,7 @@ namespace Provodnik.Wpf.Shared.Services
     {
       var layout = GammaLayout.Find(folder);
       if (layout is null)
-        return $"Não achei o GAMMA em {folder}: falta o ModOrganizer.exe ou a pasta {GammaLayout.InstallerFolderName}.";
+        return L.T("shared.gamma.notFound", folder, GammaLayout.InstallerFolderName);
 
       Layout = layout;
       _settings.Update(s => s with { GammaRoot = IsPortable ? null : layout.Root });

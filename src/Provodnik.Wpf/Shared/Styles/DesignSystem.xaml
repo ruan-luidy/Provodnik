@@ -5,6 +5,7 @@
   xmlns:converters="clr-namespace:Provodnik.Wpf.Shared.Converters"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:system="clr-namespace:System;assembly=mscorlib">
 
   <!--  Os tokens (espaçamento, raio, fonte, cores base) moram no Tokens.xaml, carregado antes de tudo  -->
@@ -571,7 +572,7 @@
                 Command="hc:ControlCommands.Clear"
                 Focusable="False"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Limpar" />
+                ToolTip="{loc:Tr shared.clear}" />
             </Grid>
           </Border>
           <ControlTemplate.Triggers>

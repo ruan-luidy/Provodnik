@@ -4,6 +4,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Provodnik.Core.Desktop;
+using Provodnik.Core.Text;
 using Provodnik.Features.Verify;
 using Provodnik.Wpf.Shared;
 using Provodnik.Wpf.Shared.Services;
@@ -87,7 +88,7 @@ namespace Provodnik.Wpf.Features.Install
       await LoadAsync();
       if (Checks.FirstOrDefault(c => c.Check.Level == CheckLevel.Failed) is { } blocked)
       {
-        await DialogService.WarningAsync(blocked.Title, blocked.Message + (blocked.HasFix ? $"\n\nUse o botão \"{blocked.FixText}\" na checagem." : string.Empty));
+        await DialogService.WarningAsync(blocked.Title, blocked.Message + (blocked.HasFix ? "\n\n" + L.T("install.blocked.useFix", blocked.FixText) : string.Empty));
         return;
       }
       await Service.InstallAsync(ForceExtract);
@@ -112,13 +113,13 @@ namespace Provodnik.Wpf.Features.Install
       {
         case CheckFix.RunAsAdmin:
           if (!_elevation.RestartAsAdmin())
-            ToastService.Warning("O Windows não deixou abrir como administrador.");
+            ToastService.Warning(L.T("install.fix.adminRefused"));
           break;
         case CheckFix.EnableLongPaths:
           if (await _elevation.EnableLongPathsAsync())
-            ToastService.Success("Caminhos longos ligados no Windows.");
+            ToastService.Success(L.T("install.fix.longPathsOn"));
           else
-            ToastService.Warning("Não ligou: o pedido de administrador foi recusado.");
+            ToastService.Warning(L.T("install.fix.longPathsRefused"));
           await RunAsync(LoadAsync);
           break;
       }

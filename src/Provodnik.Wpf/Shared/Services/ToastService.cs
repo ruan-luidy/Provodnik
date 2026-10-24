@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Controls;
 
 namespace Provodnik.Wpf.Shared.Services
@@ -26,13 +27,13 @@ namespace Provodnik.Wpf.Shared.Services
     private static AdornerLayer? _inWindowLayer;
     private static DesktopStack? _desktop;
 
-    public static void Info(string message, string? title = null) => Show(DialogKind.Info, title ?? "Aviso", message, Short);
+    public static void Info(string message, string? title = null) => Show(DialogKind.Info, title ?? L.T("shared.toast.info"), message, Short);
 
-    public static void Success(string message, string? title = null) => Show(DialogKind.Success, title ?? "Pronto", message, Short);
+    public static void Success(string message, string? title = null) => Show(DialogKind.Success, title ?? L.T("shared.toast.success"), message, Short);
 
-    public static void Warning(string message, string? title = null) => Show(DialogKind.Warning, title ?? "Atenção", message, TimeSpan.FromSeconds(4));
+    public static void Warning(string message, string? title = null) => Show(DialogKind.Warning, title ?? L.T("shared.toast.warning"), message, TimeSpan.FromSeconds(4));
 
-    public static void Error(string message, string? title = null) => Show(DialogKind.Error, title ?? "Erro", message, TimeSpan.FromSeconds(5));
+    public static void Error(string message, string? title = null) => Show(DialogKind.Error, title ?? L.T("shared.toast.error"), message, TimeSpan.FromSeconds(5));
 
     /// <param name="lifetime">Quanto fica; null = até fechar no X.</param>
     /// <param name="desktop">Com o app minimizado ou sem foco, mostra no canto da tela em vez de dentro da janela.</param>

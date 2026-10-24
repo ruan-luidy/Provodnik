@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
 using Provodnik.Core.Install;
+using Provodnik.Core.Text;
 
 namespace Provodnik.Wpf.Shared.Services
 {
@@ -14,9 +15,9 @@ namespace Provodnik.Wpf.Shared.Services
     /// <summary>A etiqueta pequena na frente da linha; info fica sem.</summary>
     public string LevelText => Level switch
     {
-      LogLevel.Warning => "aviso",
-      LogLevel.Error => "erro",
-      LogLevel.Success => "pronto",
+      LogLevel.Warning => L.T("shared.log.warning"),
+      LogLevel.Error => L.T("shared.log.error"),
+      LogLevel.Success => L.T("shared.log.success"),
       _ => string.Empty,
     };
 

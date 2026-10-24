@@ -1,3 +1,4 @@
+using Provodnik.Core.Text;
 using Provodnik.Features.Verify;
 using Provodnik.Wpf.Shared;
 
@@ -16,8 +17,8 @@ namespace Provodnik.Wpf.Features.Install
 
     public string FixText => Check.Fix switch
     {
-      CheckFix.RunAsAdmin => "Reabrir como administrador",
-      CheckFix.EnableLongPaths => "Ligar caminhos longos",
+      CheckFix.RunAsAdmin => L.T("install.fix.runAsAdmin"),
+      CheckFix.EnableLongPaths => L.T("install.fix.enableLongPaths"),
       _ => string.Empty,
     };
 

@@ -4,6 +4,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   x:Name="Root"
   MaxWidth="460"
   HorizontalAlignment="Center"
@@ -42,7 +43,7 @@
           HorizontalAlignment="Right"
           hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
           Command="{Binding RetryCommand, ElementName=Root}"
-          Content="Tentar de novo"
+          Content="{loc:Tr shared.retry}"
           Style="{StaticResource Action}" />
       </StackPanel>
     </Border>

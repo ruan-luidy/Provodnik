@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Provodnik.Core.Install;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared;
 
 namespace Provodnik.Wpf.Features.Install
@@ -36,16 +37,16 @@ namespace Provodnik.Wpf.Features.Install
 
     public static IReadOnlyList<StageRow> CreateAll() =>
     [
-      new(InstallStage.Preparing, "Conferir a pasta", "GAMMA, ferramentas, MO2 fechado e espaço em disco"),
-      new(InstallStage.Repositories, "Repositórios", "Stalker_GAMMA, arquivos grandes e Gunslinger pelo git"),
-      new(InstallStage.Definition, "Definição do modpack", "A pasta G.A.M.M.A e a versão"),
-      new(InstallStage.ModList, "Lista de mods", "O mods.txt de stalker-gamma.com"),
-      new(InstallStage.Mods, "Addons", "Baixar, conferir e extrair cada mod"),
-      new(InstallStage.Extras, "Extras", "Arquivos grandes, Gunslinger e modpack_addons"),
-      new(InstallStage.Profile, "Perfil do MO2", "profiles\\G.A.M.M.A e a ordem dos mods"),
-      new(InstallStage.Patches, "Patches do Anomaly", "bin, appdata, db e gamedata do GAMMA"),
-      new(InstallStage.Shortcuts, "Atalhos", "Na área de trabalho"),
-      new(InstallStage.Verify, "Conferência final", "Todo mod ativo no MO2 tem pasta com conteúdo") { IsLast = true },
+      new(InstallStage.Preparing, L.T("install.stage.preparing"), L.T("install.stage.preparing.tip")),
+      new(InstallStage.Repositories, L.T("install.stage.repositories"), L.T("install.stage.repositories.tip")),
+      new(InstallStage.Definition, L.T("install.stage.definition"), L.T("install.stage.definition.tip")),
+      new(InstallStage.ModList, L.T("install.stage.modList"), L.T("install.stage.modList.tip")),
+      new(InstallStage.Mods, L.T("install.stage.mods"), L.T("install.stage.mods.tip")),
+      new(InstallStage.Extras, L.T("install.stage.extras"), L.T("install.stage.extras.tip")),
+      new(InstallStage.Profile, L.T("install.stage.profile"), L.T("install.stage.profile.tip")),
+      new(InstallStage.Patches, L.T("install.stage.patches"), L.T("install.stage.patches.tip")),
+      new(InstallStage.Shortcuts, L.T("install.stage.shortcuts"), L.T("install.stage.shortcuts.tip")),
+      new(InstallStage.Verify, L.T("install.stage.verify"), L.T("install.stage.verify.tip")) { IsLast = true },
     ];
   }
 }

@@ -1,4 +1,5 @@
 using System.Windows;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Shared.Services;
 
 namespace Provodnik.Wpf.Features.Install
@@ -19,7 +20,7 @@ namespace Provodnik.Wpf.Features.Install
     private void Copy_Click(object sender, RoutedEventArgs e)
     {
       Clipboard.SetText(string.Join(Environment.NewLine, _console.Lines.Select(l => $"{l.TimeText} [{l.Tool}] {l.Text}")));
-      ToastService.Success($"{_console.Lines.Count} linhas copiadas");
+      ToastService.Success(L.T("shared.lines.copied", _console.Lines.Count));
     }
   }
 }

@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
   xmlns:hc="https://handyorg.github.io/handycontrol"
-  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons">
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization">
 
   <!--
     DialogFrame: a moldura única dos diálogos, como no rnzNegativeObserver. Cartão com a animação de entrada,
@@ -41,7 +42,7 @@
                     hc:IconElement.Geometry="{icons:Phosphor XBold}"
                     DockPanel.Dock="Right"
                     Style="{StaticResource Action.Icon.Close}"
-                    ToolTip="Fechar"
+                    ToolTip="{loc:Tr shared.close}"
                     Visibility="{TemplateBinding ShowClose, Converter={StaticResource Boolean2VisibilityConverter}}" />
                   <StackPanel VerticalAlignment="Center">
                     <ContentPresenter

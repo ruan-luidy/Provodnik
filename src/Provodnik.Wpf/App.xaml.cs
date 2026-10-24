@@ -207,7 +207,7 @@ namespace Provodnik.Wpf
 
       // as ferramentas moram na pasta do GAMMA, que pode mudar nas configurações: o caminho é lido na hora de usar
       static GammaLayout Layout(IServiceProvider provider) =>
-        provider.GetRequiredService<GammaSession>().Layout ?? throw new InvalidOperationException("A pasta do GAMMA não foi escolhida.");
+        provider.GetRequiredService<GammaSession>().Layout ?? throw new InvalidOperationException(L.T("shell.gammaNotChosen"));
 
       services.AddSingleton<IGammaApi>(new GammaApi(api));
       services.AddSingleton<IGitClient>(sp => new GitClient(() => Layout(sp).Git, sp.GetRequiredService<IToolConsole>()));
@@ -264,7 +264,7 @@ namespace Provodnik.Wpf
       _showingError = true;
       try
       {
-        await DialogService.ErrorAsync("Algo deu errado", e.Exception.GetBaseException().Message, e.Exception.ToString());
+        await DialogService.ErrorAsync(L.T("shell.error.title"), e.Exception.GetBaseException().Message, e.Exception.ToString());
       }
       finally
       {

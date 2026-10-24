@@ -8,6 +8,7 @@
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
   xmlns:install="clr-namespace:Provodnik.Wpf.Features.Install"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   d:DataContext="{d:DesignInstance Type=install:InstallViewModel}"
   mc:Ignorable="d">
@@ -96,46 +97,46 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <controls:PageHeader Title="Instalar e atualizar" Subtitle="{Binding Service.Headline}">
+    <controls:PageHeader Title="{loc:Tr install.title}" Subtitle="{Binding Service.Headline}">
       <controls:PageHeader.Actions>
         <StackPanel Orientation="Horizontal">
           <CheckBox
             Margin="0,0,16,0"
             VerticalAlignment="Center"
-            Content="Reextrair tudo"
+            Content="{loc:Tr install.forceExtract}"
             IsChecked="{Binding ForceExtract}"
-            ToolTip="Extrai de novo todo mod, mesmo os que não mudaram. Use quando o jogo estiver quebrado; demora bem mais."
+            ToolTip="{loc:Tr install.forceExtract.tip}"
             Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}" />
           <ToggleButton
             Margin="0,0,4,0"
             hc:IconElement.Geometry="{icons:Phosphor TerminalWindowBold}"
             IsChecked="{Binding ShowConsole}"
             Style="{StaticResource Action.Toggle.Icon}"
-            ToolTip="Mostrar o console das ferramentas aqui embaixo" />
+            ToolTip="{loc:Tr install.console.show.tip}" />
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor ArrowSquareOutBold}"
             Command="{Binding PopOutConsoleCommand}"
             Style="{StaticResource Action.Icon.Small}"
-            ToolTip="Abrir o console numa janela separada (como o cmd do launcher original)" />
+            ToolTip="{loc:Tr install.console.popOut.tip}" />
           <Button
             Margin="0,0,8,0"
             hc:IconElement.Geometry="{icons:Phosphor FileTextBold}"
             Command="{Binding OpenLogCommand}"
-            Content="Log"
+            Content="{loc:Tr install.log}"
             Style="{StaticResource Action}"
-            ToolTip="Abre o log desta instalação (.provodnik\logs)" />
+            ToolTip="{loc:Tr install.log.tip}" />
           <Button
             hc:IconElement.Geometry="{icons:Phosphor StopBold}"
             Command="{Binding CancelCommand}"
-            Content="Cancelar"
+            Content="{loc:Tr install.cancel}"
             IsEnabled="{Binding Service.IsCancelling, Converter={StaticResource Boolean2BooleanReConverter}}"
             Style="{StaticResource Action.Danger}"
             Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
           <Button
             hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
             Command="{Binding StartCommand}"
-            Content="Instalar / atualizar"
+            Content="{loc:Tr install.start}"
             Style="{StaticResource Action.Primary}"
             Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}" />
         </StackPanel>
@@ -165,7 +166,7 @@
             Margin="0,0,0,10"
             DockPanel.Dock="Top"
             Style="{StaticResource StatLabel}"
-            Text="ETAPAS" />
+            Text="{loc:Tr install.stages}" />
           <ItemsControl ItemsSource="{Binding Service.Stages}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -216,22 +217,22 @@
               <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                 <StackPanel Margin="24,0,0,0">
                   <TextBlock Style="{StaticResource BigNumber}" Text="{Binding Service.Downloading}" />
-                  <TextBlock Style="{StaticResource CaptionText}" Text="baixando" />
+                  <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Tr install.downloading}" />
                 </StackPanel>
                 <StackPanel Margin="24,0,0,0">
                   <TextBlock Style="{StaticResource BigNumber}" Text="{Binding Service.Extracting}" />
-                  <TextBlock Style="{StaticResource CaptionText}" Text="extraindo" />
+                  <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Tr install.extracting}" />
                 </StackPanel>
                 <StackPanel MinWidth="90" Margin="24,0,0,0">
                   <TextBlock Style="{StaticResource BigNumber}" Text="{Binding Service.SpeedText}" />
-                  <TextBlock Style="{StaticResource CaptionText}" Text="velocidade" />
+                  <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Tr install.speed}" />
                 </StackPanel>
               </StackPanel>
               <StackPanel>
                 <TextBlock Style="{StaticResource BigNumber}">
                   <Run Text="{Binding Service.Done, Mode=OneWay}" /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text=" / " /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding Service.Total, Mode=OneWay}" />
                 </TextBlock>
-                <TextBlock Style="{StaticResource CaptionText}" Text="addons prontos" />
+                <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Tr install.addonsDone}" />
               </StackPanel>
             </DockPanel>
             <ProgressBar
@@ -253,14 +254,14 @@
               <Button
                 hc:IconElement.Geometry="{icons:Phosphor ArrowClockwiseBold}"
                 Command="{Binding RetryCommand}"
-                Content="Tentar de novo as falhas"
+                Content="{loc:Tr install.retryFailed}"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Small}" />
               <TextBlock
                 VerticalAlignment="Center"
                 Foreground="{DynamicResource DangerBrush}"
                 Style="{StaticResource StatLabel}"
-                Text="{Binding Service.Failures.Count, StringFormat=FALHAS ({0})}" />
+                Text="{Binding Service.Failures.Count, StringFormat={loc:Tr install.failures}}" />
             </DockPanel>
             <ScrollViewer MaxHeight="132" VerticalScrollBarVisibility="Auto">
               <ItemsControl ItemsSource="{Binding Service.Failures}">
@@ -323,11 +324,11 @@
                 Command="{Binding CheckAgainCommand}"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Conferir de novo" />
+                ToolTip="{loc:Tr install.checkAgain}" />
               <TextBlock
                 VerticalAlignment="Center"
                 Style="{StaticResource StatLabel}"
-                Text="ANTES DE INSTALAR" />
+                Text="{loc:Tr install.beforeInstall}" />
             </DockPanel>
             <ScrollViewer
               DockPanel.Dock="Top"
@@ -374,7 +375,7 @@
               Margin="0,0,0,8"
               DockPanel.Dock="Top"
               Style="{StaticResource StatLabel}"
-              Text="AGORA"
+              Text="{loc:Tr install.now}"
               Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
             <Grid Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
               <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -466,16 +467,16 @@
               Command="{Binding ClearConsoleCommand}"
               DockPanel.Dock="Right"
               Style="{StaticResource Action.Icon.Small}"
-              ToolTip="Limpar" />
+              ToolTip="{loc:Tr shared.clear}" />
             <TextBlock
               VerticalAlignment="Center"
               Style="{StaticResource StatLabel}"
-              Text="CONSOLE" />
+              Text="{loc:Tr install.console.title}" />
             <TextBlock
               Margin="10,0,0,0"
               VerticalAlignment="Center"
               Style="{StaticResource CaptionText}"
-              Text="o que o git, o curl, o 7-Zip e o dl-cli escrevem · erros conhecidos ganham a explicação em amarelo" />
+              Text="{loc:Tr install.console.caption}" />
           </DockPanel>
           <install:ConsolePanel Lines="{Binding Console.Lines}" />
         </DockPanel>
