@@ -19,7 +19,7 @@
 - Pasta de instrução renomeada pelo autor (o Defended Lab X10: a lista diz "Spawn Options\No Bloodsuckers", o arquivo tem "Spawn - No Bloodsuckers"): usa a única pasta que termina igual, em vez de deixar o mod vazio como o original.
 - Conferência: nome do modlist com TAB no fim conta certo, e nome que o próprio modlist do GAMMA escreveu errado vira aviso, não falha.
 - Atalho "Provodnik (G.A.M.M.A.)" (o WScript.Shell não grava nome em cirílico).
-- Ícone: o átomo do GAMMA (três órbitas, elétrons e núcleo) redesenhado em vetor no verde dele, nítido de 16 a 256 px (tools/icon/atom.cs).
+- Ícone: o átomo do GAMMA (o modpack_icon), com o brilho original nos tamanhos grandes e as órbitas engrossadas nos pequenos, pra não sumir na barra de tarefas.
 - Dicas com a lâmpada do Phosphor no lugar da seta; estado "Tentando de novo" enquanto espera a próxima tentativa; depois de cancelar nada fica girando.
 
 ## 0.2.0

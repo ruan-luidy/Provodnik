@@ -31,7 +31,7 @@ console = Console()
 
 # Caminhos
 ROOT = Path(__file__).resolve().parent.parent
-# O ícone do instalador (Setup.exe), o mesmo do .exe (tools/icon)
+# O ícone do instalador (Setup.exe), o mesmo do .exe
 APP_ICON = ROOT / "src" / "Provodnik.Wpf" / "Assets" / "provodnik.ico"
 PROPS_PATH = ROOT / "Directory.Build.props"
 CHANGELOG_PATH = ROOT / "docs" / "CHANGELOG.md"
