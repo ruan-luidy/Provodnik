@@ -17,7 +17,8 @@
     HandyControl) e o cartão é o SecondaryRegionBrush em cima dela, como a grade e as faixas. Sem contorno. Raio Lg.
   -->
   <Style x:Key="SurfaceCard" TargetType="Border">
-    <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+    <!--  Branco translúcido (o da Связь) em vez do cinza sólido: o mesmo de todo cartão, e o Mica atravessa  -->
+    <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
     <Setter Property="Padding" Value="{StaticResource Padding.Card}" />
