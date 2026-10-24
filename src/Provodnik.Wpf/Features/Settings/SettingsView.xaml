@@ -175,6 +175,23 @@
 
           <TextBlock Style="{StaticResource SettingSection}" Text="PROVODNIK" />
           <Border Style="{StaticResource SettingGroup}">
+            <StackPanel>
+            <Border Style="{StaticResource SettingRow}">
+              <DockPanel>
+                <controls:SelectField
+                  Width="150"
+                  Margin="12,0,0,0"
+                  VerticalAlignment="Center"
+                  DockPanel.Dock="Right"
+                  ItemsSource="{Binding Languages}"
+                  SelectedItem="{Binding Language}" />
+                <StackPanel>
+                  <TextBlock Style="{StaticResource SettingTitle}" Text="Idioma · Language · Язык" />
+                  <TextBlock Style="{StaticResource SettingCaption}" Text="O app reabre pra trocar." />
+                </StackPanel>
+              </DockPanel>
+            </Border>
+            <Border Style="{StaticResource InfoDivider}" />
             <Border Style="{StaticResource SettingRow}">
               <DockPanel>
                 <ToggleButton IsChecked="{Binding AutoUpdateApp}" Style="{StaticResource RowSwitch}" />
@@ -184,6 +201,7 @@
                 </StackPanel>
               </DockPanel>
             </Border>
+            </StackPanel>
           </Border>
 
           <TextBlock Style="{StaticResource SettingSection}" Text="APARÊNCIA" />

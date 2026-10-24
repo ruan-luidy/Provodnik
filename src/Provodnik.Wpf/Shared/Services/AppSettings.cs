@@ -10,6 +10,7 @@ namespace Provodnik.Wpf.Shared.Services
   ///   - GammaRoot: a pasta do GAMMA quando o exe não mora dentro dela (nulo: procura a partir do exe);
   ///   - Executable: o executável do MO2 que o Jogar abre ("Anomaly (DX11-AVX)");
   ///   - AutoUpdateApp: procura e baixa sozinho a versão nova do próprio Проводник (só na versão do Setup.exe);
+  ///   - Language: "pt", "en" ou "ru" (nulo: o do Windows);
   ///   - o resto vira <see cref="InstallOptions"/>, com os padrões do launcher original.
   /// </summary>
   public sealed record AppSettings(
@@ -28,7 +29,8 @@ namespace Provodnik.Wpf.Shared.Services
     bool ShowConsole = true,
     bool Mica = true,
     bool DarkTheme = true,
-    bool AutoUpdateApp = true)
+    bool AutoUpdateApp = true,
+    string? Language = null)
   {
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 

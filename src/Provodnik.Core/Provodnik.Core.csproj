@@ -14,4 +14,9 @@
     <InternalsVisibleTo Include="Provodnik.Tests" />
   </ItemGroup>
 
+  <!--  Os textos em português, inglês e russo (Provodnik.Core.Text.L lê os que terminam em .pt/.en/.ru.json)  -->
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\*.json" />
+  </ItemGroup>
+
 </Project>

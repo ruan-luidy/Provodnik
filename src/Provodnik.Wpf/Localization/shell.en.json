@@ -1,0 +1,8 @@
+{
+  "settings.saved": "Settings saved",
+  "settings.language.title": "Change language",
+  "settings.language.restart": "Provodnik needs to reopen to change the language. Reopen now?",
+  "settings.language.reopen": "Reopen",
+  "settings.language.notNow": "Later",
+  "settings.language.later": "The new language takes effect the next time Provodnik opens."
+}

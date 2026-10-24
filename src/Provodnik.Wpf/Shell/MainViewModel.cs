@@ -1,5 +1,7 @@
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Core.Text;
 using Provodnik.Wpf.Features.About;
 using Provodnik.Wpf.Features.AppUpdate;
 using Provodnik.Wpf.Features.Home;
@@ -8,6 +10,7 @@ using Provodnik.Wpf.Features.Logs;
 using Provodnik.Wpf.Features.Mods;
 using Provodnik.Wpf.Features.Settings;
 using Provodnik.Wpf.Shared;
+using Provodnik.Wpf.Shared.Controls;
 using Provodnik.Wpf.Shared.Services;
 
 namespace Provodnik.Wpf.Shell
@@ -95,8 +98,22 @@ namespace Provodnik.Wpf.Shell
     [RelayCommand]
     private async Task OpenSettingsAsync()
     {
-      if (await DialogService.ShowAsync(new SettingsView { DataContext = new SettingsViewModel(_settings, _session) }))
-        ToastService.Success("Configurações salvas");
+      var settings = new SettingsViewModel(_settings, _session);
+      if (!await DialogService.ShowAsync(new SettingsView { DataContext = settings }))
+        return;
+      if (!settings.LanguageChanged)
+      {
+        ToastService.Success(L.T("settings.saved"));
+        return;
+      }
+      // o idioma vale da partida em diante: reabre, a não ser no meio de uma instalação
+      if (Install.IsRunning)
+      {
+        ToastService.Info(L.T("settings.language.later"));
+        return;
+      }
+      if (await DialogService.ConfirmAsync(L.T("settings.language.title"), L.T("settings.language.restart"), L.T("settings.language.reopen"), L.T("settings.language.notNow"), DialogKind.Info))
+        ((App)Application.Current).Restart();
     }
   }
 }

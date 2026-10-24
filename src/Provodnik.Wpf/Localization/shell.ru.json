@@ -1,0 +1,8 @@
+{
+  "settings.saved": "Настройки сохранены",
+  "settings.language.title": "Смена языка",
+  "settings.language.restart": "Чтобы сменить язык, Проводник нужно перезапустить. Перезапустить сейчас?",
+  "settings.language.reopen": "Перезапустить",
+  "settings.language.notNow": "Позже",
+  "settings.language.later": "Новый язык включится при следующем запуске Проводника."
+}

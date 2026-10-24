@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Core.Text;
 using Microsoft.Win32;
 using Provodnik.Wpf.Shared.Services;
 
@@ -24,6 +25,7 @@ namespace Provodnik.Wpf.Features.Settings
     [ObservableProperty] private bool _createShortcuts;
     [ObservableProperty] private bool _mica;
     [ObservableProperty] private bool _autoUpdateApp;
+    [ObservableProperty] private LanguageOption _language;
     [ObservableProperty] private string? _error;
 
     public SettingsViewModel(SettingsStore store, GammaSession session)
@@ -41,7 +43,19 @@ namespace Provodnik.Wpf.Features.Settings
       _createShortcuts = current.CreateShortcuts;
       _mica = current.Mica;
       _autoUpdateApp = current.AutoUpdateApp;
+      _language = Languages.First(l => l.Code == L.Language);
     }
+
+    /// <summary>Os idiomas, cada um escrito nele mesmo (quem não lê o atual acha o seu).</summary>
+    public IReadOnlyList<LanguageOption> Languages { get; } =
+    [
+      new(L.Portuguese, "Português"),
+      new(L.English, "English"),
+      new(L.Russian, "Русский"),
+    ];
+
+    /// <summary>Salvou com outro idioma: o app precisa reabrir pra trocar.</summary>
+    public bool LanguageChanged { get; private set; }
 
     /// <summary>O exe mora dentro do GAMMA: a pasta é essa e pronto.</summary>
     public bool IsPortable => _session.IsPortable;
@@ -77,8 +91,16 @@ namespace Provodnik.Wpf.Features.Settings
         CreateShortcuts = CreateShortcuts,
         Mica = Mica,
         AutoUpdateApp = AutoUpdateApp,
+        Language = Language.Code,
       });
+      LanguageChanged = Language.Code != L.Language;
       return true;
     }
+  }
+
+  /// <summary>Um idioma da lista: o código ("pt") e o nome escrito nele mesmo.</summary>
+  public sealed record LanguageOption(string Code, string Name)
+  {
+    public override string ToString() => Name;
   }
 }

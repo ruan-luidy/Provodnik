@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Provodnik.Core.Archives;
@@ -11,6 +13,7 @@ using Provodnik.Core.Downloads;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Remote;
 using Provodnik.Core.Repos;
+using Provodnik.Core.Text;
 using Provodnik.Features.Install;
 using Provodnik.Features.Update;
 using Provodnik.Infrastructure.Desktop;
@@ -67,6 +70,7 @@ namespace Provodnik.Wpf
       DispatcherUnhandledException += OnDispatcherUnhandledException;
 
       var settings = AppSettings.Load();
+      ApplyLanguage(settings);
       _services = ConfigureServices(settings, demo);
       ThemeService.Initialize(_services.GetRequiredService<SettingsStore>());
 
@@ -116,6 +120,37 @@ namespace Provodnik.Wpf
     }
 
     /// <summary>Reabre como administrador: solta a instância única pra nova pegar e sai. Falso se o UAC foi recusado.</summary>
+    /// <summary>
+    /// O idioma escolhido (ou o do Windows) pra todo texto e pros números e datas. Antes de criar qualquer tela: trocar
+    /// com o app aberto reabre (<see cref="Restart"/>).
+    /// </summary>
+    private static void ApplyLanguage(AppSettings settings)
+    {
+      L.Use(settings.Language ?? L.FromSystem(CultureInfo.CurrentUICulture));
+      CultureInfo.DefaultThreadCurrentCulture = L.Culture;
+      CultureInfo.DefaultThreadCurrentUICulture = L.Culture;
+      CultureInfo.CurrentCulture = L.Culture;
+      CultureInfo.CurrentUICulture = L.Culture;
+      FrameworkElement.LanguageProperty.OverrideMetadata(
+        typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(L.Culture.IetfLanguageTag)));
+    }
+
+    /// <summary>
+    /// Fecha e abre de novo, com os mesmos argumentos (a simulação continua simulação, sem recomeçar do zero): pra trocar
+    /// de idioma. Solta a instância única antes, senão a nova só acordaria esta e sairia.
+    /// </summary>
+    public void Restart()
+    {
+      _instance?.ReleaseMutex();
+      _instance?.Dispose();
+      _instance = null;
+      var args = Environment.GetCommandLineArgs().Skip(1).Where(a => a != "--demo-novo");
+      Process.Start(new ProcessStartInfo(Environment.ProcessPath!, args) { UseShellExecute = false })?.Dispose();
+      // a versão baixada fica pra quando fechar de vez: o Update.exe trocaria os arquivos com a nova já rodando
+      _elevating = true;
+      Shutdown();
+    }
+
     public bool RestartElevated()
     {
       _instance?.ReleaseMutex();
