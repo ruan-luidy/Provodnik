@@ -45,6 +45,7 @@ namespace Provodnik.Features.Verify
       checks.Add(Running());
       checks.Add(Space(layout));
       checks.Add(Tools(layout));
+      checks.Add(Browser(layout, system));
       checks.Add(LongPaths(layout, system));
       return checks;
     }
@@ -97,12 +98,22 @@ namespace Provodnik.Features.Verify
 
     private static PreflightCheck Tools(GammaLayout layout)
     {
-      var tools = new[] { layout.SevenZip, layout.Curl, layout.CurlConfig, layout.ModDbCli, layout.Git };
+      var tools = new[] { layout.SevenZip, layout.Curl, layout.CurlConfig, layout.Git };
       var missing = tools.Where(t => !File.Exists(t)).Select(Path.GetFileName).ToList();
       return missing.Count == 0
-        ? new("Ferramentas do GAMMA", CheckLevel.Ok, "7-Zip, curl-impersonate, stalker-gamma-dl-cli e Git no lugar.")
+        ? new("Ferramentas do GAMMA", CheckLevel.Ok, "7-Zip, curl-impersonate e Git no lugar.")
         : new("Ferramentas do GAMMA", missing.SequenceEqual(["git.exe"]) ? CheckLevel.Warning : CheckLevel.Failed,
           $"Faltam em resources\\: {string.Join(", ", missing)}. Quase sempre é o antivírus: restaure da quarentena, coloque a pasta do GAMMA nas exclusões ou baixe o instalador do GAMMA de novo.");
+    }
+
+    /// <summary>O ModDB agora exige navegador de verdade pra passar pelo Cloudflare: sem o WebView2 sobra o dl-cli do GAMMA, que está falhando.</summary>
+    private static PreflightCheck Browser(GammaLayout layout, ISystemInfo system)
+    {
+      if (system.WebView2Version is { } version)
+        return new("Navegador do ModDB", CheckLevel.Ok, $"WebView2 {version}: passa pelo Cloudflare do ModDB.");
+      return new("Navegador do ModDB", CheckLevel.Warning, File.Exists(layout.ModDbCli)
+        ? "Sem o WebView2 Runtime: os links do ModDB vão pelo stalker-gamma-dl-cli, que hoje está falhando. Instale o WebView2 Runtime da Microsoft."
+        : "Sem o WebView2 Runtime e sem o stalker-gamma-dl-cli: os mods do ModDB não vão baixar. Instale o WebView2 Runtime da Microsoft.");
     }
 
     private static PreflightCheck LongPaths(GammaLayout layout, ISystemInfo system)

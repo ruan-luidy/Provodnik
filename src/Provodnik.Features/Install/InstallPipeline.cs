@@ -343,7 +343,8 @@ namespace Provodnik.Features.Install
 
       await Parallel.ForEachAsync(
         mods,
-        new ParallelOptions { MaxDegreeOfParallelism = 64, CancellationToken = cancellationToken },
+        // todo mundo na fila de uma vez (quem segura são as vagas de download e extração): GitHub no fim da lista não espera o ModDB
+        new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, mods.Count), CancellationToken = cancellationToken },
         async (mod, token) =>
         {
           reporter.Mod(new ModProgress(mod.Index, ModStatus.Checking));

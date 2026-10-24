@@ -18,7 +18,7 @@ namespace Provodnik.Features.Install
 
     public async Task InstallAsync(GammaLayout layout, ModEntry mod, string archive, string metaTemplate, IProgress<double>? progress, Action<string> warn, CancellationToken cancellationToken)
     {
-      var staging = Path.Combine(layout.WorkDir, $"{mod.Index}-{Guid.NewGuid():N}");
+      var staging = Path.Combine(layout.WorkDir, $"{mod.Index}-{Guid.NewGuid():N}"[..12]);
       try
       {
         await extractor.ExtractAsync(archive, staging, progress, cancellationToken).ConfigureAwait(false);

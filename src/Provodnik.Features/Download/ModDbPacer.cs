@@ -41,6 +41,7 @@ namespace Provodnik.Features.Download
 
         try
         {
+          waiting("pedindo o link ao ModDB");
           var link = await resolver.ResolveAsync(addonUrl, cancellationToken).ConfigureAwait(false);
           // deu certo: a espera volta a encolher
           _cooldown = _cooldown > TimeSpan.Zero ? TimeSpan.FromTicks(_cooldown.Ticks / 2) : TimeSpan.Zero;
@@ -75,7 +76,7 @@ namespace Provodnik.Features.Download
     {
       var text = ex.Message.ToLowerInvariant();
       return text.Contains("403") || text.Contains("429") || text.Contains("cloudflare") || text.Contains("challenge")
-        || text.Contains("too many") || text.Contains("não devolveu o link") || text.Contains("não respondeu a tempo");
+        || text.Contains("too many") || text.Contains("temporarily") || text.Contains("bloqueou") || text.Contains("não devolveu o link") || text.Contains("não respondeu a tempo");
     }
   }
 }

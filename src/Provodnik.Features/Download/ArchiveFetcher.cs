@@ -90,7 +90,7 @@ namespace Provodnik.Features.Download
           if (spec.Kind == ModKind.ModDb)
           {
             // o link vem da fila cadenciada do ModDB; o download depois corre solto no CDN
-            report(ModStatus.Resolving, detail: "na fila do ModDB");
+            report(ModStatus.Pending, detail: "na fila do ModDB");
             url = await pacer.ResolveAsync(spec.Url, message => report(ModStatus.Resolving, detail: message), cancellationToken).ConfigureAwait(false);
           }
           resolving = false;

@@ -160,7 +160,9 @@ namespace Provodnik.Wpf
       }, sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton(new HttpDownloader(download));
       services.AddSingleton<IFileDownloader, FileDownloader>();
-      services.AddSingleton<IModDbResolver>(sp => new ModDbResolver(() => Layout(sp).ModDbCli, sp.GetRequiredService<IToolConsole>()));
+      // o link do ModDB pelo navegador (WebView2); sem ele, o stalker-gamma-dl-cli do GAMMA
+      services.AddSingleton(sp => new ModDbResolver(() => Layout(sp).ModDbCli, sp.GetRequiredService<IToolConsole>()));
+      services.AddSingleton<IModDbResolver>(sp => new ModDbBrowser(sp.GetRequiredService<ModDbResolver>(), sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton<IArchiveExtractor>(sp => new SevenZipExtractor(() => Layout(sp).SevenZip, sp.GetRequiredService<IToolConsole>()));
       services.AddSingleton<IShortcutWriter, ShortcutWriter>();
       services.AddSingleton<InstallPipeline>();

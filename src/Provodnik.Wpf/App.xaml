@@ -7,7 +7,8 @@
   xmlns:home="clr-namespace:Provodnik.Wpf.Features.Home"
   xmlns:install="clr-namespace:Provodnik.Wpf.Features.Install"
   xmlns:logs="clr-namespace:Provodnik.Wpf.Features.Logs"
-  xmlns:mods="clr-namespace:Provodnik.Wpf.Features.Mods">
+  xmlns:mods="clr-namespace:Provodnik.Wpf.Features.Mods"
+  ShutdownMode="OnMainWindowClose">
 
   <!--  Sem StartupUri: a MainWindow sai do container de DI em App.xaml.cs  -->
   <Application.Resources>

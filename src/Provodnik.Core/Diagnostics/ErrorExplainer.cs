@@ -14,6 +14,10 @@ namespace Provodnik.Core.Diagnostics
 
     private static readonly Rule[] Rules =
     [
+      new(["temporarily blocked", "bloqueou temporariamente"],
+        new("O ModDB bloqueou este IP por um tempo (costuma ser 1 hora).", "O Проводник espera e tenta de novo sozinho. Se não passar, pare, espere uma hora e rode de novo: o que já baixou fica.")),
+      new(["failed to generate download link"],
+        new("O stalker-gamma-dl-cli do GAMMA não conseguiu o link (ele está defasado: o ModDB agora exige navegador).", "O Проводник usa o navegador embutido (WebView2) no lugar dele; se aparecer isto, o WebView2 Runtime não está instalado.")),
       new(["cloudflare", "challenge", "403 forbidden", "http 403", "error: 403"],
         new("O ModDB (Cloudflare) recusou o pedido.", "Espere uns minutos e tente de novo; se repetir, diminua os downloads do ModDB nas Configurações (1 ou 2).")),
       new(["429", "too many requests"],

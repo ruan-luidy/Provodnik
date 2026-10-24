@@ -61,28 +61,65 @@ namespace Provodnik.Core.IO
           ClearReadOnly(target);
           File.Delete(target);
         }
-        File.Move(file, target);
+        Retry(() => File.Move(file, target));
       }
 
       Delete(source);
       return true;
     }
 
-    /// <summary>Apaga a pasta inteira; arquivo somente-leitura perde o atributo antes.</summary>
+    /// <summary>
+    /// Apaga a pasta inteira. Arquivo e pasta somente-leitura (zip e rar guardam esse atributo) perdem o atributo antes;
+    /// e o antivírus que segura um arquivo recém-extraído por um instante ganha mais duas chances.
+    /// </summary>
     public static void Delete(string path)
     {
-      if (!Directory.Exists(path))
-        return;
+      for (var attempt = 1; ; attempt++)
+      {
+        if (!Directory.Exists(path))
+          return;
+        try
+        {
+          Directory.Delete(path, recursive: true);
+          return;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException && attempt < 3)
+        {
+          ClearAttributes(path);
+          Thread.Sleep(300 * attempt);
+        }
+      }
+    }
 
+    /// <summary>O antivírus escaneando o arquivo recém-extraído segura ele por um instante: mais duas chances.</summary>
+    private static void Retry(Action action)
+    {
+      for (var attempt = 1; ; attempt++)
+      {
+        try
+        {
+          action();
+          return;
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException && attempt < 3)
+        {
+          Thread.Sleep(300 * attempt);
+        }
+      }
+    }
+
+    private static void ClearAttributes(string path)
+    {
       try
       {
-        Directory.Delete(path, recursive: true);
+        foreach (var entry in Directory.EnumerateFileSystemEntries(path, "*", SearchOption.AllDirectories).Append(path))
+        {
+          if ((File.GetAttributes(entry) & (FileAttributes.ReadOnly | FileAttributes.System | FileAttributes.Hidden)) != 0)
+            File.SetAttributes(entry, File.GetAttributes(entry) & ~(FileAttributes.ReadOnly | FileAttributes.System | FileAttributes.Hidden));
+        }
       }
-      catch (UnauthorizedAccessException)
+      catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
       {
-        foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
-          ClearReadOnly(file);
-        Directory.Delete(path, recursive: true);
       }
     }
 

@@ -12,7 +12,13 @@ namespace Provodnik.Core.Install
     /// GAMMA) também conta como mudança e é reextraído.
     /// </summary>
     public static string FingerprintOf(string md5, IReadOnlyList<string> instructions) =>
-      instructions.Count == 0 ? md5 : $"{md5}|{string.Join(':', instructions)}";
+      instructions.Count == 0 ? $"{Recipe}|{md5}" : $"{Recipe}|{md5}|{string.Join(':', instructions)}";
+
+    /// <summary>
+    /// A versão do jeito de montar a pasta. Sobe quando o Проводник muda como aplica as instruções: o que foi montado
+    /// do jeito antigo é refeito sozinho na próxima instalação (r2: instrução com barra no começo ou com "/").
+    /// </summary>
+    public const string Recipe = "r2";
   }
 
   public sealed record InstallState

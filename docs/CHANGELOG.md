@@ -1,5 +1,13 @@
 # Novidades
 
+## 0.3.0
+
+- Links do ModDB pelo navegador embutido (WebView2): o ModDB passou a exigir navegador por causa do Cloudflare, e o stalker-gamma-dl-cli do GAMMA responde "Failed to generate download link" pra todo mundo. Lê o HTML assim que chega e vai direto pro espelho, ~1 s por link; desafio com clique abre a janela pra pessoa resolver, e os cookies ficam salvos.
+- Instrução com barra no começo ("\Black_Market-main") ou com "/" entrava errado; os mods montados assim são refeitos sozinhos.
+- Pasta somente-leitura dentro do arquivo (zip/rar) não trava mais a extração.
+- Quem só espera a vez na fila do ModDB não aparece mais como "baixando".
+- Todos os mods entram na fila de uma vez: os do GitHub não esperam os do ModDB.
+
 ## 0.2.0
 
 - Console das ferramentas, como o cmd do launcher original, mas legível: cada erro conhecido do git, curl, 7-Zip e stalker-gamma-dl-cli ganha embaixo o que quer dizer e o que fazer. Fica na tela de instalação ou numa janela separada, e vai pra .provodnik\logs\console-*.log.

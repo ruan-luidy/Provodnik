@@ -223,6 +223,8 @@ namespace Provodnik.Tests
       public bool IsElevated => false;
 
       public bool? LongPathsEnabled => true;
+
+      public string? WebView2Version => "155.0";
     }
 
     private sealed class NoShortcuts : IShortcutWriter

@@ -69,6 +69,33 @@ namespace Provodnik.Tests
     }
 
     [Fact]
+    public void Barra_no_comeco_e_barra_normal_valem_como_no_original()
+    {
+      Touch(@"Black_Market-main\gamedata\a.ltx");
+      Touch(@"gamma_loading_screens-main\CS Eden\gamedata\b.ltx");
+      var warnings = new List<string>();
+
+      InstructionApplier.Apply(_root, [@"\Black_Market-main", "gamma_loading_screens-main/CS Eden"], warnings.Add);
+
+      Assert.Empty(warnings);
+      Assert.True(Has(@"gamedata\a.ltx"));
+      Assert.True(Has(@"gamedata\b.ltx"));
+    }
+
+    [Fact]
+    public void Pasta_somente_leitura_do_arquivo_nao_trava_a_limpeza()
+    {
+      Touch(@"x\gamedata\a.ltx");
+      Touch(@"Docs\leia.txt");
+      File.SetAttributes(Path.Combine(_root, "Docs"), FileAttributes.Directory | FileAttributes.ReadOnly);
+      File.SetAttributes(Path.Combine(_root, @"Docs\leia.txt"), FileAttributes.ReadOnly);
+
+      InstructionApplier.Apply(_root, ["x"], _ => { });
+
+      Assert.False(Directory.Exists(Path.Combine(_root, "Docs")));
+    }
+
+    [Fact]
     public void Limpeza_mantem_so_as_pastas_do_jogo()
     {
       Touch(@"x\gamedata\a.ltx");

@@ -37,6 +37,8 @@
     <!--  Ícones: Phosphor Icons (todos os ícones do app saem daqui)  -->
     <PackageReference Include="MahApps.Metro.IconPacks.PhosphorIcons" Version="6.2.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+    <!--  O navegador que passa pelo Cloudflare do ModDB (Features/Install/ModDbBrowser.cs)  -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
   </ItemGroup>
 
   <ItemGroup>

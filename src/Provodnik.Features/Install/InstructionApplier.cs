@@ -17,8 +17,12 @@ namespace Provodnik.Features.Install
 
     public static void Apply(string root, IReadOnlyList<string> instructions, Action<string> warn)
     {
-      foreach (var instruction in instructions)
+      foreach (var raw in instructions)
       {
+        // o original junta como texto ("$Extract_path\$i"): "\Black_Market-main" e "pasta/sub" valem igual a "pasta\sub"
+        var instruction = Normalize(raw);
+        if (instruction.Length == 0)
+          continue;
         var source = Path.Combine(root, instruction);
         if (Directory.Exists(Path.Combine(source, "gamedata")))
         {
@@ -43,5 +47,8 @@ namespace Provodnik.Features.Install
           FileTree.Delete(folder);
       }
     }
+
+    internal static string Normalize(string instruction) =>
+      instruction.Replace('/', '\\').Trim().Trim('\\');
   }
 }

@@ -48,8 +48,9 @@ namespace Provodnik.Infrastructure.Tools
         "--connect-timeout", "30",
         "--speed-limit", "1024",
         "--speed-time", "60",
-        "--retry", "2",
+        "--retry", "3",
         "--retry-delay", "3",
+        "--retry-connrefused",
         "--output", destination,
       };
       if (resume)
