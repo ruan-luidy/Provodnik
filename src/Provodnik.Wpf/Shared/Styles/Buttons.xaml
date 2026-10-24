@@ -687,20 +687,64 @@
     TargetType="Button" />
 
   <!--
-    Liga/desliga só de ícone (o fixar da mini janela do Finder): o ToggleButtonIconTransparent do HandyControl, do
-    tamanho do Action.Icon.Small; ligado fica azul com o fundo suave do accent (o ícone pode trocar pelo IconSwitchElement.GeometrySelected).
+    Liga/desliga só de ícone (o console da instalação, o fixar da janela do console). Template próprio desenhado igual
+    ao Action.Icon.Small - moldura arredondada e o ícone Phosphor de 14 no meio -, pra ficar do lado dele sem parecer
+    outro botão (o ToggleButtonIconTransparent do HandyControl encolhia o ícone e afinava o traço). Ligado fica azul
+    com o fundo suave do accent; o IconSwitchElement.GeometrySelected, se tiver, troca o ícone.
   -->
-  <Style
-    x:Key="Action.Toggle.Icon"
-    BasedOn="{StaticResource ToggleButtonIconTransparent}"
-    TargetType="ToggleButton">
+  <Style x:Key="Action.Toggle.Icon" TargetType="ToggleButton">
     <Setter Property="Width" Value="{StaticResource Control.Height.Small}" />
     <Setter Property="Height" Value="{StaticResource Control.Height.Small}" />
-    <Setter Property="Padding" Value="5" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
     <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Size}" />
     <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size}" />
-    <Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource Radius.Sm}" />
+    <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+    <Setter Property="RenderTransform">
+      <Setter.Value>
+        <ScaleTransform />
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Border
+            Background="{TemplateBinding Background}"
+            CornerRadius="{StaticResource Radius.Sm}"
+            SnapsToDevicePixels="True">
+            <Path
+              x:Name="Icon"
+              Width="{TemplateBinding hc:IconElement.Width}"
+              Height="{TemplateBinding hc:IconElement.Height}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Data="{TemplateBinding hc:IconElement.Geometry}"
+              Fill="{TemplateBinding Foreground}"
+              SnapsToDevicePixels="True"
+              Stretch="Uniform" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Icon" Property="Data" Value="{Binding Path=(hc:IconSwitchElement.GeometrySelected), RelativeSource={RelativeSource TemplatedParent}}" />
+            </Trigger>
+            <!--  Sem ícone de ligado, fica o mesmo  -->
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsChecked" Value="True" />
+                <Condition Property="hc:IconSwitchElement.GeometrySelected" Value="{x:Null}" />
+              </MultiTrigger.Conditions>
+              <Setter TargetName="Icon" Property="Data" Value="{Binding Path=(hc:IconElement.Geometry), RelativeSource={RelativeSource TemplatedParent}}" />
+            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -709,6 +753,37 @@
       <Trigger Property="IsChecked" Value="True">
         <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
         <Setter Property="Background" Value="{DynamicResource Accent.SoftBrush}" />
+      </Trigger>
+      <!--  O "afundar" do clique dos botões do Negativo  -->
+      <Trigger Property="IsPressed" Value="True">
+        <Trigger.EnterActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="0.95"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="0.95"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.EnterActions>
+        <Trigger.ExitActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                To="1.0"
+                Duration="0:0:0.10" />
+              <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                To="1.0"
+                Duration="0:0:0.10" />
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.ExitActions>
       </Trigger>
     </Style.Triggers>
   </Style>

@@ -19,6 +19,9 @@ namespace Provodnik.Wpf.Features.Install
 
     public string Description { get; } = description;
 
+    /// <summary>A última da lista: sem o traço que liga à próxima.</summary>
+    public bool IsLast { get; init; }
+
     public bool IsRunning => State == StageState.Running;
 
     public bool IsDone => State is StageState.Done or StageState.Warning or StageState.Failed or StageState.Skipped;
@@ -42,7 +45,7 @@ namespace Provodnik.Wpf.Features.Install
       new(InstallStage.Profile, "Perfil do MO2", "profiles\\G.A.M.M.A e a ordem dos mods"),
       new(InstallStage.Patches, "Patches do Anomaly", "bin, appdata, db e gamedata do GAMMA"),
       new(InstallStage.Shortcuts, "Atalhos", "Na área de trabalho"),
-      new(InstallStage.Verify, "Conferência final", "Todo mod ativo no MO2 tem pasta com conteúdo"),
+      new(InstallStage.Verify, "Conferência final", "Todo mod ativo no MO2 tem pasta com conteúdo") { IsLast = true },
     ];
   }
 }

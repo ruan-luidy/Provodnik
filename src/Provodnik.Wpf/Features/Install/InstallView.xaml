@@ -49,6 +49,24 @@
       </Style.Triggers>
     </Style>
 
+    <!--  O traço da linha do tempo, do ícone até a próxima etapa: verde quando a etapa terminou, nenhum na última  -->
+    <Style x:Key="StageConnector" TargetType="Border">
+      <Setter Property="Width" Value="2" />
+      <Setter Property="Margin" Value="0,4,0,3" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="CornerRadius" Value="1" />
+      <Setter Property="Background" Value="{DynamicResource Progress.TrackBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Done}">
+          <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
+          <Setter Property="Opacity" Value="0.45" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding IsLast}" Value="True">
+          <Setter Property="Visibility" Value="Collapsed" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
     <Style x:Key="StageTitle" TargetType="TextBlock">
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
@@ -90,8 +108,7 @@
             Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}" />
           <ToggleButton
             Margin="0,0,4,0"
-            hc:IconElement.Geometry="{icons:Phosphor TerminalBold}"
-            hc:IconSwitchElement.GeometrySelected="{icons:Phosphor TerminalBold}"
+            hc:IconElement.Geometry="{icons:Phosphor TerminalWindowBold}"
             IsChecked="{Binding ShowConsole}"
             Style="{StaticResource Action.Toggle.Icon}"
             ToolTip="Mostrar o console das ferramentas aqui embaixo" />
@@ -131,24 +148,41 @@
         <ColumnDefinition Width="16" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-      <!--  ===== Etapas =====  -->
-      <Border VerticalAlignment="Top" Style="{StaticResource SurfaceCard}">
-        <StackPanel>
+      <!--
+        ===== Etapas =====
+        Da altura inteira da coluna, como uma linha do tempo: as etapas se espalham pela altura (UniformGrid) e um traço
+        liga o ícone de uma ao da próxima, verde depois que ela termina. Antes o cartão parava no meio e sobrava um
+        buraco embaixo dele.
+      -->
+      <Border Style="{StaticResource SurfaceCard}">
+        <DockPanel>
           <TextBlock
             Margin="0,0,0,10"
+            DockPanel.Dock="Top"
             Style="{StaticResource StatLabel}"
             Text="ETAPAS" />
           <ItemsControl ItemsSource="{Binding Service.Stages}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Columns="1" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate DataType="{x:Type install:StageRow}">
-                <DockPanel Margin="0,0,0,12" ToolTip="{Binding Description}">
+                <DockPanel Background="Transparent" ToolTip="{Binding Description}">
                   <Grid
                     Width="18"
-                    Height="18"
                     Margin="0,1,10,0"
-                    VerticalAlignment="Top"
                     DockPanel.Dock="Left">
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="18" />
+                      <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
                     <Path Style="{StaticResource StageIcon}" />
                     <hc:CircleProgressBar
                       Width="16"
@@ -156,6 +190,7 @@
                       IsIndeterminate="True"
                       Style="{StaticResource BusyCircle}"
                       Visibility="{Binding IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                    <Border Grid.Row="1" Style="{StaticResource StageConnector}" />
                   </Grid>
                   <StackPanel>
                     <TextBlock Style="{StaticResource StageTitle}" Text="{Binding Title}" />
@@ -170,7 +205,7 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-        </StackPanel>
+        </DockPanel>
       </Border>
 
       <!--  ===== O total, as falhas e o que está trabalhando agora =====  -->
@@ -273,35 +308,6 @@
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
             </ScrollViewer>
-          </DockPanel>
-        </Border>
-
-        <!--  O console das ferramentas, embaixo de tudo (liga e desliga no cabeçalho)  -->
-        <Border
-          Height="190"
-          Margin="0,12,0,0"
-          DockPanel.Dock="Bottom"
-          Style="{StaticResource SurfaceCard}"
-          Visibility="{Binding ShowConsole, Converter={StaticResource Boolean2VisibilityConverter}}">
-          <DockPanel>
-            <DockPanel Margin="0,0,0,8" DockPanel.Dock="Top">
-              <Button
-                hc:IconElement.Geometry="{icons:Phosphor TrashBold}"
-                Command="{Binding ClearConsoleCommand}"
-                DockPanel.Dock="Right"
-                Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Limpar" />
-              <TextBlock
-                VerticalAlignment="Center"
-                Style="{StaticResource StatLabel}"
-                Text="CONSOLE" />
-              <TextBlock
-                Margin="10,0,0,0"
-                VerticalAlignment="Center"
-                Style="{StaticResource CaptionText}"
-                Text="o que o git, o curl, o 7-Zip e o dl-cli escrevem · erros conhecidos ganham a explicação em amarelo" />
-            </DockPanel>
-            <install:ConsolePanel Lines="{Binding Console.Lines}" />
           </DockPanel>
         </Border>
 
@@ -434,6 +440,36 @@
           </DockPanel>
         </Border>
       </DockPanel>
+
+      <!--  O console das ferramentas: faixa da largura inteira embaixo das duas colunas (liga e desliga no cabeçalho)  -->
+      <Border
+        Grid.Row="1"
+        Grid.ColumnSpan="3"
+        Height="190"
+        Margin="0,16,0,0"
+        Style="{StaticResource SurfaceCard}"
+        Visibility="{Binding ShowConsole, Converter={StaticResource Boolean2VisibilityConverter}}">
+        <DockPanel>
+          <DockPanel Margin="0,0,0,8" DockPanel.Dock="Top">
+            <Button
+              hc:IconElement.Geometry="{icons:Phosphor TrashBold}"
+              Command="{Binding ClearConsoleCommand}"
+              DockPanel.Dock="Right"
+              Style="{StaticResource Action.Icon.Small}"
+              ToolTip="Limpar" />
+            <TextBlock
+              VerticalAlignment="Center"
+              Style="{StaticResource StatLabel}"
+              Text="CONSOLE" />
+            <TextBlock
+              Margin="10,0,0,0"
+              VerticalAlignment="Center"
+              Style="{StaticResource CaptionText}"
+              Text="o que o git, o curl, o 7-Zip e o dl-cli escrevem · erros conhecidos ganham a explicação em amarelo" />
+          </DockPanel>
+          <install:ConsolePanel Lines="{Binding Console.Lines}" />
+        </DockPanel>
+      </Border>
     </Grid>
   </Grid>
 </UserControl>
