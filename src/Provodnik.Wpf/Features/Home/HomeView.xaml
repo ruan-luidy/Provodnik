@@ -225,66 +225,78 @@
           </Border>
         </UniformGrid>
 
-        <!--  Onde está tudo  -->
-        <Border Margin="0,16,0,0" Style="{StaticResource SurfaceCard}">
+        <!--  Onde está tudo: o cartão de informação da Связь (rótulo, valor à direita, abrir colado nele, divisória fina)  -->
+        <TextBlock
+          Margin="2,16,0,6"
+          Style="{StaticResource StatLabel}"
+          Text="PASTAS" />
+        <Border Style="{StaticResource InfoCard}">
           <StackPanel>
-            <TextBlock
-              Margin="0,0,0,10"
-              Style="{StaticResource StatLabel}"
-              Text="PASTAS" />
-            <DockPanel Margin="0,0,0,6">
-              <TextBlock Style="{StaticResource PathLabel}" Text="GAMMA" />
+            <DockPanel Style="{StaticResource InfoRow}">
+              <TextBlock Style="{StaticResource InfoLabel}" Text="GAMMA" />
               <Button
+                Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
                 Command="{Binding OpenFolderCommand}"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
                 ToolTip="Abrir" />
-              <TextBlock Style="{StaticResource PathValue}" Text="{Binding GammaRoot}" />
+              <TextBlock
+                FontFamily="{StaticResource FontFamily.Numbers}"
+                Style="{StaticResource InfoValue}"
+                Text="{Binding GammaRoot}" />
             </DockPanel>
-            <DockPanel Margin="0,0,0,6">
-              <TextBlock Style="{StaticResource PathLabel}" Text="Anomaly" />
+            <Border Style="{StaticResource InfoDivider}" />
+            <DockPanel Style="{StaticResource InfoRow}">
+              <TextBlock Style="{StaticResource InfoLabel}" Text="Anomaly" />
               <Button
+                Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
                 Command="{Binding OpenFolderCommand}"
                 CommandParameter="anomaly"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
                 ToolTip="Abrir" />
-              <TextBlock Style="{StaticResource PathValue}" Text="{Binding AnomalyPath}" />
+              <TextBlock
+                FontFamily="{StaticResource FontFamily.Numbers}"
+                Style="{StaticResource InfoValue}"
+                Text="{Binding AnomalyPath}" />
             </DockPanel>
-            <DockPanel Margin="0,0,0,6">
-              <TextBlock Style="{StaticResource PathLabel}" Text="Perfil do MO2" />
+            <Border Style="{StaticResource InfoDivider}" />
+            <DockPanel Style="{StaticResource InfoRow}">
+              <TextBlock Style="{StaticResource InfoLabel}" Text="Perfil do MO2" />
               <Button
+                Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
                 Command="{Binding OpenFolderCommand}"
                 CommandParameter="profile"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
                 ToolTip="Abrir" />
-              <TextBlock Style="{StaticResource PathValue}" Text="{Binding ProfileName}" />
+              <TextBlock Style="{StaticResource InfoValue}" Text="{Binding ProfileName}" />
             </DockPanel>
-            <DockPanel>
-              <TextBlock Style="{StaticResource PathLabel}" Text="Downloads" />
+            <Border Style="{StaticResource InfoDivider}" />
+            <DockPanel Style="{StaticResource InfoRow}">
+              <TextBlock Style="{StaticResource InfoLabel}" Text="Mod Organizer" />
               <Button
+                Margin="8,0,0,0"
+                hc:IconElement.Geometry="{icons:Phosphor SlidersHorizontalBold}"
+                Command="{Binding OpenModOrganizerCommand}"
+                DockPanel.Dock="Right"
+                Style="{StaticResource Action.Icon.Small}"
+                ToolTip="Abrir o Mod Organizer (sem o jogo)" />
+              <Button
+                Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
                 Command="{Binding OpenFolderCommand}"
                 CommandParameter="downloads"
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Abrir" />
-              <Button
-                Margin="0,0,4,0"
-                hc:IconElement.Geometry="{icons:Phosphor GearSixBold}"
-                Command="{Binding OpenModOrganizerCommand}"
-                DockPanel.Dock="Right"
-                Style="{StaticResource Action.Icon.Small}"
-                ToolTip="Abrir o Mod Organizer (sem o jogo)" />
-              <TextBlock Style="{StaticResource PathValue}" Text="downloads\ e mods\ dentro da pasta do GAMMA" />
+                ToolTip="Abrir downloads\" />
+              <TextBlock Style="{StaticResource InfoValue}" Text="downloads\ e mods\ dentro da pasta do GAMMA" />
             </DockPanel>
           </StackPanel>
         </Border>
-
         <!--  Dica de usar dentro da pasta, só quando o exe está fora dela  -->
         <Border
           Margin="0,16,0,0"

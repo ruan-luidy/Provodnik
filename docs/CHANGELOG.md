@@ -11,6 +11,7 @@
 - Tabela no estilo do rnzNegative (StandardDataGrid) com o degradê embaixo.
 - Registro legível: texto na cor normal, o nível só na bolinha e numa etiqueta.
 - Barra de título sem a pílula: carregando, andamento e barra fina.
+- Camadas da Связь, sem linha dura: o painel fica direto no Mica, a tela é uma camada com o canto de cima arredondado e os cartões são brancos translúcidos; o cartão Pastas é o de informação da Связь, com divisória fina.
 - Fundo Mica do Windows 11, como na Связь (desliga nas Configurações; no Windows 10 fica o cinza sólido).
 - Ícone: o átomo verde do GAMMA, em todos os tamanhos e mais grosso nos pequenos pra aparecer na barra de tarefas.
 - Dicas com a lâmpada do Phosphor no lugar da seta; estado "Tentando de novo" enquanto espera a próxima tentativa; depois de cancelar nada fica girando.

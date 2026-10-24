@@ -148,15 +148,12 @@
 
     <!--  ===== Painel lateral: as telas em cima, Configurações no rodapé =====  -->
     <!--  Sem fundo próprio: o Mica (ou o RegionBrush da janela, sem ele) aparece direto no painel  -->
-    <Border
-      Background="Transparent"
-      BorderBrush="{DynamicResource BorderBrush}"
-      BorderThickness="0,0,1,0">
+    <Border Background="Transparent">
       <DockPanel Margin="8,8">
         <Border
           Margin="0,6,0,0"
           Padding="0,6,0,0"
-          BorderBrush="{DynamicResource BorderBrush}"
+          BorderBrush="{DynamicResource Divider.Brush}"
           BorderThickness="0,1,0,0"
           DockPanel.Dock="Bottom">
           <Button
@@ -205,18 +202,17 @@
       </DockPanel>
     </Border>
 
-    <!--  Linha entre a barra de título e a área da janela  -->
-    <Border
-      Grid.ColumnSpan="2"
-      Height="1"
-      VerticalAlignment="Top"
-      Panel.ZIndex="1"
-      Background="{DynamicResource BorderBrush}"
-      IsHitTestVisible="False" />
 
     <!--  A tela aberta; por cima, o erro e o carregando  -->
-    <!--  A tela uma camada acima do painel: branco translúcido por cima do Mica  -->
-    <Grid Grid.Column="1" Background="{DynamicResource Pane.BackgroundBrush}">
+    <!--
+      A tela uma camada acima do painel, como o cartão de detalhes da Связь: branco translúcido por cima do Mica,
+      encostada na direita e embaixo, só o canto de cima à esquerda arredondado. Nenhuma linha separando.
+    -->
+    <Border
+      Grid.Column="1"
+      Background="{DynamicResource Pane.BackgroundBrush}"
+      CornerRadius="12,0,0,0" />
+    <Grid Grid.Column="1">
       <ContentControl x:Name="Page" Content="{Binding Current}" />
 
       <controls:ErrorState RetryCommand="{Binding Current.ReloadCommand}" Text="{Binding Current.Error}" />

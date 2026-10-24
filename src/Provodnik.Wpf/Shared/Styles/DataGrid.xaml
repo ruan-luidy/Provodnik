@@ -54,10 +54,10 @@
     <Setter Property="SelectionUnit" Value="FullRow" />
 
     <Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource Radius.Lg}" />
-    <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+    <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
     <Setter Property="GridLinesVisibility" Value="Vertical" />
     <Setter Property="HeadersVisibility" Value="Column" />
-    <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource SecondaryRegionBrush}" />
+    <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource Divider.Brush}" />
     <Setter Property="BorderThickness" Value="0" />
 
     <Setter Property="EnableColumnVirtualization" Value="True" />

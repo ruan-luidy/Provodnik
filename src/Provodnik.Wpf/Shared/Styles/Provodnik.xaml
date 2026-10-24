@@ -421,7 +421,7 @@
               <Setter TargetName="Dot" Property="Visibility" Value="Collapsed" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="Item" Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+              <Setter TargetName="Item" Property="Background" Value="{DynamicResource Nav.SelectedBrush}" />
               <Setter TargetName="Bar" Property="Visibility" Value="Visible" />
               <Setter TargetName="Icon" Property="Fill" Value="{DynamicResource PrimaryBrush}" />
               <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -576,7 +576,7 @@
               <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-              <Setter TargetName="Item" Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+              <Setter TargetName="Item" Property="Background" Value="{DynamicResource Nav.SelectedBrush}" />
               <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
             </Trigger>
           </ControlTemplate.Triggers>
@@ -642,5 +642,45 @@
     quase o mesmo cinza de antes.
   -->
   <SolidColorBrush x:Key="Pane.BackgroundBrush" Color="#12FFFFFF" />
+
+  <!--
+    As camadas da Связь, sem borda dura em lugar nenhum: o painel fica direto no Mica, a tela é uma camada um pouco
+    mais clara (Pane.BackgroundBrush) e os cartões mais uma por cima (Card.BackgroundBrush). Divisória é uma linha de
+    branco bem fraco, não a cor de borda do HandyControl.
+  -->
+  <SolidColorBrush x:Key="Card.BackgroundBrush" Color="#14FFFFFF" />
+  <SolidColorBrush x:Key="Divider.Brush" Color="#14FFFFFF" />
+  <SolidColorBrush x:Key="Nav.SelectedBrush" Color="#1AFFFFFF" />
+
+  <!--  Cartão de informação da Связь: linhas "rótulo ..... valor [ação]" com divisória fina entre elas  -->
+  <Style x:Key="InfoCard" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="14,2" />
+  </Style>
+
+  <Style x:Key="InfoRow" TargetType="DockPanel">
+    <Setter Property="MinHeight" Value="40" />
+    <Setter Property="LastChildFill" Value="True" />
+  </Style>
+
+  <Style x:Key="InfoLabel" TargetType="TextBlock">
+    <Setter Property="Width" Value="110" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+  </Style>
+
+  <Style x:Key="InfoValue" TargetType="TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="TextAlignment" Value="Right" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
+  <Style x:Key="InfoDivider" TargetType="Border">
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Background" Value="{DynamicResource Divider.Brush}" />
+  </Style>
 
 </ResourceDictionary>
