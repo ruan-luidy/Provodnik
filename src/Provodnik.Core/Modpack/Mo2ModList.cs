@@ -34,7 +34,8 @@ namespace Provodnik.Core.Modpack
           _ => (bool?)null,
         };
         if (enabled is { } on)
-          entries.Add(new Mo2ModListEntry(raw[1..], on));
+          // o modlist do GAMMA tem nome com TAB no fim (#425): pasta no Windows não tem, então compara sem as pontas
+          entries.Add(new Mo2ModListEntry(raw[1..].Trim(), on));
       }
       return new Mo2ModList(entries);
     }

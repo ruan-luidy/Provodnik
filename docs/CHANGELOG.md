@@ -13,6 +13,9 @@
 - Barra de título sem a pílula: carregando, andamento e barra fina.
 - Camadas da Связь, sem linha dura: o painel fica direto no Mica, a tela é uma camada com o canto de cima arredondado e os cartões são brancos translúcidos; o cartão Pastas é o de informação da Связь, com divisória fina.
 - Fundo Mica do Windows 11, como na Связь (desliga nas Configurações; no Windows 10 fica o cinza sólido).
+- Pasta de instrução renomeada pelo autor (o Defended Lab X10: a lista diz "Spawn Options\No Bloodsuckers", o arquivo tem "Spawn - No Bloodsuckers"): usa a única pasta que termina igual, em vez de deixar o mod vazio como o original.
+- Conferência: nome do modlist com TAB no fim conta certo, e nome que o próprio modlist do GAMMA escreveu errado vira aviso, não falha.
+- Atalho "Provodnik (G.A.M.M.A.)" (o WScript.Shell não grava nome em cirílico).
 - Ícone: o átomo do GAMMA (três órbitas, elétrons e núcleo) redesenhado em vetor no verde dele, nítido de 16 a 256 px (tools/icon/atom.cs).
 - Dicas com a lâmpada do Phosphor no lugar da seta; estado "Tentando de novo" enquanto espera a próxima tentativa; depois de cancelar nada fica girando.
 

@@ -30,6 +30,15 @@ namespace Provodnik.Features.Install
           continue;
         }
 
+        if (!Directory.Exists(source) && FindRenamed(root, instruction) is { } renamed)
+        {
+          // o autor renomeou a pasta e a lista do GAMMA não acompanhou ("Spawn Options\No Bloodsuckers" virou
+          // "Spawn - No Bloodsuckers"): o original deixava o mod vazio; aqui usa a única pasta que termina igual
+          warn($"a pasta \"{instruction}\" não existe no arquivo; usando \"{Path.GetRelativePath(root, renamed)}\", que é a mesma opção com outro nome");
+          FileTree.MoveContents(renamed, root);
+          continue;
+        }
+
         var gamedata = Path.Combine(root, "gamedata");
         Directory.CreateDirectory(gamedata);
         if (!Directory.Exists(source))
@@ -50,5 +59,42 @@ namespace Provodnik.Features.Install
 
     internal static string Normalize(string instruction) =>
       instruction.Replace('/', '\\').Trim().Trim('\\');
+
+    /// <summary>
+    /// A pasta que o autor renomeou: a única (até 3 níveis), com gamedata dentro, cujo nome termina igual ao fim da
+    /// instrução mas não é igual a ele ("Spawn - No Bloodsuckers" pra "No Bloodsuckers"). Nome igual fica de fora de
+    /// propósito: é a pasta que o original já tinha movido antes (Ammo Maker, MagsRedux) e o resultado tem que sair igual.
+    /// </summary>
+    internal static string? FindRenamed(string root, string instruction)
+    {
+      var key = Squash(Path.GetFileName(instruction));
+      if (key.Length < 4)
+        return null;
+
+      var candidates = Folders(root, depth: 3)
+        .Where(d => Squash(Path.GetFileName(d)) is var name && name != key && name.EndsWith(key, StringComparison.Ordinal))
+        .Where(d => Directory.Exists(Path.Combine(d, "gamedata")))
+        .Take(2)
+        .ToList();
+      return candidates.Count == 1 ? candidates[0] : null;
+    }
+
+    private static IEnumerable<string> Folders(string root, int depth)
+    {
+      if (depth == 0)
+        yield break;
+      foreach (var folder in Directory.EnumerateDirectories(root))
+      {
+        if (Path.GetFileName(folder).Equals("gamedata", StringComparison.OrdinalIgnoreCase))
+          continue;
+        yield return folder;
+        foreach (var inner in Folders(folder, depth - 1))
+          yield return inner;
+      }
+    }
+
+    /// <summary>Só letras e números, minúsculas: "Timer - 10 minutes" e "10 minutes" comparam pelo fim.</summary>
+    private static string Squash(string name) =>
+      new(name.Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant).ToArray());
   }
 }

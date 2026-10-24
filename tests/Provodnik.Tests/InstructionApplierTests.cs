@@ -69,6 +69,37 @@ namespace Provodnik.Tests
     }
 
     [Fact]
+    public void Pasta_renomeada_pelo_autor_e_achada_pelo_fim_do_nome()
+    {
+      // o Defended Lab X10 (#334): a lista diz "Spawn Options\No Bloodsuckers", o arquivo tem "Spawn - No Bloodsuckers"
+      Touch(@"Spawn - No Bloodsuckers\gamedata\configs\a.ltx");
+      Touch(@"Spawn - Defense Only\gamedata\configs\a.ltx");
+      Touch(@"Timer - 10 minutes\gamedata\configs\b.ltx");
+      Touch(@"Timer - 5 minutes\gamedata\configs\b.ltx");
+      File.WriteAllText(Path.Combine(_root, @"Timer - 10 minutes\gamedata\configs\b.ltx"), "dez");
+      var warnings = new List<string>();
+
+      InstructionApplier.Apply(_root, [@"Spawn Options\No Bloodsuckers", @"Timer Options\10 minutes"], warnings.Add);
+
+      Assert.True(Has(@"gamedata\configs\a.ltx"));
+      Assert.Equal("dez", File.ReadAllText(Path.Combine(_root, @"gamedata\configs\b.ltx")));
+      Assert.Equal(2, warnings.Count);
+      Assert.All(warnings, w => Assert.Contains("usando", w));
+    }
+
+    [Fact]
+    public void Pasta_com_o_mesmo_nome_ja_movida_continua_de_fora_como_no_original()
+    {
+      Touch(@"MagsRedux-main\gamedata\a.ltx");
+      Touch(@"MagsRedux-main\aug_patch\gamedata\b.ltx");
+
+      InstructionApplier.Apply(_root, ["MagsRedux-main", @"MagsRedux-main\aug_patch"], _ => { });
+
+      Assert.True(Has(@"gamedata\a.ltx"));
+      Assert.False(Has(@"gamedata\b.ltx"));
+    }
+
+    [Fact]
     public void Barra_no_comeco_e_barra_normal_valem_como_no_original()
     {
       Touch(@"Black_Market-main\gamedata\a.ltx");

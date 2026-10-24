@@ -137,12 +137,15 @@ namespace Provodnik.Features.Install
           loose.Add(name);
         }
       }
-      if (loose.Count > 0)
-        run.Failures.Add(new ModFailure(0, "Mods do modpack", $"ativos no MO2 sem pasta: {string.Join(", ", loose.Take(8))}{(loose.Count > 8 ? "..." : string.Empty)}"));
+      // sem número e sem pasta: nome que o próprio modlist do GAMMA escreveu errado ("DarkasleQif's..."); o MO2 mostra
+      // igual pra todo mundo, não tem o que reinstalar
+      foreach (var name in loose)
+        run.Warn($"O modlist do GAMMA liga \"{name}\", que não existe em pasta nenhuma (erro de digitação na lista do GAMMA; o MO2 mostra igual pra todo mundo).");
 
+      var numbered = result.Missing.Count - loose.Count;
       var summary = $"{result.Found} de {result.Expected} mods ativos";
-      run.Reporter.Log(result.Complete ? LogLevel.Success : LogLevel.Warning, $"Conferência: {summary} no MO2");
-      run.Reporter.Stage(InstallStage.Verify, result.Complete ? StageState.Done : StageState.Failed, summary);
+      run.Reporter.Log(numbered == 0 ? LogLevel.Success : LogLevel.Warning, $"Conferência: {summary} no MO2{(loose.Count > 0 ? $" ({loose.Count} com o nome errado na lista do GAMMA)" : string.Empty)}");
+      run.Reporter.Stage(InstallStage.Verify, numbered > 0 ? StageState.Failed : loose.Count > 0 ? StageState.Warning : StageState.Done, summary);
     }
 
     // ===== Preparando =====
@@ -532,7 +535,8 @@ namespace Provodnik.Features.Install
         var icon = Path.Combine(run.Layout.Definition(run.Metadata.FolderName), "modpack_data", "modpack_icon.ico");
         shortcuts.Create(Path.Combine(desktop, "G.A.M.M.A..lnk"), run.Layout.ModOrganizerExe, icon, run.Layout.Root);
         if (LauncherPath is { } launcher && File.Exists(launcher))
-          shortcuts.Create(Path.Combine(desktop, "Проводник (G.A.M.M.A.).lnk"), launcher, launcher, Path.GetDirectoryName(launcher));
+          // nome latino: o WScript.Shell grava o .lnk em ANSI e o cirílico virava "?????????"
+          shortcuts.Create(Path.Combine(desktop, "Provodnik (G.A.M.M.A.).lnk"), launcher, launcher, Path.GetDirectoryName(launcher));
         run.Reporter.Stage(InstallStage.Shortcuts, StageState.Done);
       }
       catch (Exception ex)
