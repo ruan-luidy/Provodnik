@@ -16,6 +16,7 @@ using Provodnik.Features.Update;
 using Provodnik.Infrastructure.Desktop;
 using Provodnik.Infrastructure.Http;
 using Provodnik.Infrastructure.Tools;
+using Provodnik.Wpf.Features.AppUpdate;
 using Provodnik.Wpf.Features.Demo;
 using Provodnik.Wpf.Features.Home;
 using Provodnik.Wpf.Features.Install;
@@ -38,6 +39,7 @@ namespace Provodnik.Wpf
     private Mutex? _instance;
     private EventWaitHandle? _wake;
     private bool _showingError;
+    private bool _elevating;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -73,6 +75,8 @@ namespace Provodnik.Wpf
       ListenForSecondInstance(window);
       window.Show();
       DemoConsole(_services.GetRequiredService<IToolConsole>());
+      // versão nova do próprio Проводник (só na instalada pelo Setup.exe, fora da simulação)
+      _services.GetRequiredService<AppUpdateService>().Start();
     }
 
     /// <summary>Só no Debug: --demo-console enche o console com linhas típicas (pra ver as explicações sem instalar).</summary>
@@ -126,12 +130,17 @@ namespace Provodnik.Wpf
         _instance = new Mutex(true, InstanceName, out _);
         return false;
       }
+      _elevating = true;
       Shutdown();
       return true;
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
+      // versão nova baixada entra quando o processo terminar de sair; reabrindo como administrador não, que o
+      // Update.exe trocaria os arquivos com a outra instância já rodando
+      if (!_elevating)
+        _services?.GetService<AppUpdateService>()?.ApplyOnExit();
       _services?.Dispose();
       _instance?.Dispose();
       base.OnExit(e);
@@ -193,6 +202,7 @@ namespace Provodnik.Wpf
       services.AddSingleton<InstallPipeline>();
       services.AddSingleton<UpdateChecker>();
       services.AddSingleton<InstallService>();
+      services.AddSingleton<AppUpdateService>();
 
       services.AddSingleton<HomeViewModel>();
       services.AddSingleton<InstallViewModel>();

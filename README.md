@@ -25,7 +25,7 @@ Continua sendo ele. O jogo só enxerga os mods pela pasta virtual do MO2, e liga
 O jeito pensado: publicar um exe só e deixar ele ao lado do `ModOrganizer.exe`.
 
 ```powershell
-.\tools\publicar.ps1 -Gamma D:\GAMMA
+python tools\build_tool.py --gamma D:\GAMMA
 ```
 
 Isso gera `D:\GAMMA\Provodnik.exe`, com o .NET dentro (não precisa instalar nada). Ele acha a pasta sozinho e usa as ferramentas que o GAMMA já traz em `.Grok's Modpack Installer\resources` (7-Zip, curl-impersonate, stalker-gamma-dl-cli e Git). O launcher original pode continuar lá: os dois leem e escrevem os mesmos arquivos.
@@ -38,6 +38,23 @@ dotnet run --project src/Provodnik.Wpf -- --demo        # simulação: GAMMA de 
 dotnet run --project src/Provodnik.Wpf -- --demo-novo   # simulação começando do zero
 dotnet test
 ```
+
+## Releases e atualização
+
+Quem instala pelo `Provodnik-win-Setup.exe` do [GitHub Releases](https://github.com/ruan-luidy/Provodnik/releases/latest) recebe as versões novas sozinho, pelo [Velopack](https://velopack.io): o Проводник procura no GitHub, baixa e avisa com "Reiniciar agora"; sem clique, a versão nova entra quando ele fechar. O exe solto na pasta do GAMMA não se atualiza: é só gerar de novo com `--gamma`.
+
+O `tools/build_tool.py` faz tudo (o mesmo do Otmetka):
+
+```powershell
+pip install -r tools\requirements.txt
+python tools\build_tool.py                     # menu
+python tools\build_tool.py --bump patch        # sobe a versão no Directory.Build.props e abre a seção no CHANGELOG
+python tools\build_tool.py --build             # testes, publish e pacote do Velopack em artifacts\releases
+python tools\build_tool.py --build --github    # e publica o release no GitHub
+python tools\build_tool.py --gamma D:\GAMMA    # o exe único na pasta do GAMMA
+```
+
+A versão mora no `Directory.Build.props` e a nota do release sai da seção dela no `docs/CHANGELOG.md` (sem ela o build não sai). Pra subir pro GitHub, o token vem de `GITHUB_TOKEN` ou do `gh auth login`.
 
 ## Estrutura
 
