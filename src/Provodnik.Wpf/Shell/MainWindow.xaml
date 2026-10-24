@@ -157,11 +157,18 @@
           BorderBrush="{DynamicResource Divider.Brush}"
           BorderThickness="0,1,0,0"
           DockPanel.Dock="Bottom">
-          <Button
-            Command="{Binding OpenSettingsCommand}"
-            Content="Configurações"
-            Style="{StaticResource SideNavButton}"
-            Tag="{icons:Phosphor GearSixBold}" />
+          <StackPanel>
+            <Button
+              Command="{Binding OpenAboutCommand}"
+              Content="Sobre"
+              Style="{StaticResource SideNavButton}"
+              Tag="{icons:Phosphor InfoBold}" />
+            <Button
+              Command="{Binding OpenSettingsCommand}"
+              Content="Configurações"
+              Style="{StaticResource SideNavButton}"
+              Tag="{icons:Phosphor GearSixBold}" />
+          </StackPanel>
         </Border>
 
         <StackPanel DockPanel.Dock="Top">

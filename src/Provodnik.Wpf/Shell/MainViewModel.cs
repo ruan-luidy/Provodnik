@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Provodnik.Wpf.Features.About;
+using Provodnik.Wpf.Features.AppUpdate;
 using Provodnik.Wpf.Features.Home;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Features.Logs;
@@ -19,6 +21,7 @@ namespace Provodnik.Wpf.Shell
     private readonly Dictionary<Tab, PageViewModel> _pages;
     private readonly SettingsStore _settings;
     private readonly GammaSession _session;
+    private readonly AppUpdateService _update;
 
     [ObservableProperty] private Tab _tab;
     [ObservableProperty] private PageViewModel _current;
@@ -36,10 +39,12 @@ namespace Provodnik.Wpf.Shell
       SettingsStore settings,
       Navigator navigator,
       ElevationService elevation,
-      AppOptions options)
+      AppOptions options,
+      AppUpdateService update)
     {
       _settings = settings;
       _session = session;
+      _update = update;
       Install = installService;
       IsElevated = elevation.IsElevated;
       IsDemo = options.Demo;
@@ -83,6 +88,9 @@ namespace Provodnik.Wpf.Shell
 
     [RelayCommand]
     private void GoInstall() => Tab = Tab.Install;
+
+    [RelayCommand]
+    private Task OpenAboutAsync() => DialogService.ShowAsync(new AboutView { DataContext = new AboutViewModel(_update, _session) });
 
     [RelayCommand]
     private async Task OpenSettingsAsync()

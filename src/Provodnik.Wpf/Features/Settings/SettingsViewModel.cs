@@ -23,6 +23,7 @@ namespace Provodnik.Wpf.Features.Settings
     [ObservableProperty] private bool _deleteReshadeDlls;
     [ObservableProperty] private bool _createShortcuts;
     [ObservableProperty] private bool _mica;
+    [ObservableProperty] private bool _autoUpdateApp;
     [ObservableProperty] private string? _error;
 
     public SettingsViewModel(SettingsStore store, GammaSession session)
@@ -39,6 +40,7 @@ namespace Provodnik.Wpf.Features.Settings
       _deleteReshadeDlls = current.DeleteReshadeDlls;
       _createShortcuts = current.CreateShortcuts;
       _mica = current.Mica;
+      _autoUpdateApp = current.AutoUpdateApp;
     }
 
     /// <summary>O exe mora dentro do GAMMA: a pasta é essa e pronto.</summary>
@@ -74,6 +76,7 @@ namespace Provodnik.Wpf.Features.Settings
         DeleteReshadeDlls = DeleteReshadeDlls,
         CreateShortcuts = CreateShortcuts,
         Mica = Mica,
+        AutoUpdateApp = AutoUpdateApp,
       });
       return true;
     }

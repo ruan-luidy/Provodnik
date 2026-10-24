@@ -173,6 +173,19 @@
             </StackPanel>
           </Border>
 
+          <TextBlock Style="{StaticResource SettingSection}" Text="PROVODNIK" />
+          <Border Style="{StaticResource SettingGroup}">
+            <Border Style="{StaticResource SettingRow}">
+              <DockPanel>
+                <ToggleButton IsChecked="{Binding AutoUpdateApp}" Style="{StaticResource RowSwitch}" />
+                <StackPanel>
+                  <TextBlock Style="{StaticResource SettingTitle}" Text="Atualizar sozinho" />
+                  <TextBlock Style="{StaticResource SettingCaption}" Text="Procura a versão nova do app no GitHub e baixa; ela entra quando o app fechar. Só na versão instalada pelo Setup." />
+                </StackPanel>
+              </DockPanel>
+            </Border>
+          </Border>
+
           <TextBlock Style="{StaticResource SettingSection}" Text="APARÊNCIA" />
           <Border Style="{StaticResource SettingGroup}">
             <Border Style="{StaticResource SettingRow}">
