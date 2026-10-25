@@ -392,10 +392,13 @@
                   Padding="5,0"
                   Background="{DynamicResource PrimaryBrush}"
                   CornerRadius="9">
+                  <!--  O algarismo sobe 1 px: centrado pela caixa da linha (que conta a descida das letras) ele ficava baixo  -->
                   <TextBlock
+                    Margin="0,0,0,1"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    FontSize="{StaticResource FontSize.XS}"
+                    FontSize="11"
+                    FontWeight="SemiBold"
                     Foreground="White"
                     Text="{Binding (controls:NavBadge.Count), RelativeSource={RelativeSource TemplatedParent}}" />
                 </Border>
@@ -501,10 +504,13 @@
                   Padding="5,0"
                   Background="{DynamicResource PrimaryBrush}"
                   CornerRadius="9">
+                  <!--  O algarismo sobe 1 px: centrado pela caixa da linha (que conta a descida das letras) ele ficava baixo  -->
                   <TextBlock
+                    Margin="0,0,0,1"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    FontSize="{StaticResource FontSize.XS}"
+                    FontSize="11"
+                    FontWeight="SemiBold"
                     Foreground="White"
                     Text="{Binding (controls:NavBadge.Count), RelativeSource={RelativeSource TemplatedParent}}" />
                 </Border>

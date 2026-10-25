@@ -343,6 +343,14 @@ def upload_release() -> bool:
                    "vpk upload", env):
         return False
 
+    # O exe único vai junto no mesmo release: quem prefere deixar o Provodnik dentro da pasta do GAMMA baixa ele
+    if not publish_exe():
+        return False
+    repo = RELEASES_REPO.removeprefix("https://github.com/")
+    if not run_cmd(["gh", "release", "upload", f"v{version}", str(EXE_DIR / MAIN_EXE), "--clobber", "-R", repo],
+                   "gh release upload (exe único)", {"GH_TOKEN": token}):
+        return False
+
     log_ok(f"Publicado: {RELEASES_REPO}/releases/tag/v{version}")
     log_info(f"Pra instalar: {RELEASES_REPO}/releases/latest ({PACK_ID}-{CHANNEL}-Setup.exe)")
     return True
