@@ -550,8 +550,11 @@ namespace Provodnik.Features.Install
         var icon = Path.Combine(run.Layout.Definition(run.Metadata.FolderName), "modpack_data", "modpack_icon.ico");
         shortcuts.Create(Path.Combine(desktop, "G.A.M.M.A..lnk"), run.Layout.ModOrganizerExe, icon, run.Layout.Root);
         if (LauncherPath is { } launcher && File.Exists(launcher))
-          // nome latino: o WScript.Shell grava o .lnk em ANSI e o cirílico virava "?????????"
-          shortcuts.Create(Path.Combine(desktop, "Provodnik (G.A.M.M.A.).lnk"), launcher, launcher, Path.GetDirectoryName(launcher));
+        {
+          shortcuts.Create(Path.Combine(desktop, "Проводник (G.A.M.M.A.).lnk"), launcher, launcher, Path.GetDirectoryName(launcher));
+          // o de nome latino das versões até a 0.3.0
+          File.Delete(Path.Combine(desktop, "Provodnik (G.A.M.M.A.).lnk"));
+        }
         run.Reporter.Stage(InstallStage.Shortcuts, StageState.Done);
       }
       catch (Exception ex)

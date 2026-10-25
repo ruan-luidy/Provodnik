@@ -49,8 +49,9 @@ Sem instalador. Um arquivo só:
 Ele acha tudo sozinho, usa as ferramentas que o GAMMA já traz e se mantém atualizado: a versão nova baixa sozinha e
 entra quando você fecha o app (ou na hora, com **Reiniciar agora**).
 
-Windows 10/11 x64, com tudo embutido. A primeira instalação baixa uns 150 GB; depois, as atualizações só trazem o que
-mudou.
+Windows 10/11 x64, com tudo embutido. A primeira instalação baixa uns 45 GB e precisa de uns 200 GB livres (só os mods
+extraídos dão uns 150 GB); depois, as atualizações só trazem o que mudou. Uma instalação do zero levou uns 35 minutos
+aqui.
 
 ## Mods
 

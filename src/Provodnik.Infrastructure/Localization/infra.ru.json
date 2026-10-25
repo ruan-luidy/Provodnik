@@ -1,5 +1,4 @@
 {
-  "infra.shortcut.noShell": "WScript.Shell недоступен",
   "infra.gammaApi.badList": "Список модов пришёл в странном формате (возможно, сайт лежит).",
   "infra.http.partialMismatch": "Недокачанный файл не совпадает с файлом на сервере; он скачается заново.",
   "infra.http.cutShort": "Загрузка оборвалась ({0} из {1} байт).",

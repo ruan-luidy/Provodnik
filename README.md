@@ -56,8 +56,9 @@ No installer. One file:
 It finds everything on its own, uses the tools GAMMA already ships, and keeps itself up to date: new versions download
 in the background and swap in when you close it (or right away with **Restart now**).
 
-Windows 10/11 x64, everything bundled. A first install downloads around 150 GB; after that, updates only fetch what
-changed.
+Windows 10/11 x64, everything bundled. A first install downloads around 45 GB and needs about 200 GB of free space
+(the extracted mods alone are about 150 GB); after that, updates only fetch what changed. A full install from
+scratch took about 35 minutes here.
 
 ## Mods screen
 

@@ -1,5 +1,4 @@
 {
-  "infra.shortcut.noShell": "WScript.Shell indisponível",
   "infra.gammaApi.badList": "A lista de mods veio num formato estranho (o site pode estar fora do ar).",
   "infra.http.partialMismatch": "O arquivo parcial não bate com o do servidor; vai baixar de novo.",
   "infra.http.cutShort": "O download veio cortado ({0} de {1} bytes).",

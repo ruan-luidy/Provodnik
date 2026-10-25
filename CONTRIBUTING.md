@@ -19,7 +19,7 @@ dotnet test
 ```
 
 The simulation runs next to a real install without touching it (separate settings and folders), so you can try UI
-changes without downloading 150 GB.
+changes without downloading 45 GB.
 
 ## Code
 

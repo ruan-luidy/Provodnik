@@ -1,5 +1,11 @@
 # Novidades
 
+## 0.3.1
+
+- O atalho da área de trabalho volta a se chamar "Проводник (G.A.M.M.A.)": agora é criado pelo IShellLinkW do Windows, em Unicode, e o cirílico não vira mais "?????????". O atalho de nome latino das versões anteriores é apagado.
+- README com o tamanho certo: a primeira instalação baixa uns 45 GB e precisa de uns 200 GB livres (os 150 GB eram dos mods extraídos).
+- Licença MIT, modelos de issue e PR, guia de contribuição, código de conduta e política de segurança.
+
 ## 0.3.0
 
 - Sem instalador: o Проводник é um exe só, que mora na pasta do GAMMA e se atualiza sozinho. Procura o último release no GitHub, baixa o Provodnik.exe novo do lado do atual (conferido pelo tamanho e pelo SHA-256) e troca quando a pessoa reinicia ou o app fecha. O `tools/build_tool.py` faz o build, o exe único e o release no GitHub (no lugar do `tools/publicar.ps1`).
