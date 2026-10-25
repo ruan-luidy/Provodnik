@@ -12,14 +12,22 @@ pra uma pasta do GAMMA.
 
 A versão mora no Directory.Build.props e a nota do release sai da seção dela no docs/CHANGELOG.md: sem a seção,
 o build não sai. O token do GitHub vem de GITHUB_TOKEN ou, sem ele, do `gh auth token` (o gh já logado).
+
+A nota ganha o SHA-256 do exe e, com a VIRUSTOTAL_API_KEY definida (a chave grátis da conta no virustotal.com),
+o link da análise do VirusTotal: o exe vai pra lá antes do release e o resultado aparece no fim.
 """
 
 import argparse
+import hashlib
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import time
+import urllib.error
+import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -27,6 +35,11 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
+
+# o console do Windows em cp1252 quebrava no "✓"
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8")
 
 console = Console()
 
@@ -44,6 +57,7 @@ EXE_VERSION = EXE_DIR / "version.txt"
 # O nome do arquivo no release tem que bater com o AppUpdateService do app (ele procura "Provodnik.exe")
 MAIN_EXE = "Provodnik.exe"
 RELEASES_REPO = "https://github.com/ruan-luidy/Provodnik"
+VIRUSTOTAL_API = "https://www.virustotal.com/api/v3"
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -249,6 +263,133 @@ def publish_exe(gamma: Path | None = None) -> bool:
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# SHA-256 e VirusTotal
+# ---------------------------------------------------------------------------------------------------------------
+
+def sha256_of(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def virustotal_link(sha: str) -> str:
+    return f"https://www.virustotal.com/gui/file/{sha}"
+
+
+def checksum_notes(sha: str, scanned: bool) -> str:
+    """O bloco do fim da nota: o hash e, se o exe foi pro VirusTotal, o link da análise."""
+    check = f"Check it in PowerShell with `Get-FileHash .\\{MAIN_EXE}`."
+    if scanned:
+        check += f" [VirusTotal scan]({virustotal_link(sha)})."
+    return f"### Checksum\n`{MAIN_EXE}` SHA-256: `{sha}`\n\n{check}"
+
+
+def virustotal_key() -> str | None:
+    return os.environ.get("VIRUSTOTAL_API_KEY") or None
+
+
+def virustotal_get(path: str, key: str) -> dict | None:
+    """GET na API do VirusTotal; None quando ele não conhece (404)."""
+    request = urllib.request.Request(VIRUSTOTAL_API + path, headers={"x-apikey": key})
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return None
+        raise
+
+
+def virustotal_send(exe: Path, sha: str, key: str) -> bool:
+    """Manda o exe pro VirusTotal, se ele ainda não conhece. False só quando não deu pra mandar."""
+    log_step("Mandando pro VirusTotal...")
+    try:
+        if virustotal_get(f"/files/{sha}", key) is not None:
+            log_ok("O VirusTotal já conhece esse exe")
+            return True
+        # mais de 32 MB: precisa do endereço de upload grande
+        upload_url = virustotal_get("/files/upload_url", key)["data"]
+    except (urllib.error.URLError, KeyError, TypeError, ValueError) as e:
+        log_error(f"VirusTotal: {e}")
+        return False
+    # o curl do Windows monta o multipart sem dependência nova
+    if not run_cmd(["curl", "-s", "-S", "--fail", "-H", f"x-apikey: {key}", "-F", f"file=@{exe}", upload_url],
+                   "upload pro VirusTotal"):
+        return False
+    log_ok("Enviado; a análise leva alguns minutos")
+    return True
+
+
+def virustotal_result(sha: str, key: str, minutes: int = 15) -> bool:
+    """Espera a análise do exe e mostra quantos antivírus acusaram. False se algum acusou."""
+    deadline = time.time() + minutes * 60
+    with console.status("[cyan]esperando a análise do VirusTotal[/cyan]", spinner="dots"):
+        while True:
+            try:
+                report = virustotal_get(f"/files/{sha}", key)
+            except urllib.error.URLError:
+                report = None
+            attributes = (report or {}).get("data", {}).get("attributes", {})
+            stats = attributes.get("last_analysis_stats") or {}
+            # recém-enviado o arquivo aparece antes da análise: só vale com a data dela
+            if stats and sum(stats.values()) > 0 and attributes.get("last_analysis_date"):
+                break
+            if time.time() > deadline:
+                log_warn(f"A análise não terminou em {minutes} min; o resultado sai em {virustotal_link(sha)}")
+                return True
+            time.sleep(20)
+
+    bad = stats.get("malicious", 0) + stats.get("suspicious", 0)
+    total = bad + stats.get("undetected", 0) + stats.get("harmless", 0)
+    if bad == 0:
+        log_ok(f"VirusTotal: 0/{total} acusaram")
+        return True
+    names = [f"{name} ({r.get('result')})" for name, r in (attributes.get("last_analysis_results") or {}).items()
+             if r.get("category") in ("malicious", "suspicious")]
+    log_warn(f"VirusTotal: {bad}/{total} acusaram: {', '.join(names)}")
+    log_info(virustotal_link(sha))
+    return False
+
+
+def virustotal_release() -> bool:
+    """O exe da versão atual pro VirusTotal e o link na nota do release que já está no GitHub."""
+    version = get_version()
+    key = virustotal_key()
+    if not key:
+        log_error("Sem VIRUSTOTAL_API_KEY (a chave da conta no virustotal.com, em API key)")
+        return False
+    if not release_exists(version):
+        log_error(f"Nenhum exe da v{version}: faça o build antes")
+        return False
+    exe = EXE_DIR / MAIN_EXE
+    sha = sha256_of(exe)
+    if not virustotal_send(exe, sha, key):
+        return False
+
+    repo = RELEASES_REPO.removeprefix("https://github.com/")
+    tag = f"v{version}"
+    token = {"GH_TOKEN": github_token() or ""}
+    body = subprocess.run(["gh", "release", "view", tag, "-R", repo, "--json", "body", "-q", ".body"],
+                          capture_output=True, text=True, encoding="utf-8", env={**os.environ, **token})
+    if body.returncode != 0:
+        log_error(f"Sem o release {tag} no GitHub")
+        return False
+    notes = body.stdout.rstrip()
+    if virustotal_link(sha) not in notes:
+        old = checksum_notes(sha, scanned=False)
+        new = checksum_notes(sha, scanned=True)
+        notes = notes.replace(old, new) if old in notes else notes + "\n\n" + new
+        notes_file = ARTIFACTS / f"notes-{version}.md"
+        notes_file.write_text(notes + "\n", encoding="utf-8")
+        if not run_cmd(["gh", "release", "edit", tag, "--notes-file", str(notes_file), "-R", repo], "gh release edit", token):
+            return False
+        log_ok(f"Link do VirusTotal na nota do {tag}")
+    return virustotal_result(sha, key)
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # Publicar
 # ---------------------------------------------------------------------------------------------------------------
 
@@ -281,9 +422,16 @@ def upload_release() -> bool:
     env = {"GH_TOKEN": token}
     repo = RELEASES_REPO.removeprefix("https://github.com/")
     tag = f"v{version}"
-    notes_file = ARTIFACTS / f"notes-{version}.md"
-    notes_file.write_text(changelog_notes(version) or "", encoding="utf-8")
     exe = str(EXE_DIR / MAIN_EXE)
+    sha = sha256_of(EXE_DIR / MAIN_EXE)
+    # o exe vai pro VirusTotal antes: o link já sai na nota e a análise roda enquanto o release sobe
+    vt_key = virustotal_key()
+    scanned = bool(vt_key) and virustotal_send(EXE_DIR / MAIN_EXE, sha, vt_key)
+    if not vt_key:
+        log_warn("Sem VIRUSTOTAL_API_KEY: o release sai sem o link do VirusTotal")
+    notes_file = ARTIFACTS / f"notes-{version}.md"
+    notes = (changelog_notes(version) or "") + "\n\n" + checksum_notes(sha, scanned)
+    notes_file.write_text(notes + "\n", encoding="utf-8")
 
     exists = subprocess.run(["gh", "release", "view", tag, "-R", repo], capture_output=True,
                             env={**os.environ, **env}).returncode == 0
@@ -302,6 +450,9 @@ def upload_release() -> bool:
 
     log_ok(f"Publicado: {RELEASES_REPO}/releases/tag/{tag}")
     log_info("Quem já tem o Provodnik recebe sozinho; quem não tem baixa o Provodnik.exe do release.")
+    if scanned:
+        console.print()
+        virustotal_result(sha, vt_key)
     return True
 
 
@@ -330,9 +481,10 @@ def show_menu() -> str:
     console.print("  [cyan]3[/cyan] - Publicar no GitHub" if built else "  [dim]3 - Publicar no GitHub (faça o build antes)[/dim]")
     console.print("  [cyan]4[/cyan] - Exe único (e copiar pra pasta do GAMMA)")
     console.print(f"  [cyan]5[/cyan] - Limpar o exe da v{version}")
+    console.print("  [cyan]6[/cyan] - VirusTotal do exe (e o link no release)" if built else "  [dim]6 - VirusTotal do exe (faça o build antes)[/dim]")
     console.print("  [cyan]q[/cyan] - Sair")
     console.print()
-    return Prompt.ask("Escolha", choices=["1", "2", "3", "4", "5", "q"], default="2")
+    return Prompt.ask("Escolha", choices=["1", "2", "3", "4", "5", "6", "q"], default="2")
 
 
 def menu():
@@ -352,6 +504,13 @@ def menu():
         console.print()
         log_step(f"Limpando o exe da v{get_version()}...")
         clean_release(get_version())
+        console.print()
+        return
+
+    if choice == "6":
+        console.print()
+        if virustotal_release():
+            console.print("[green]Pronto![/green]")
         console.print()
         return
 
@@ -399,6 +558,7 @@ def parse_args() -> argparse.Namespace:
         epilog="exemplos:\n"
                "  python tools/build_tool.py --build               testes e o exe único em artifacts/exe\n"
                "  python tools/build_tool.py --build --github      e publica o release no GitHub\n"
+               "  python tools/build_tool.py --virustotal          exe atual pro VirusTotal e o link no release\n"
                "  python tools/build_tool.py --bump patch          0.3.0 -> 0.3.1 (abre a seção no CHANGELOG)\n"
                "  python tools/build_tool.py --gamma D:\\GAMMA       exe único copiado pra D:\\GAMMA\\Provodnik.exe",
     )
@@ -408,6 +568,8 @@ def parse_args() -> argparse.Namespace:
                         help="testes e o exe único (um arquivo, .NET dentro) em artifacts/exe")
     parser.add_argument("--github", action="store_true",
                         help="publica o release da versão atual no GitHub com o Provodnik.exe (gh release)")
+    parser.add_argument("--virustotal", action="store_true",
+                        help="manda o exe da versão atual pro VirusTotal e põe o link na nota do release")
     parser.add_argument("--exe", action="store_true",
                         help="só o exe único (um arquivo, .NET dentro) em artifacts/exe")
     parser.add_argument("--gamma", metavar="PASTA", type=Path,
@@ -419,7 +581,7 @@ def parse_args() -> argparse.Namespace:
 
 def main():
     args = parse_args()
-    if not (args.bump or args.build or args.github or args.exe or args.gamma):
+    if not (args.bump or args.build or args.github or args.exe or args.gamma or args.virustotal):
         menu()
         return
 
@@ -436,6 +598,9 @@ def main():
     if ok and args.github:
         console.print()
         ok = upload_release()
+    if ok and args.virustotal and not args.github:
+        console.print()
+        ok = virustotal_release()
     if ok and (args.exe or args.gamma) and not (args.build and not args.gamma):
         console.print()
         ok = publish_exe(args.gamma)
