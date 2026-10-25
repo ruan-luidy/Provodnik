@@ -5,9 +5,10 @@ Provodnik Build Tool - o build_tool.py do Otmetka (que é o do Windfinder e do r
     python tools/build_tool.py                      menu
     python tools/build_tool.py --help               as opções sem menu
 
-Menu: subir a versão (patch/minor/major, ou mais uma de teste; já abrindo a seção no CHANGELOG), build completo
-(testes, publish e pacote do Velopack), publicar no GitHub Releases (de onde a versão instalada se atualiza) e o
-exe único pra morar na pasta do GAMMA (o que o antigo tools/publicar.ps1 fazia).
+O Provodnik é um exe só, que mora na pasta do GAMMA e se atualiza sozinho pelos GitHub Releases (baixa o
+Provodnik.exe do último release e troca o próprio arquivo). Menu: subir a versão (patch/minor/major, ou mais uma de
+teste; já abrindo a seção no CHANGELOG), build (testes e o exe único), publicar o release no GitHub e copiar o exe
+pra uma pasta do GAMMA.
 
 A versão mora no Directory.Build.props e a nota do release sai da seção dela no docs/CHANGELOG.md: sem a seção,
 o build não sai. O token do GitHub vem de GITHUB_TOKEN ou, sem ele, do `gh auth token` (o gh já logado).
@@ -31,24 +32,17 @@ console = Console()
 
 # Caminhos
 ROOT = Path(__file__).resolve().parent.parent
-# O ícone do instalador (Setup.exe), o mesmo do .exe
-APP_ICON = ROOT / "src" / "Provodnik.Wpf" / "Assets" / "provodnik.ico"
 PROPS_PATH = ROOT / "Directory.Build.props"
 CHANGELOG_PATH = ROOT / "docs" / "CHANGELOG.md"
 APP_PROJECT = ROOT / "src" / "Provodnik.Wpf"
 TESTS_PROJECT = ROOT / "tests" / "Provodnik.Tests"
 ARTIFACTS = ROOT / "artifacts"
-PUBLISH_DIR = ARTIFACTS / "publish"
-RELEASES_DIR = ARTIFACTS / "releases"
-# O exe único (-p:Distribuir=true), separado do publish do Velopack
+# O exe único (-p:Distribuir=true) e a versão dele, pro release
 EXE_DIR = ARTIFACTS / "exe"
+EXE_VERSION = EXE_DIR / "version.txt"
 
-# Velopack: tem que bater com o AppUpdateService do app (canal fixo "win")
-PACK_ID = "Provodnik"
+# O nome do arquivo no release tem que bater com o AppUpdateService do app (ele procura "Provodnik.exe")
 MAIN_EXE = "Provodnik.exe"
-CHANNEL = "win"
-RUNTIME = "win-x64"
-
 RELEASES_REPO = "https://github.com/ruan-luidy/Provodnik"
 
 
@@ -181,30 +175,15 @@ def bump_version(part: str | None = None) -> bool:
 # Build
 # ---------------------------------------------------------------------------------------------------------------
 
-def release_files(version: str) -> list[Path]:
-    if not RELEASES_DIR.exists():
-        return []
-    return sorted(f for f in RELEASES_DIR.iterdir() if f.is_file() and version in f.name)
-
-
 def release_exists(version: str) -> bool:
-    return (RELEASES_DIR / f"{PACK_ID}-{version}-full.nupkg").exists()
+    """O exe único desta versão já está em artifacts/exe."""
+    return (EXE_DIR / MAIN_EXE).exists() and EXE_VERSION.exists() and EXE_VERSION.read_text(encoding="utf-8").strip() == version
 
 
 def clean_release(version: str):
-    """Tira os arquivos desta versão e os índices (o vpk gera de novo); os de versões antigas ficam pro delta."""
-    removed = 0
-    for f in release_files(version):
-        f.unlink()
-        removed += 1
-    for name in ["RELEASES", f"releases.{CHANNEL}.json", f"assets.{CHANNEL}.json", f"{PACK_ID}-{CHANNEL}-Setup.exe",
-                 f"{PACK_ID}-{CHANNEL}-Portable.zip"]:
-        path = RELEASES_DIR / name
-        if path.exists():
-            path.unlink()
-            removed += 1
-    if removed:
-        log_ok(f"Limpou {removed} arquivos")
+    if EXE_DIR.exists():
+        shutil.rmtree(EXE_DIR)
+        log_ok(f"Limpou o exe da v{version}")
 
 
 def build_release(assume_yes: bool = False) -> bool:
@@ -213,18 +192,16 @@ def build_release(assume_yes: bool = False) -> bool:
     console.print(Panel(f"[bold]Provodnik[/bold] v{version}", title="Build", border_style="cyan"))
     console.print()
 
-    notes = changelog_notes(version)
-    if notes is None:
+    if changelog_notes(version) is None:
         log_error(f"O docs/CHANGELOG.md não tem a seção {version} (ou ela está vazia).")
         log_info("Use a opção 'Subir a versão' ou escreva a seção na mão.")
         return False
 
     if release_exists(version):
-        log_warn(f"O release v{version} já existe")
+        log_warn(f"O exe da v{version} já existe")
         if not assume_yes and not Confirm.ask("Apagar e fazer de novo?", default=True):
             log_info("Cancelado")
             return False
-        clean_release(version)
         console.print()
 
     log_step("Testando...")
@@ -232,43 +209,14 @@ def build_release(assume_yes: bool = False) -> bool:
         return False
     log_ok("Testes passaram")
 
-    log_step("Publicando...")
-    if PUBLISH_DIR.exists():
-        shutil.rmtree(PUBLISH_DIR)
-    if not run_cmd(["dotnet", "publish", str(APP_PROJECT), "-c", "Release", "-r", RUNTIME, "--self-contained",
-                    "-o", str(PUBLISH_DIR), "--verbosity", "quiet"], "dotnet publish"):
+    if not publish_exe():
         return False
-    log_ok("Publish pronto")
-
-    log_step("Empacotando...")
-    RELEASES_DIR.mkdir(parents=True, exist_ok=True)
-    notes_file = ARTIFACTS / f"notes-{version}.md"
-    notes_file.write_text(notes, encoding="utf-8")
-    # vpk local do repositório (.config/dotnet-tools.json), na mesma versão do pacote Velopack do app
-    if not run_cmd(["dotnet", "tool", "restore"], "dotnet tool restore"):
-        return False
-    if not run_cmd(["dotnet", "vpk", "pack", "--packId", PACK_ID, "--packVersion", version, "--packDir", str(PUBLISH_DIR),
-                    "--mainExe", MAIN_EXE, "--packTitle", PACK_ID, "--runtime", RUNTIME, "--channel", CHANNEL,
-                    "--packAuthors", "Ruan Melo", "--releaseNotes", str(notes_file), "--outputDir", str(RELEASES_DIR),
-                    "--icon", str(APP_ICON)],
-                   "vpk pack"):
-        return False
-    log_ok("Velopack pronto")
-
-    console.print()
-    table = Table(title="Arquivos", border_style="green")
-    table.add_column("Arquivo", style="cyan")
-    table.add_column("Tamanho", justify="right")
-    for f in release_files(version) + [RELEASES_DIR / f"{PACK_ID}-{CHANNEL}-Setup.exe",
-                                       RELEASES_DIR / f"{PACK_ID}-{CHANNEL}-Portable.zip"]:
-        if f.exists():
-            table.add_row(f.name, f"{f.stat().st_size / (1024 * 1024):.1f} MB")
-    console.print(table)
+    EXE_VERSION.write_text(version, encoding="utf-8")
     return True
 
 
 # ---------------------------------------------------------------------------------------------------------------
-# Exe único (a pasta do GAMMA)
+# Exe único (o que vai pro release e pra pasta do GAMMA)
 # ---------------------------------------------------------------------------------------------------------------
 
 def publish_exe(gamma: Path | None = None) -> bool:
@@ -297,7 +245,6 @@ def publish_exe(gamma: Path | None = None) -> bool:
         log_error(f"Feche o Provodnik antes de trocar o {target}")
         return False
     log_ok(f"Copiado pra {target}")
-    log_info("Esse exe não se atualiza sozinho: é só rodar de novo com a pasta do GAMMA.")
     return True
 
 
@@ -317,12 +264,13 @@ def github_token() -> str | None:
 
 
 def upload_release() -> bool:
+    """O release v<versão> no GitHub com o Provodnik.exe e a seção do CHANGELOG como nota (de onde o app se atualiza)."""
     version = get_version()
     log_step("Subindo pro GitHub...")
     log_info(f"Repo: {RELEASES_REPO}")
 
     if not release_exists(version):
-        log_error(f"Nenhum release da v{version}: faça o build antes")
+        log_error(f"Nenhum exe da v{version}: faça o build antes")
         return False
 
     token = github_token()
@@ -330,29 +278,30 @@ def upload_release() -> bool:
         log_error("Sem token: defina GITHUB_TOKEN ou faça gh auth login")
         return False
 
-    # vpk lê o token do VPK_TOKEN; o pacote anterior do GitHub entra como base do delta (na primeira vez não tem)
-    env = {"VPK_TOKEN": token}
-    if not run_cmd(["dotnet", "tool", "restore"], "dotnet tool restore"):
-        return False
-    run_cmd(["dotnet", "vpk", "download", "github", "--repoUrl", RELEASES_REPO, "--outputDir", str(RELEASES_DIR)],
-            "vpk download (release anterior)", env)
-    # Versão de teste ("0.4.0-teste.2") sobe como pré-release
-    pre = ["--pre"] if "-" in version else []
-    if not run_cmd(["dotnet", "vpk", "upload", "github", "--repoUrl", RELEASES_REPO, "--tag", f"v{version}",
-                    "--releaseName", f"Provodnik {version}", "--outputDir", str(RELEASES_DIR), "--publish"] + pre,
-                   "vpk upload", env):
-        return False
-
-    # O exe único vai junto no mesmo release: quem prefere deixar o Provodnik dentro da pasta do GAMMA baixa ele
-    if not publish_exe():
-        return False
+    env = {"GH_TOKEN": token}
     repo = RELEASES_REPO.removeprefix("https://github.com/")
-    if not run_cmd(["gh", "release", "upload", f"v{version}", str(EXE_DIR / MAIN_EXE), "--clobber", "-R", repo],
-                   "gh release upload (exe único)", {"GH_TOKEN": token}):
-        return False
+    tag = f"v{version}"
+    notes_file = ARTIFACTS / f"notes-{version}.md"
+    notes_file.write_text(changelog_notes(version) or "", encoding="utf-8")
+    exe = str(EXE_DIR / MAIN_EXE)
 
-    log_ok(f"Publicado: {RELEASES_REPO}/releases/tag/v{version}")
-    log_info(f"Pra instalar: {RELEASES_REPO}/releases/latest ({PACK_ID}-{CHANNEL}-Setup.exe)")
+    exists = subprocess.run(["gh", "release", "view", tag, "-R", repo], capture_output=True,
+                            env={**os.environ, **env}).returncode == 0
+    if exists:
+        # o mesmo release de novo: troca o exe e a nota
+        if not run_cmd(["gh", "release", "upload", tag, exe, "--clobber", "-R", repo], "gh release upload", env):
+            return False
+        if not run_cmd(["gh", "release", "edit", tag, "--notes-file", str(notes_file), "-R", repo], "gh release edit", env):
+            return False
+    else:
+        # versão de teste ("0.4.0-teste.2") sobe como pré-release: só quem está numa de teste recebe
+        pre = ["--prerelease"] if "-" in version else []
+        if not run_cmd(["gh", "release", "create", tag, exe, "--title", f"Provodnik {version}",
+                        "--notes-file", str(notes_file), "-R", repo] + pre, "gh release create", env):
+            return False
+
+    log_ok(f"Publicado: {RELEASES_REPO}/releases/tag/{tag}")
+    log_info("Quem já tem o Provodnik recebe sozinho; quem não tem baixa o Provodnik.exe do release.")
     return True
 
 
@@ -368,19 +317,19 @@ def show_menu() -> str:
     console.print(f"[bold cyan]Provodnik[/bold cyan] [dim]v{version}[/dim]")
     console.print()
     if built:
-        console.print(f"  [green]✓[/green] Release v{version} em artifacts/releases")
+        console.print(f"  [green]✓[/green] Exe da v{version} em artifacts/exe")
     else:
-        console.print(f"  [dim]○[/dim] Nenhum release da v{version}")
+        console.print(f"  [dim]○[/dim] Nenhum exe da v{version}")
     if changelog_notes(version) is None:
         console.print(f"  [yellow]![/yellow] docs/CHANGELOG.md sem a seção {version}")
     console.print()
 
     console.print("[bold]Opções:[/bold]")
     console.print("  [cyan]1[/cyan] - Subir a versão (patch/minor/major)")
-    console.print(f"  [cyan]2[/cyan] - {'Refazer o build (apaga o release atual)' if built else 'Build completo (testes, publish, pacote)'}")
+    console.print(f"  [cyan]2[/cyan] - {'Refazer o build' if built else 'Build (testes e o exe único)'}")
     console.print("  [cyan]3[/cyan] - Publicar no GitHub" if built else "  [dim]3 - Publicar no GitHub (faça o build antes)[/dim]")
     console.print("  [cyan]4[/cyan] - Exe único (e copiar pra pasta do GAMMA)")
-    console.print(f"  [cyan]5[/cyan] - Limpar o release da v{version}")
+    console.print(f"  [cyan]5[/cyan] - Limpar o exe da v{version}")
     console.print("  [cyan]q[/cyan] - Sair")
     console.print()
     return Prompt.ask("Escolha", choices=["1", "2", "3", "4", "5", "q"], default="2")
@@ -401,7 +350,7 @@ def menu():
 
     if choice == "5":
         console.print()
-        log_step(f"Limpando o release da v{get_version()}...")
+        log_step(f"Limpando o exe da v{get_version()}...")
         clean_release(get_version())
         console.print()
         return
@@ -434,7 +383,7 @@ def menu():
         console.print()
         upload_release()
     else:
-        console.print("[dim]Ficou só local, em artifacts/releases.[/dim]")
+        console.print("[dim]Ficou só local, em artifacts/exe.[/dim]")
     console.print()
 
 
@@ -448,23 +397,23 @@ def parse_args() -> argparse.Namespace:
         description="Build e release do Provodnik. Sem opções abre o menu.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="exemplos:\n"
-               "  python tools/build_tool.py --build               testes, publish e pacote em artifacts/releases\n"
-               "  python tools/build_tool.py --build --github      e sobe pro GitHub Releases\n"
+               "  python tools/build_tool.py --build               testes e o exe único em artifacts/exe\n"
+               "  python tools/build_tool.py --build --github      e publica o release no GitHub\n"
                "  python tools/build_tool.py --bump patch          0.3.0 -> 0.3.1 (abre a seção no CHANGELOG)\n"
                "  python tools/build_tool.py --gamma D:\\GAMMA       exe único copiado pra D:\\GAMMA\\Provodnik.exe",
     )
     parser.add_argument("--bump", choices=["patch", "minor", "major", "teste"],
                         help="sobe a versão no Directory.Build.props e abre a seção no CHANGELOG")
     parser.add_argument("--build", action="store_true",
-                        help="testes, publish self-contained e pacote do Velopack (vpk pack) em artifacts/releases")
+                        help="testes e o exe único (um arquivo, .NET dentro) em artifacts/exe")
     parser.add_argument("--github", action="store_true",
-                        help="sobe o pacote da versão atual pro GitHub Releases (vpk upload github)")
+                        help="publica o release da versão atual no GitHub com o Provodnik.exe (gh release)")
     parser.add_argument("--exe", action="store_true",
                         help="só o exe único (um arquivo, .NET dentro) em artifacts/exe")
     parser.add_argument("--gamma", metavar="PASTA", type=Path,
                         help="o exe único copiado pra pasta do GAMMA (ao lado do ModOrganizer.exe)")
     parser.add_argument("-y", "--yes", action="store_true",
-                        help="sem perguntas: refaz o release da versão se ele já existir")
+                        help="sem perguntas: refaz o exe da versão se ele já existir")
     return parser.parse_args()
 
 
@@ -487,7 +436,7 @@ def main():
     if ok and args.github:
         console.print()
         ok = upload_release()
-    if ok and (args.exe or args.gamma):
+    if ok and (args.exe or args.gamma) and not (args.build and not args.gamma):
         console.print()
         ok = publish_exe(args.gamma)
 

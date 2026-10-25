@@ -15,9 +15,8 @@
   mc:Ignorable="d">
 
   <!--
-    Sobre: o selo do app com a versão, a procura de versão nova (instalado pelo Setup.exe, baixa e reinicia; o exe
-    solto na pasta do GAMMA pergunta pro GitHub e oferece o download) e os links. Os grupos são os cartões das
-    Configurações.
+    Sobre: o selo do app com a versão, a procura de versão nova (baixa do GitHub e troca o exe ao reiniciar) e os
+    links. Os grupos são os cartões das Configurações.
   -->
   <controls:DialogFrame
     BodyPadding="20,0,20,16"
@@ -63,11 +62,11 @@
               Orientation="Horizontal">
               <Button
                 hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
-                Command="{Binding CheckCommand}"
+                Command="{Binding Update.CheckNowCommand}"
                 Content="{loc:Tr about.update.check}"
                 Style="{StaticResource Action}"
                 ToolTip="{loc:Tr about.update.checkTip}" />
-              <!--  Instalado pelo Setup.exe: a versão nova já baixou, é só reiniciar  -->
+              <!--  A versão nova já baixou do lado do exe: é só reiniciar pra trocar  -->
               <Button
                 Margin="8,0,0,0"
                 hc:IconElement.Geometry="{icons:Phosphor ArrowCircleUpBold}"
@@ -75,32 +74,25 @@
                 Content="{loc:Tr about.update.restart}"
                 Style="{StaticResource Action.Primary}"
                 Visibility="{Binding Update.IsReady, Converter={StaticResource Boolean2VisibilityConverter}}" />
-              <!--  A cópia solta na pasta do GAMMA: abre o release novo pra baixar  -->
-              <Button
-                Margin="8,0,0,0"
-                hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
-                Command="{Binding DownloadCommand}"
-                Content="{loc:Tr about.update.download}"
-                Style="{StaticResource Action.Primary}"
-                Visibility="{Binding HasDownload, Converter={StaticResource Boolean2VisibilityConverter}}" />
             </StackPanel>
             <StackPanel VerticalAlignment="Center">
-              <TextBlock>
-                <TextBlock.Style>
-                  <Style BasedOn="{StaticResource SettingTitle}" TargetType="TextBlock">
-                    <Setter Property="Text" Value="{Binding Update.Status}" />
+              <TextBlock Style="{StaticResource SettingTitle}" Text="{Binding Update.Status}" />
+              <ProgressBar
+                Height="4"
+                Margin="0,6,0,0"
+                Maximum="100"
+                Value="{Binding Update.Progress, Mode=OneWay}">
+                <ProgressBar.Style>
+                  <Style BasedOn="{StaticResource SlimProgress}" TargetType="ProgressBar">
+                    <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                      <DataTrigger Binding="{Binding IsPortable}" Value="True">
-                        <Setter Property="Text" Value="{Binding PortableStatus}" />
+                      <DataTrigger Binding="{Binding Update.State}" Value="Downloading">
+                        <Setter Property="Visibility" Value="Visible" />
                       </DataTrigger>
                     </Style.Triggers>
                   </Style>
-                </TextBlock.Style>
-              </TextBlock>
-              <TextBlock
-                Style="{StaticResource SettingCaption}"
-                Text="{loc:Tr about.update.portableNote}"
-                Visibility="{Binding IsPortable, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                </ProgressBar.Style>
+              </ProgressBar>
             </StackPanel>
           </DockPanel>
         </Border>

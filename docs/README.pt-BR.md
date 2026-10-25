@@ -40,13 +40,14 @@ arquivo) e corrige um erro de digitação na própria lista do GAMMA que deixa u
 
 ## Instalar
 
-1. Baixe o **`Provodnik-win-Setup.exe`** do [último release](https://github.com/ruan-luidy/Provodnik/releases/latest) e
-   rode. As versões novas baixam sozinhas e entram quando você fecha o app.
-2. Abra o Provodnik, aponte a pasta do GAMMA se ele não achar e clique em **Instalar / atualizar**.
+Sem instalador. Um arquivo só:
 
-Prefere um arquivo só? Baixe o **`Provodnik.exe`** do release e deixe ao lado do `ModOrganizer.exe` na pasta do GAMMA.
-Ele acha tudo sozinho e usa as ferramentas que o GAMMA já traz. Essa cópia não se atualiza sozinha; **Sobre →
-Procurar** avisa quando sai versão nova.
+1. Baixe o **`Provodnik.exe`** do [último release](https://github.com/ruan-luidy/Provodnik/releases/latest).
+2. Jogue na pasta do GAMMA, ao lado do `ModOrganizer.exe`.
+3. Abra e clique em **Instalar / atualizar**. Botão direito → *Enviar para → Área de trabalho* se quiser um atalho.
+
+Ele acha tudo sozinho, usa as ferramentas que o GAMMA já traz e se mantém atualizado: a versão nova baixa sozinha e
+entra quando você fecha o app (ou na hora, com **Reiniciar agora**).
 
 Windows 10/11 x64, com tudo embutido. A primeira instalação baixa uns 150 GB; depois, as atualizações só trazem o que
 mudou.
@@ -76,7 +77,7 @@ levar no Discord do GAMMA ou numa [issue](https://github.com/ruan-luidy/Provodni
 ```powershell
 dotnet run --project src/Provodnik.Wpf -- --demo   # simulação: GAMMA de mentira em %TEMP%, nada é baixado
 dotnet test
-python tools\build_tool.py --build --github        # testes, pacote do Velopack e release no GitHub
+python tools\build_tool.py --build --github        # testes, o exe único e o release no GitHub
 python tools\build_tool.py --gamma D:\GAMMA        # o exe único direto na pasta do GAMMA
 ```
 
@@ -87,5 +88,4 @@ ficam em `Localization/*.{pt,en,ru}.json`.
 ## Créditos
 
 G.A.M.M.A. do Grok e da equipe do GAMMA. Ícone do átomo do [Icons8](https://icons8.com). Feito com
-[HandyControl](https://github.com/HandyOrg/HandyControl), [Phosphor](https://phosphoricons.com) e
-[Velopack](https://velopack.io).
+[HandyControl](https://github.com/HandyOrg/HandyControl) e [Phosphor](https://phosphoricons.com).

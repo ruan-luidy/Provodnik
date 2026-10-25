@@ -47,16 +47,17 @@ and fixes a typo in GAMMA's own mod list that leaves one mod disabled for everyb
 
 ## Install
 
-1. Download **`Provodnik-win-Setup.exe`** from the [latest release](https://github.com/ruan-luidy/Provodnik/releases/latest)
-   and run it. New versions download in the background and apply when you close the app.
-2. Open Provodnik, point it at your GAMMA folder if it doesn't find it, and press **Install / update**.
+No installer. One file:
 
-Prefer a single file? Download **`Provodnik.exe`** from the release and drop it next to `ModOrganizer.exe` in your GAMMA
-folder. It finds everything on its own and uses the tools GAMMA already ships. That copy doesn't update itself;
-**About → Check** tells you when there's a new version.
+1. Download **`Provodnik.exe`** from the [latest release](https://github.com/ruan-luidy/Provodnik/releases/latest).
+2. Drop it in your GAMMA folder, next to `ModOrganizer.exe`.
+3. Run it and press **Install / update**. Right-click → *Send to → Desktop* if you want a shortcut.
 
-Windows 10/11 x64. Everything it needs is bundled. A first install downloads around 150 GB; after that, updates only
-fetch what changed.
+It finds everything on its own, uses the tools GAMMA already ships, and keeps itself up to date: new versions download
+in the background and swap in when you close it (or right away with **Restart now**).
+
+Windows 10/11 x64, everything bundled. A first install downloads around 150 GB; after that, updates only fetch what
+changed.
 
 ## Mods screen
 
@@ -84,7 +85,7 @@ Discord or in an [issue](https://github.com/ruan-luidy/Provodnik/issues).
 ```powershell
 dotnet run --project src/Provodnik.Wpf -- --demo   # simulation: a fake GAMMA in %TEMP%, nothing is downloaded
 dotnet test
-python tools\build_tool.py --build --github        # tests, Velopack package and GitHub release
+python tools\build_tool.py --build --github        # tests, the single exe and the GitHub release
 ```
 
 The code is split into `Provodnik.Core` (models and contracts, no dependencies), `Provodnik.Features` (the install
@@ -94,5 +95,4 @@ pipeline), `Provodnik.Infrastructure` (HTTP and the GAMMA tools) and `Provodnik.
 ## Credits
 
 G.A.M.M.A. by Grok and the GAMMA team. Atom icon by [Icons8](https://icons8.com). Built with
-[HandyControl](https://github.com/HandyOrg/HandyControl), [Phosphor icons](https://phosphoricons.com) and
-[Velopack](https://velopack.io).
+[HandyControl](https://github.com/HandyOrg/HandyControl) and [Phosphor icons](https://phosphoricons.com).

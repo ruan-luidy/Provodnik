@@ -28,7 +28,7 @@
   "appUpdate.applyFailed": "Сейчас обновить не получилось. Новая версия встанет, когда Проводник закроется.",
   "appUpdate.idle": "Обновляется сам через GitHub.",
   "appUpdate.demo": "В симуляции новые версии не ищутся.",
-  "appUpdate.notInstalled": "Автообновление есть только в установленной версии (Setup.exe).",
+  "appUpdate.notInstalled": "Запущено из исходников: самообновления нет.",
   "appUpdate.short.demo": "демо",
   "appUpdate.short.notInstalled": "без обновлений",
   "appUpdate.checking": "Ищу новую версию...",
@@ -45,5 +45,7 @@
   "appUpdate.short.failed": "нет связи",
   "appUpdate.toast.title": "Новая версия Проводника",
   "appUpdate.toast.message": "Версия {0} уже скачана. Встанет, когда Проводник закроется, или прямо сейчас:",
-  "appUpdate.toast.restart": "Перезапустить сейчас"
+  "appUpdate.toast.restart": "Перезапустить сейчас",
+  "appUpdate.noWrite": "Нет прав заменить Provodnik.exe в этой папке. Скачайте новую версию в Releases.",
+  "appUpdate.badDownload": "Скачанный файл не совпадает с файлом на GitHub. Попробую позже."
 }

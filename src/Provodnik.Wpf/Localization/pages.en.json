@@ -147,7 +147,7 @@
   "settings.section.app": "PROVODNIK",
   "settings.languageRow.caption": "The app reopens to switch.",
   "settings.autoUpdate.title": "Update automatically",
-  "settings.autoUpdate.caption": "Looks for a new app version on GitHub and downloads it; it kicks in when the app closes. Only for the version installed with Setup.",
+  "settings.autoUpdate.caption": "Looks for a new app version on GitHub and downloads it; it kicks in when the app closes.",
   "settings.section.appearance": "APPEARANCE",
   "settings.mica.title": "Mica background",
   "settings.mica.caption": "The translucent Windows 11 background. On Windows 10 it stays solid gray.",

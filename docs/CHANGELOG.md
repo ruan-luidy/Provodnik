@@ -2,7 +2,7 @@
 
 ## 0.3.0
 
-- Atualização do próprio Проводник pelo Velopack: a versão instalada pelo `Provodnik-win-Setup.exe` procura versão nova no GitHub Releases, baixa sozinha e avisa com "Reiniciar agora"; sem clique, entra quando o app fechar. O exe solto na pasta do GAMMA continua igual, sem se atualizar. O `tools/build_tool.py` faz o build, o pacote, o release no GitHub e o exe único da pasta do GAMMA (no lugar do `tools/publicar.ps1`).
+- Sem instalador: o Проводник é um exe só, que mora na pasta do GAMMA e se atualiza sozinho. Procura o último release no GitHub, baixa o Provodnik.exe novo do lado do atual (conferido pelo tamanho e pelo SHA-256) e troca quando a pessoa reinicia ou o app fecha. O `tools/build_tool.py` faz o build, o exe único e o release no GitHub (no lugar do `tools/publicar.ps1`).
 - Links do ModDB pelo navegador embutido (WebView2): o ModDB passou a exigir navegador por causa do Cloudflare, e o stalker-gamma-dl-cli do GAMMA responde "Failed to generate download link" pra todo mundo. Lê o HTML assim que chega e vai direto pro espelho, ~1 s por link; desafio com clique abre a janela pra pessoa resolver, e os cookies ficam salvos.
 - Instrução com barra no começo ("\Black_Market-main") ou com "/" entrava errado; os mods montados assim são refeitos sozinhos.
 - Pasta somente-leitura dentro do arquivo (zip/rar) não trava mais a extração.

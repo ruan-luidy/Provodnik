@@ -147,7 +147,7 @@
   "settings.section.app": "PROVODNIK",
   "settings.languageRow.caption": "O app reabre pra trocar.",
   "settings.autoUpdate.title": "Atualizar sozinho",
-  "settings.autoUpdate.caption": "Procura a versão nova do app no GitHub e baixa; ela entra quando o app fechar. Só na versão instalada pelo Setup.",
+  "settings.autoUpdate.caption": "Procura a versão nova do app no GitHub e baixa; ela entra quando o app fechar.",
   "settings.section.appearance": "APARÊNCIA",
   "settings.mica.title": "Fundo Mica",
   "settings.mica.caption": "O fundo translúcido do Windows 11. No Windows 10 fica o cinza sólido.",

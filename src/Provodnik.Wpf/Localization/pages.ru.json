@@ -147,7 +147,7 @@
   "settings.section.app": "ПРОВОДНИК",
   "settings.languageRow.caption": "Для смены приложение перезапустится.",
   "settings.autoUpdate.title": "Обновляться автоматически",
-  "settings.autoUpdate.caption": "Ищет новую версию приложения на GitHub и скачивает её; она встанет, когда приложение закроется. Только для версии, установленной через Setup.",
+  "settings.autoUpdate.caption": "Ищет новую версию приложения на GitHub и скачивает её; она встанет, когда приложение закроется.",
   "settings.section.appearance": "ВНЕШНИЙ ВИД",
   "settings.mica.title": "Фон Mica",
   "settings.mica.caption": "Полупрозрачный фон Windows 11. В Windows 10 остаётся сплошной серый.",

@@ -15,13 +15,11 @@
     <RootNamespace>Provodnik.Wpf</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\provodnik.ico</ApplicationIcon>
-    <!--  Main próprio (Program.cs): o Velopack roda antes do WPF  -->
-    <StartupObject>Provodnik.Wpf.Program</StartupObject>
   </PropertyGroup>
 
   <!--
     Publicação pra morar na pasta do GAMMA: um exe só, com o .NET dentro (quem joga não precisa instalar nada).
-    O tools\build_tool.py (opções exe e gamma) chama com -p:Distribuir=true. O pacote do Velopack não usa isto.
+    O tools\build_tool.py (opções exe e gamma) chama com -p:Distribuir=true.
   -->
   <PropertyGroup Condition="'$(Distribuir)' == 'true'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -42,7 +40,6 @@
     <!--  O navegador que passa pelo Cloudflare do ModDB (Features/Install/ModDbBrowser.cs)  -->
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
     <!--  Atualização do próprio Проводник pelo GitHub Releases (Features/AppUpdate)  -->
-    <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>
 
   <ItemGroup>

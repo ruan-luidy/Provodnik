@@ -28,7 +28,7 @@
   "appUpdate.applyFailed": "Couldn't update right now. The new version kicks in when Provodnik closes.",
   "appUpdate.idle": "Updates itself from GitHub.",
   "appUpdate.demo": "The simulation doesn't check for new versions.",
-  "appUpdate.notInstalled": "Auto-update only works in the installed version (Setup.exe).",
+  "appUpdate.notInstalled": "Running from source: no self-update.",
   "appUpdate.short.demo": "demo",
   "appUpdate.short.notInstalled": "no updates here",
   "appUpdate.checking": "Checking for a new version...",
@@ -45,5 +45,7 @@
   "appUpdate.short.failed": "offline",
   "appUpdate.toast.title": "New Provodnik version",
   "appUpdate.toast.message": "{0} is already downloaded. It kicks in when Provodnik closes, or right now:",
-  "appUpdate.toast.restart": "Restart now"
+  "appUpdate.toast.restart": "Restart now",
+  "appUpdate.noWrite": "No permission to replace Provodnik.exe in this folder. Get the new version from Releases.",
+  "appUpdate.badDownload": "The downloaded file doesn't match GitHub's. Trying again later."
 }

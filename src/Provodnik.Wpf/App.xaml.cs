@@ -79,7 +79,7 @@ namespace Provodnik.Wpf
       ListenForSecondInstance(window);
       window.Show();
       DemoConsole(_services.GetRequiredService<IToolConsole>());
-      // versão nova do próprio Проводник (só na instalada pelo Setup.exe, fora da simulação)
+      // versão nova do próprio Проводник pelos Releases do GitHub (o exe único, fora da simulação)
       _services.GetRequiredService<AppUpdateService>().Start();
     }
 
