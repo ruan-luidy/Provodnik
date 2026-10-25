@@ -70,7 +70,8 @@ pacotes, ajustes seus) ficam como estão. Deixe o seu jeito numa cópia do perfi
 
 **Algo falhou.** Primeiro o **Tentar de novo as falhas** na tela de instalação; a maioria dos soluços do ModDB passa. Se
 não, o **Registro** tem todas as instalações, e em `.Grok's Modpack Installer\.provodnik\logs` estão os arquivos pra
-levar no Discord do GAMMA ou numa [issue](https://github.com/ruan-luidy/Provodnik/issues).
+anexar numa [issue](https://github.com/ruan-luidy/Provodnik/issues). Problema do Provodnik é aqui, não com os helpers do
+GAMMA: o suporte deles é do launcher oficial, então confira o problema nele antes de pedir ajuda no Discord do GAMMA.
 
 ## Compilar
 
@@ -89,3 +90,7 @@ ficam em `Localization/*.{pt,en,ru}.json`.
 
 G.A.M.M.A. do Grok e da equipe do GAMMA. Ícone do átomo do [Icons8](https://icons8.com). Feito com
 [HandyControl](https://github.com/HandyOrg/HandyControl) e [Phosphor](https://phosphoricons.com).
+
+## Licença
+
+[MIT](../LICENSE). O G.A.M.M.A. e cada addon que ele instala seguem com as licenças deles.

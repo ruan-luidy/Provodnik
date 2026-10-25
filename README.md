@@ -77,8 +77,9 @@ GAMMA's definition, exactly like the official launcher. Other profiles, and mods
 your own tweaks), are left alone. Keep your own setup in a copy of the profile.
 
 **Something failed.** Press **Retry failed** on the Install screen first; most ModDB hiccups go away. If not, the
-**Log** screen has every install, and `.Grok's Modpack Installer\.provodnik\logs` has the files to share on the GAMMA
-Discord or in an [issue](https://github.com/ruan-luidy/Provodnik/issues).
+**Log** screen has every install, and `.Grok's Modpack Installer\.provodnik\logs` has the files to attach to an
+[issue](https://github.com/ruan-luidy/Provodnik/issues). Please report Provodnik problems here, not to the GAMMA
+helpers: their support is for the official launcher, so check the problem there before asking on the GAMMA Discord.
 
 ## Build
 
@@ -96,3 +97,7 @@ pipeline), `Provodnik.Infrastructure` (HTTP and the GAMMA tools) and `Provodnik.
 
 G.A.M.M.A. by Grok and the GAMMA team. Atom icon by [Icons8](https://icons8.com). Built with
 [HandyControl](https://github.com/HandyOrg/HandyControl) and [Phosphor icons](https://phosphoricons.com).
+
+## License
+
+[MIT](LICENSE). G.A.M.M.A. itself and every addon it installs keep their own licenses.
