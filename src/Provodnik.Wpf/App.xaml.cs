@@ -198,7 +198,7 @@ namespace Provodnik.Wpf
       download.DefaultRequestHeaders.UserAgent.ParseAdd(agent);
 
       services.AddSingleton(settings);
-      services.AddSingleton(new AppOptions(demo is not null, demo?.Root));
+      services.AddSingleton(new AppOptions(demo is not null, demo?.Root, demo is null ? null : ScreenshotTour.Folder(Environment.GetCommandLineArgs())));
       services.AddSingleton(new SettingsStore(settings));
       services.AddSingleton<Navigator>();
       services.AddSingleton<LogBook>();
@@ -230,11 +230,12 @@ namespace Provodnik.Wpf
       {
         // a simulação troca as ferramentas de verdade pelas de mentira (o último registro é o que vale)
         services.AddSingleton(demo);
+        var shots = ScreenshotTour.Folder(Environment.GetCommandLineArgs()) is not null;
         services.AddSingleton<IGammaApi>(new DemoTools.Api(demo));
         services.AddSingleton<IGitClient>(sp => new DemoTools.Git(demo, sp.GetRequiredService<IToolConsole>()));
         services.AddSingleton<IModDbResolver>(sp => new DemoTools.Resolver(sp.GetRequiredService<IToolConsole>()));
-        services.AddSingleton<IFileDownloader>(sp => new DemoTools.Downloader(sp.GetRequiredService<IToolConsole>()));
-        services.AddSingleton<IArchiveExtractor>(sp => new DemoTools.Extractor(demo, sp.GetRequiredService<IToolConsole>()));
+        services.AddSingleton<IFileDownloader>(sp => new DemoTools.Downloader(sp.GetRequiredService<IToolConsole>(), shots));
+        services.AddSingleton<IArchiveExtractor>(sp => new DemoTools.Extractor(demo, sp.GetRequiredService<IToolConsole>(), shots));
         services.AddSingleton<IShortcutWriter, DemoTools.Shortcuts>();
         services.AddSingleton<ISystemInfo>(new DemoTools.System(new SystemInfo()));
       }

@@ -43,7 +43,7 @@ something goes wrong.
 It also checks the result the way the community does by eye (every mod GAMMA enables in MO2 must actually have files),
 and fixes a typo in GAMMA's own mod list that leaves one mod disabled for everybody.
 
-![Status and numbers at a glance](docs/images/home-status.png)
+![Status and numbers at a glance](docs/images/home.png)
 
 ## Install
 

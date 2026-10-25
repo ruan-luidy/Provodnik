@@ -50,6 +50,7 @@ namespace Provodnik.Wpf.Features.Home
     private int _activeExpected;
     [ObservableProperty] private int _archivesMissing;
     [ObservableProperty] private string _lastInstallText = L.T("home.stat.last.never");
+    [ObservableProperty] private string _lastInstallCaption = L.T("home.stat.last.caption.never");
     [ObservableProperty] private IReadOnlyList<string> _executables = [];
     [ObservableProperty] private string? _selectedExecutable;
 
@@ -151,6 +152,9 @@ namespace Provodnik.Wpf.Features.Home
         ? _settings.Current.Executable
         : Executables.FirstOrDefault(e => e.Contains("DX11-AVX", StringComparison.OrdinalIgnoreCase)) ?? Executables.FirstOrDefault();
       LastInstallText = _session.State.LastCompleted is { } done ? L.T("home.stat.last.date", done) : L.T("home.stat.last.never");
+      // a legenda diz o que a data quer dizer; sem nenhuma completa, se já tentou ou nem começou
+      LastInstallCaption = L.T(_session.State.LastCompleted is not null ? "home.stat.last.caption"
+        : _session.State.LastStarted is not null ? "home.stat.last.caption.failed" : "home.stat.last.caption.never");
       if (!HasGamma)
       {
         StatusTitle = L.T("home.status.notFound.title");

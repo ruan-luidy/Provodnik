@@ -14,7 +14,7 @@ namespace Provodnik.Wpf.Features.Demo
   /// As ferramentas de mentira da simulação. O tempo corre ~10x mais rápido que o de verdade, mas com o mesmo
   /// jeitão: links do ModDB que às vezes levam bloqueio, downloads que caem e voltam, uns poucos que falham de vez,
   /// arquivo corrompido na extração. Quem falha é sempre o mesmo (sorteio pelo nome), pra dar pra testar o "tentar de
-  /// novo" e ver a mesma tela duas vezes.
+  /// novo" e ver a mesma tela duas vezes. Nas capturas do README (heals) os que falham de vez voltam no "tentar de novo".
   /// </summary>
   public static class DemoTools
   {
@@ -108,7 +108,7 @@ namespace Provodnik.Wpf.Features.Demo
       }
     }
 
-    public sealed class Downloader(IToolConsole console) : IFileDownloader
+    public sealed class Downloader(IToolConsole console, bool heals = false) : IFileDownloader
     {
       private readonly ConcurrentDictionary<string, int> _calls = new();
 
@@ -124,7 +124,7 @@ namespace Provodnik.Wpf.Features.Demo
 
         // um em ~31 cai no meio da primeira vez e volta na segunda; um em ~110 falha sempre (404)
         var dropsAt = call == 1 && DemoWorld.Dice(archive, 4) % 31 == 0 ? size / 2 : long.MaxValue;
-        var broken = DemoWorld.Dice(archive, 5) % 110 == 0;
+        var broken = DemoWorld.Dice(archive, 5) % 110 == 0 && (call == 1 || !heals);
 
         long received = 0;
         while (received < size)
@@ -150,11 +150,14 @@ namespace Provodnik.Wpf.Features.Demo
       }
     }
 
-    public sealed class Extractor(DemoWorld world, IToolConsole console) : IArchiveExtractor
+    public sealed class Extractor(DemoWorld world, IToolConsole console, bool heals = false) : IArchiveExtractor
     {
+      private readonly ConcurrentDictionary<string, int> _calls = new();
+
       public async Task ExtractAsync(string archive, string destination, IProgress<double>? progress, CancellationToken cancellationToken)
       {
         var name = Path.GetFileName(archive);
+        var call = _calls.AddOrUpdate(name, 1, (_, n) => n + 1);
         console.Write("7z", L.T("install.demo.extracting", name));
         var steps = 3 + DemoWorld.Dice(name, 6) % 10;
         for (var step = 1; step <= steps; step++)
@@ -162,7 +165,7 @@ namespace Provodnik.Wpf.Features.Demo
           await Task.Delay(180, cancellationToken);
           progress?.Report((double)step / steps);
           // um em ~90 está corrompido
-          if (step == steps / 2 && DemoWorld.Dice(name, 7) % 90 == 0)
+          if (step == steps / 2 && DemoWorld.Dice(name, 7) % 90 == 0 && (call == 1 || !heals))
           {
             console.Write("7z", $"ERROR: Headers Error : {archive}");
             throw new ArchiveException(L.T("install.demo.headersError"));

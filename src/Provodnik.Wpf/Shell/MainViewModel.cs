@@ -50,7 +50,7 @@ namespace Provodnik.Wpf.Shell
       _update = update;
       Install = installService;
       IsElevated = elevation.IsElevated;
-      IsDemo = options.Demo;
+      IsDemo = options.Demo && !options.Shots;
       _pages = new()
       {
         [Tab.Home] = home,

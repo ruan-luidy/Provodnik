@@ -20,6 +20,8 @@
   "home.stat.missing.caption": "архивов для загрузки",
   "home.stat.last": "ПОСЛ. УСТАНОВКА",
   "home.stat.last.caption": "полная, без ошибок",
+  "home.stat.last.caption.failed": "в последней были ошибки",
+  "home.stat.last.caption.never": "нажмите «Установить / обновить»",
   "home.stat.last.date": "{0:dd.MM.yyyy HH:mm}",
   "home.stat.last.never": "ещё не было",
   "home.folders": "ПАПКИ",

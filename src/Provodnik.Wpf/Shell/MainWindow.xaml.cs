@@ -20,7 +20,7 @@ namespace Provodnik.Wpf.Shell
     private readonly SettingsStore _settings;
     private bool _closing;
 
-    public MainWindow(MainViewModel viewModel, InstallService install, SettingsStore settings)
+    public MainWindow(MainViewModel viewModel, InstallService install, SettingsStore settings, AppOptions options)
     {
       InitializeComponent();
       DataContext = viewModel;
@@ -42,6 +42,8 @@ namespace Provodnik.Wpf.Shell
         if (Environment.GetCommandLineArgs().Contains(ReopenSettings))
           _ = Dispatcher.InvokeAsync(() => viewModel.OpenSettingsCommand.Execute(null), System.Windows.Threading.DispatcherPriority.Background);
         await viewModel.StartAsync();
+        if (options.ShotsFolder is { } shots)
+          await Features.Demo.ScreenshotTour.RunAsync(this, viewModel, install, shots);
       };
       install.Finished += (_, report) =>
       {

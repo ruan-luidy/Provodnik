@@ -20,6 +20,8 @@
   "home.stat.missing.caption": "archives to download",
   "home.stat.last": "LAST INSTALL",
   "home.stat.last.caption": "complete, no failures",
+  "home.stat.last.caption.failed": "the last one had failures",
+  "home.stat.last.caption.never": "run Install / update",
   "home.stat.last.date": "{0:MMM d, yyyy HH:mm}",
   "home.stat.last.never": "not yet",
   "home.folders": "FOLDERS",

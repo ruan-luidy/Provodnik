@@ -15,7 +15,9 @@ namespace Provodnik.Wpf.Features.Demo
   {
     public const string Flag = "--demo";
 
-    public static string Home { get; } = Path.Combine(Path.GetTempPath(), "provodnik-demo");
+    // PROVODNIK_DEMO_HOME troca a pasta (as capturas do README usam uma neutra, sem o usuário do Windows no caminho)
+    public static string Home { get; } =
+      Environment.GetEnvironmentVariable("PROVODNIK_DEMO_HOME") is { Length: > 0 } home ? home : Path.Combine(Path.GetTempPath(), "provodnik-demo");
 
     public static bool Requested(IEnumerable<string> args) => args.Contains(Flag);
 

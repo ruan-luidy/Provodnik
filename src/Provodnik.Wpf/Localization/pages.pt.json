@@ -20,6 +20,8 @@
   "home.stat.missing.caption": "arquivos pra baixar",
   "home.stat.last": "ÚLTIMA INSTALAÇÃO",
   "home.stat.last.caption": "completa, sem falha",
+  "home.stat.last.caption.failed": "a última teve falha",
+  "home.stat.last.caption.never": "rode Instalar / atualizar",
   "home.stat.last.date": "{0:dd/MM/yyyy HH:mm}",
   "home.stat.last.never": "ainda não",
   "home.folders": "PASTAS",

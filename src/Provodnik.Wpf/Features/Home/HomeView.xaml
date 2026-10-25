@@ -378,7 +378,7 @@
                 Style="{StaticResource StatNumber}"
                 Text="{Binding LastInstallText}"
                 TextTrimming="CharacterEllipsis" />
-              <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Tr home.stat.last.caption}" />
+              <TextBlock Style="{StaticResource CaptionText}" Text="{Binding LastInstallCaption}" />
             </StackPanel>
           </Border>
         </UniformGrid>

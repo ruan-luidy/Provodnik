@@ -12,7 +12,7 @@
   <a href="../README.md">English</a> · Português · o app também fala Русский
 </p>
 
-![Instalando o G.A.M.M.A. com o Provodnik](images/install.png)
+![Instalando o G.A.M.M.A. com o Provodnik](images/pt/install.png)
 
 O Provodnik (*Проводник*, "guia" em russo) instala e atualiza exatamente o mesmo G.A.M.M.A. do launcher oficial: a
 mesma lista de mods, as mesmas pastas, o mesmo perfil do MO2. Só que mais rápido, e sem te deixar no escuro quando algo
@@ -36,7 +36,7 @@ dá errado.
 Ele também confere o resultado do jeito que a comunidade faz de olho (todo mod que o GAMMA liga no MO2 precisa ter
 arquivo) e corrige um erro de digitação na própria lista do GAMMA que deixa um mod desligado pra todo mundo.
 
-![O estado e os números de relance](images/home-status.png)
+![O estado e os números de relance](images/pt/home.png)
 
 ## Instalar
 
@@ -54,7 +54,7 @@ mudou.
 
 ## Mods
 
-![Cada addon, o arquivo e a pasta](images/mods.png)
+![Cada addon, o arquivo e a pasta](images/pt/mods.png)
 
 Cada addon com o arquivo e a pasta, filtro, "só os vazios" e um clique pra refazer um mod só. Ligar, desligar e ordenar
 continua sendo com o MO2: o **Jogar** abre o MO2 direto no executável escolhido (DX11-AVX, DX11, DX9...).
