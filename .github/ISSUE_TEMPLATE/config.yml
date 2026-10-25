@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and help
+    url: https://github.com/ruan-luidy/Provodnik/discussions
+    about: How to use Provodnik, or anything that isn't a bug.
+  - name: G.A.M.M.A. itself (gameplay, mods, crashes in game)
+    url: https://github.com/Grokitach/Stalker_GAMMA
+    about: Provodnik only installs the modpack. Problems with the game go to the GAMMA team, after checking them on the official launcher.

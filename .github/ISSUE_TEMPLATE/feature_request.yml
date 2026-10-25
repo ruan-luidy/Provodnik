@@ -1,0 +1,11 @@
+name: Idea or improvement
+description: Something Provodnik could do, or do better.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What you'd like and what problem it solves for you.
+    validations:
+      required: true

@@ -1,0 +1,45 @@
+name: Bug report
+description: Something went wrong while installing, updating or launching with Provodnik.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! English or Portuguese are both fine.
+        Provodnik is not an official G.A.M.M.A. tool: please don't take Provodnik problems to the GAMMA helpers.
+  - type: input
+    id: version
+    attributes:
+      label: Provodnik version
+      placeholder: "0.3.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what you got instead. Error text and screenshots help a lot.
+    validations:
+      required: true
+  - type: dropdown
+    id: official
+    attributes:
+      label: Does the official launcher have the same problem?
+      options:
+        - I didn't try
+        - "Yes, the official launcher fails too"
+        - "No, only Provodnik"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >
+        Drag the files from `.Grok's Modpack Installer\.provodnik\logs` (inside your GAMMA folder) here,
+        or paste the relevant part of the Log screen.
