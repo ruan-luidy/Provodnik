@@ -86,6 +86,8 @@ namespace Provodnik.Features.Install
     private async Task RunStagesAsync(Run run, CancellationToken cancellationToken)
     {
       Prepare(run, system);
+      if (run.Options.BackupSaves && !run.Options.SkipPreparation && run.Options.OnlyMods is null)
+        BackupSaves(run);
 
       if (run.Options.SkipPreparation)
       {
@@ -514,6 +516,30 @@ namespace Provodnik.Features.Install
     {
       var dash = folder.IndexOf('-');
       return dash > 0 && folder[..dash].All(char.IsAsciiDigit) ? folder[(dash + 1)..].TrimStart() : folder;
+    }
+
+    private static void BackupSaves(Run run)
+    {
+      string anomaly;
+      try
+      {
+        anomaly = AnomalyPatcher.FindAnomaly(run.Layout);
+      }
+      catch (DirectoryNotFoundException)
+      {
+        // sem Anomaly ainda não tem save; a etapa dos patches é que avisa
+        return;
+      }
+
+      try
+      {
+        if (SavesBackup.Create(run.Layout, SavesBackup.SavesFolder(run.Layout, run.Metadata, anomaly)) is { } zip)
+          run.Reporter.Log(LogLevel.Info, L.T("features.saves.backedUp", zip));
+      }
+      catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+      {
+        run.Warn(L.T("features.saves.failed", ex.Message));
+      }
     }
 
     // ===== Extras, perfil, patches, atalhos =====

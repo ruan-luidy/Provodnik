@@ -215,6 +215,22 @@ namespace Provodnik.Tests
       Assert.True(Has(@"Shuler\shuler.script"));
     }
 
+    [Fact]
+    public async Task Instalacao_guarda_os_saves_e_o_tentar_de_novo_nao()
+    {
+      var saves = Path.Combine(_root, "Anomaly", "appdata", "savedgames");
+      Directory.CreateDirectory(saves);
+      File.WriteAllText(Path.Combine(saves, "l01_escape.scop"), "save");
+      _api.List = Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip");
+
+      await RunAsync();
+      await RunAsync(new InstallOptions { CreateShortcuts = false, OnlyMods = new HashSet<int> { 1 }, SkipPreparation = true });
+
+      var backups = Directory.GetFiles(Path.Combine(_layout.DataDir, "save-backups"));
+      Assert.Single(backups);
+      Assert.EndsWith(".zip", backups[0], StringComparison.Ordinal);
+    }
+
     // ===== Falsos =====
 
     private sealed class FakeApi : IGammaApi

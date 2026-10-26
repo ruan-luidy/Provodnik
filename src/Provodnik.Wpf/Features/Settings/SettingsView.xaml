@@ -171,6 +171,16 @@
                   </StackPanel>
                 </DockPanel>
               </Border>
+              <Border Style="{StaticResource InfoDivider}" />
+              <Border Style="{StaticResource SettingRow}">
+                <DockPanel>
+                  <ToggleButton IsChecked="{Binding BackupSaves}" Style="{StaticResource RowSwitch}" />
+                  <StackPanel>
+                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.backupSaves.title}" />
+                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.backupSaves.caption}" />
+                  </StackPanel>
+                </DockPanel>
+              </Border>
             </StackPanel>
           </Border>
 

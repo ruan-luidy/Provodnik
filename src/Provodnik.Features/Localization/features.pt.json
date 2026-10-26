@@ -53,6 +53,8 @@
   "features.profile.keptMods": "{0} mods seus mantidos no fim da lista do MO2: {1}",
   "features.profile.keptChoices": "{0} mods do GAMMA ficaram ligados ou desligados como você deixou: {1}",
   "features.profile.backup": "Cópia do modlist.txt de antes: {0}",
+  "features.saves.backedUp": "Saves copiados pra {0}",
+  "features.saves.failed": "Não deu pra copiar os saves ({0}); a instalação segue sem a cópia",
   "features.mods.keptYours": "sua versão: {0}",
   "features.mods.keptYoursWarning": "{0}: ficou a versão que você instalou ({1}) no lugar da do GAMMA. Pra voltar pra do GAMMA, use \"Reinstalar este mod\" na tela Mods.",
   "features.patches.applied": "Patches aplicados no Anomaly em {0}",

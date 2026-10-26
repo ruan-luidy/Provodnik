@@ -19,7 +19,7 @@ namespace Provodnik.Wpf.Features.Settings
     private static readonly HashSet<string> Live =
     [
       nameof(ModDbParallel), nameof(HttpParallel), nameof(ExtractParallel), nameof(CheckMd5), nameof(UpdateGitHubAddons),
-      nameof(DeleteReshadeDlls), nameof(CreateShortcuts), nameof(Mica), nameof(AutoUpdateApp),
+      nameof(DeleteReshadeDlls), nameof(CreateShortcuts), nameof(BackupSaves), nameof(Mica), nameof(AutoUpdateApp),
     ];
 
     private readonly SettingsStore _store;
@@ -33,6 +33,7 @@ namespace Provodnik.Wpf.Features.Settings
     [ObservableProperty] private bool _updateGitHubAddons;
     [ObservableProperty] private bool _deleteReshadeDlls;
     [ObservableProperty] private bool _createShortcuts;
+    [ObservableProperty] private bool _backupSaves;
     [ObservableProperty] private bool _mica;
     [ObservableProperty] private bool _autoUpdateApp;
     [ObservableProperty] private LanguageOption _language;
@@ -51,6 +52,7 @@ namespace Provodnik.Wpf.Features.Settings
       _updateGitHubAddons = current.UpdateGitHubAddons;
       _deleteReshadeDlls = current.DeleteReshadeDlls;
       _createShortcuts = current.CreateShortcuts;
+      _backupSaves = current.BackupSaves;
       _mica = current.Mica;
       _autoUpdateApp = current.AutoUpdateApp;
       Languages =
@@ -121,6 +123,7 @@ namespace Provodnik.Wpf.Features.Settings
         UpdateGitHubAddons = UpdateGitHubAddons,
         DeleteReshadeDlls = DeleteReshadeDlls,
         CreateShortcuts = CreateShortcuts,
+        BackupSaves = BackupSaves,
         Mica = Mica,
         AutoUpdateApp = AutoUpdateApp,
       });
