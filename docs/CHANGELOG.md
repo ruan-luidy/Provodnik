@@ -1,5 +1,9 @@
 # Novidades
 
+## 0.3.2
+
+- O atalho da área de trabalho volta pro nome latino, "Provodnik (G.A.M.M.A.)"; o de nome cirílico da 0.3.1 é apagado.
+
 ## 0.3.1
 
 - O atalho da área de trabalho volta a se chamar "Проводник (G.A.M.M.A.)": agora é criado pelo IShellLinkW do Windows, em Unicode, e o cirílico não vira mais "?????????". O atalho de nome latino das versões anteriores é apagado.
