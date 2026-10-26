@@ -77,10 +77,18 @@ namespace Provodnik.Wpf.Features.Mods
 
     /// <summary>Ligar, desligar, ordenar e buscar é com o MO2: esta tela só diz se o addon foi baixado e extraído.</summary>
     [RelayCommand]
-    private void OpenModOrganizer()
+    private async Task OpenModOrganizerAsync()
     {
-      if (_session.Layout is { } layout)
+      if (_session.Layout is not { } layout)
+        return;
+      try
+      {
         GameLauncher.OpenModOrganizer(layout, _settings.Current.Profile ?? _session.Metadata.FolderName, _elevation.Unelevated);
+      }
+      catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception)
+      {
+        await DialogService.ErrorAsync(L.T("home.play.failed"), ex.Message);
+      }
     }
 
     [RelayCommand]

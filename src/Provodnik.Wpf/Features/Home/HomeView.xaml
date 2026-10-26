@@ -137,6 +137,30 @@
             Content="{loc:Tr home.check}"
             Style="{StaticResource Action}"
             ToolTip="{loc:Tr home.check.tip}" />
+          <!--  Instalar: azul quando o cartão de baixo pede (atualização, instalação pela metade, mod faltando)  -->
+          <Button
+            Margin="0,0,8,0"
+            hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
+            Command="{Binding GoInstallCommand}"
+            Content="{loc:Tr home.install}"
+            IsEnabled="{Binding Install.IsRunning, Converter={StaticResource Boolean2BooleanReConverter}}"
+            Style="{StaticResource Action}"
+            Visibility="{Binding InstallSuggested, Converter={StaticResource Boolean2VisibilityReConverter}}" />
+          <Button
+            Margin="0,0,8,0"
+            hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
+            Command="{Binding GoInstallCommand}"
+            Content="{loc:Tr home.install}"
+            IsEnabled="{Binding Install.IsRunning, Converter={StaticResource Boolean2BooleanReConverter}}"
+            Style="{StaticResource Action.Primary}"
+            Visibility="{Binding InstallSuggested, Converter={StaticResource Boolean2VisibilityConverter}}" />
+          <Button
+            Margin="0,0,8,0"
+            hc:IconElement.Geometry="{icons:Phosphor SlidersHorizontalBold}"
+            Command="{Binding OpenModOrganizerCommand}"
+            Content="{loc:Tr mods.openMo2}"
+            Style="{StaticResource Action}"
+            ToolTip="{loc:Tr mods.openMo2.tip}" />
           <Button
             hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
             Command="{Binding OpenFolderCommand}"
@@ -192,7 +216,7 @@
       <StackPanel>
         <!--
           O cartão do estado: o ícone grande no quadrado da cor do estado, e um degradê bem suave dessa cor vindo da
-          esquerda (verde em dia, amarelo atenção, vermelho problema). Jogar e Instalar à direita.
+          esquerda (verde em dia, amarelo atenção, vermelho problema). À direita, o perfil, o executável e o Jogar.
         -->
         <Border Padding="18,16" Style="{StaticResource HeroCard}">
           <DockPanel>
@@ -215,13 +239,6 @@
                 Placeholder="{loc:Tr home.executable}"
                 SelectedItem="{Binding SelectedExecutable}"
                 ToolTip="{loc:Tr home.executable.tip}" />
-              <Button
-                Margin="0,0,8,0"
-                hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
-                Command="{Binding GoInstallCommand}"
-                Content="{loc:Tr home.install}"
-                IsEnabled="{Binding Install.IsRunning, Converter={StaticResource Boolean2BooleanReConverter}}"
-                Style="{StaticResource Action}" />
               <Button
                 Width="120"
                 hc:IconElement.Geometry="{icons:Phosphor PlayFill}"

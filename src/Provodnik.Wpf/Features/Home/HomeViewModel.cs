@@ -28,7 +28,9 @@ namespace Provodnik.Wpf.Features.Home
 
     [ObservableProperty] private string _statusTitle = L.T("home.status.checking");
     [ObservableProperty] private string _statusText = string.Empty;
-    [ObservableProperty] private RowTone _tone;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(InstallSuggested))]
+    private RowTone _tone;
     [ObservableProperty] private bool _isChecking;
     [ObservableProperty] private string _versionText = "—";
     [ObservableProperty] private string _onlineVersionText = "—";
@@ -96,6 +98,9 @@ namespace Provodnik.Wpf.Features.Home
     public string ProfileName => _session.Mo2.SelectedProfile ?? _session.Metadata.FolderName;
 
     public bool IsPortable => _session.IsPortable;
+
+    /// <summary>Tem o que instalar (atualização, instalação pela metade, mod faltando): o Instalar do topo fica azul.</summary>
+    public bool InstallSuggested => Tone == RowTone.Warning;
 
     /// <summary>A escolha de perfil só aparece com mais de um (quase todo mundo só tem o do GAMMA).</summary>
     public bool HasProfileChoice => Profiles.Count > 1;
@@ -231,10 +236,18 @@ namespace Provodnik.Wpf.Features.Home
     }
 
     [RelayCommand]
-    private void OpenModOrganizer()
+    private async Task OpenModOrganizerAsync()
     {
-      if (_session.Layout is { } layout)
+      if (_session.Layout is not { } layout)
+        return;
+      try
+      {
         GameLauncher.OpenModOrganizer(layout, SelectedProfile, _elevation.Unelevated);
+      }
+      catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception)
+      {
+        await DialogService.ErrorAsync(L.T("home.play.failed"), ex.Message);
+      }
     }
 
     [RelayCommand]
