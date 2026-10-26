@@ -122,14 +122,52 @@ namespace Provodnik.Features.ModOrganizer
       return dash > 0 && name[..dash].All(char.IsAsciiDigit);
     }
 
+    /// <summary>A cópia mais nova do modlist.txt do perfil (nula: nenhuma ainda).</summary>
+    public static FileInfo? LatestBackup(GammaLayout layout)
+    {
+      var dir = BackupsDir(layout);
+      return Directory.Exists(dir)
+        ? Newest(dir).FirstOrDefault()
+        : null;
+    }
+
+    /// <summary>
+    /// Põe de volta no perfil a cópia mais nova do modlist.txt. O que está no perfil agora vira cópia também, então
+    /// voltar de novo desfaz a volta. Nulo quando não tem cópia.
+    /// </summary>
+    public static FileInfo? RestoreLatest(GammaLayout layout, ModpackMetadata metadata)
+    {
+      if (LatestBackup(layout) is not { } latest)
+        return null;
+      var restored = File.ReadAllText(latest.FullName);
+      var target = Path.Combine(layout.Profiles, metadata.FolderName, "modlist.txt");
+      if (File.Exists(target))
+      {
+        var current = File.ReadAllText(target);
+        if (current != restored)
+          Backup(layout, current);
+      }
+      Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+      File.WriteAllText(target, restored);
+      return latest;
+    }
+
+    // pela hora de gravar: o nome tem só o segundo, e a do mesmo segundo ganha "-2"
+    private static IEnumerable<FileInfo> Newest(string dir) =>
+      new DirectoryInfo(dir).GetFiles("modlist-*.txt").OrderByDescending(f => f.LastWriteTimeUtc).ThenByDescending(f => f.Name, StringComparer.Ordinal);
+
     private static string Backup(GammaLayout layout, string current)
     {
       var dir = BackupsDir(layout);
       Directory.CreateDirectory(dir);
-      var path = Path.Combine(dir, $"modlist-{DateTime.Now:yyyyMMdd-HHmmss}.txt");
+      // duas no mesmo segundo (voltar logo depois da instalação): a segunda ganha um número, sem apagar a primeira
+      var stamp = $"modlist-{DateTime.Now:yyyyMMdd-HHmmss}";
+      var path = Path.Combine(dir, stamp + ".txt");
+      for (var n = 2; File.Exists(path); n++)
+        path = Path.Combine(dir, $"{stamp}-{n}.txt");
       File.WriteAllText(path, current);
-      foreach (var old in Directory.GetFiles(dir, "modlist-*.txt").OrderByDescending(f => f, StringComparer.Ordinal).Skip(BackupsKept))
-        File.Delete(old);
+      foreach (var old in Newest(dir).Skip(BackupsKept))
+        old.Delete();
       return path;
     }
   }

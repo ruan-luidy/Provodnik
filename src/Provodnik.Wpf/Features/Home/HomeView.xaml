@@ -456,6 +456,13 @@
                 DockPanel.Dock="Right"
                 Style="{StaticResource Action.Icon.Small}"
                 ToolTip="{loc:Tr home.folders.open}" />
+              <Button
+                Margin="8,0,0,0"
+                hc:IconElement.Geometry="{icons:Phosphor ClockCounterClockwiseBold}"
+                Command="{Binding RestoreProfileCommand}"
+                DockPanel.Dock="Right"
+                Style="{StaticResource Action.Icon.Small}"
+                ToolTip="{loc:Tr home.restoreProfile.tip}" />
               <TextBlock Style="{StaticResource InfoValue}" Text="{Binding ProfileName}" />
             </DockPanel>
             <Border Style="{StaticResource InfoDivider}" />

@@ -3,7 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using Provodnik.Core.Text;
+using Provodnik.Core.Desktop;
 using Provodnik.Features.Launch;
+using Provodnik.Features.ModOrganizer;
 using Provodnik.Features.Mods;
 using Provodnik.Features.Update;
 using Provodnik.Features.Verify;
@@ -25,6 +27,7 @@ namespace Provodnik.Wpf.Features.Home
     private readonly UpdateChecker _updates;
     private readonly Navigator _navigator;
     private readonly ElevationService _elevation;
+    private readonly ISystemInfo _system;
 
     [ObservableProperty] private string _statusTitle = L.T("home.status.checking");
     [ObservableProperty] private string _statusText = string.Empty;
@@ -60,8 +63,9 @@ namespace Provodnik.Wpf.Features.Home
     private IReadOnlyList<string> _profiles = [];
     [ObservableProperty] private string? _selectedProfile;
 
-    public HomeViewModel(GammaSession session, SettingsStore settings, UpdateChecker updates, Navigator navigator, InstallService install, ElevationService elevation)
+    public HomeViewModel(GammaSession session, SettingsStore settings, UpdateChecker updates, Navigator navigator, InstallService install, ElevationService elevation, ISystemInfo system)
     {
+      _system = system;
       _session = session;
       _settings = settings;
       _updates = updates;
@@ -247,6 +251,44 @@ namespace Provodnik.Wpf.Features.Home
       catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception)
       {
         await DialogService.ErrorAsync(L.T("home.play.failed"), ex.Message);
+      }
+    }
+
+    /// <summary>
+    /// Volta o modlist.txt do perfil do GAMMA pra cópia de antes da última instalação. O de agora vira cópia também,
+    /// então voltar de novo desfaz. Com o MO2 aberto não: ele grava a lista dele por cima quando fecha.
+    /// </summary>
+    [RelayCommand]
+    private async Task RestoreProfileAsync()
+    {
+      if (_session.Layout is not { } layout)
+        return;
+      if (Install.IsRunning)
+      {
+        ToastService.Warning(L.T("home.restoreProfile.busy"));
+        return;
+      }
+      if (ProfileSetup.LatestBackup(layout) is not { } latest)
+      {
+        await DialogService.InfoAsync(L.T("home.restoreProfile.title"), L.T("home.restoreProfile.none"));
+        return;
+      }
+      if (_system.IsModOrganizerRunning)
+      {
+        await DialogService.WarningAsync(L.T("home.restoreProfile.title"), L.T("home.restoreProfile.closeMo2"));
+        return;
+      }
+      if (!await DialogService.ConfirmAsync(L.T("home.restoreProfile.title"), L.T("home.restoreProfile.confirm", _session.Metadata.FolderName, latest.LastWriteTime), L.T("home.restoreProfile.restore")))
+        return;
+
+      try
+      {
+        ProfileSetup.RestoreLatest(layout, _session.Metadata);
+        ToastService.Success(L.T("home.restoreProfile.done", latest.LastWriteTime));
+      }
+      catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+      {
+        await DialogService.ErrorAsync(L.T("home.restoreProfile.title"), ex.Message);
       }
     }
 
