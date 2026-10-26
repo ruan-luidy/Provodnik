@@ -91,6 +91,36 @@ namespace Provodnik.Wpf.Features.Mods
       }
     }
 
+    /// <summary>Apaga de downloads\ as versões velhas que nada mais usa (<see cref="DownloadsCleaner"/>), depois de mostrar quais.</summary>
+    [RelayCommand]
+    private async Task FreeSpaceAsync()
+    {
+      if (_session.Layout is not { } layout || _session.ModList is not { } list)
+        return;
+      if (Install.IsRunning)
+      {
+        ToastService.Warning(L.T("mods.freeSpace.busy"));
+        return;
+      }
+
+      var old = await Task.Run(() => DownloadsCleaner.Find(layout, list));
+      if (old.Count == 0)
+      {
+        await DialogService.InfoAsync(L.T("mods.freeSpace.title"), L.T("mods.freeSpace.nothing"));
+        return;
+      }
+      var details = string.Join("\n", old.Select(o => $"{o.Name}  ({ByteSize.Format(o.Size)})"));
+      if (!await DialogService.ConfirmAsync(L.T("mods.freeSpace.title"), L.T("mods.freeSpace.confirm", old.Count, ByteSize.Format(old.Sum(o => o.Size))), L.T("mods.freeSpace.delete"), details: details))
+        return;
+
+      var result = await Task.Run(() => DownloadsCleaner.Delete(old));
+      if (result.Failed.Count == 0)
+        ToastService.Success(L.T("mods.freeSpace.done", result.Deleted, ByteSize.Format(result.Freed)));
+      else
+        await DialogService.WarningAsync(L.T("mods.freeSpace.title"), L.T("mods.freeSpace.partial", result.Deleted, ByteSize.Format(result.Freed), result.Failed.Count), string.Join("\n", result.Failed));
+      await RunAsync(LoadAsync);
+    }
+
     [RelayCommand]
     private void OpenPage(ModItemRow? row) => FolderOpener.Browse(row?.WebPage);
 

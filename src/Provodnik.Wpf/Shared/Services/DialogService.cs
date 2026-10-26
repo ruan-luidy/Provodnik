@@ -45,13 +45,13 @@ namespace Provodnik.Wpf.Shared.Services
     }
 
     /// <summary>Dois botões: true no principal (confirmar), false no secundário ou no Esc.</summary>
-    public static async Task<bool> ConfirmAsync(string title, string message, string confirmText, string? cancelText = null, DialogKind kind = DialogKind.Warning)
+    public static async Task<bool> ConfirmAsync(string title, string message, string confirmText, string? cancelText = null, DialogKind kind = DialogKind.Warning, string? details = null)
     {
       cancelText ??= L.T("shared.cancel");
       if (!CanShowOverlay())
         return System.Windows.MessageBox.Show(message, title, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
 
-      return await ShowAsync(new AlertDialog(kind, title, message, confirmText, cancelText));
+      return await ShowAsync(new AlertDialog(kind, title, message, confirmText, cancelText, details));
     }
 
     /// <summary>

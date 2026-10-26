@@ -37,6 +37,14 @@
             Content="{loc:Tr mods.reload}"
             Style="{StaticResource Action}" />
           <Button
+            Margin="0,0,8,0"
+            hc:IconElement.Geometry="{icons:Phosphor HardDrivesBold}"
+            Command="{Binding FreeSpaceCommand}"
+            Content="{loc:Tr mods.freeSpace}"
+            IsEnabled="{Binding Install.IsRunning, Converter={StaticResource Boolean2BooleanReConverter}}"
+            Style="{StaticResource Action}"
+            ToolTip="{loc:Tr mods.freeSpace.tip}" />
+          <Button
             hc:IconElement.Geometry="{icons:Phosphor MagicWandBold}"
             Command="{Binding ReinstallMissingCommand}"
             Content="{loc:Tr mods.fillEmpty}"
