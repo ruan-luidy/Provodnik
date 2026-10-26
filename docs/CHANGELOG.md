@@ -1,5 +1,11 @@
 # Novidades
 
+## 0.3.4
+
+- Liberar espaço (tela Mods): apaga de downloads\ as versões velhas que as atualizações do GAMMA deixam e nada mais usa (nem a lista atual, nem o meta.ini de alguma pasta em mods\), depois de mostrar quais e quanto. O que o MO2 baixou pra pessoa (tem .meta do lado) nunca sai.
+- Voltar o perfil de antes (Início, na linha do perfil do MO2): põe de volta a cópia do modlist.txt de antes da última instalação. A lista de agora vira cópia também, então voltar de novo desfaz. Pede pra fechar o MO2 antes, que ele grava a lista dele por cima quando fecha.
+- Backup dos saves antes de instalar ou atualizar, num zip em .provodnik\save-backups (os 5 últimos); desliga nas Configurações. Pega o savedgames do Anomaly, ou o saves\ do perfil quando ele usa saves próprios. O "tentar de novo" e o reinstalar de um mod não fazem cópia.
+
 ## 0.3.3
 
 - A atualização não estraga mais o perfil do GAMMA. Em vez de trocar o modlist.txt inteiro pelo da definição (o que o launcher original faz), mescla a lista nova com o perfil como está e com a lista do GAMMA da última instalação:

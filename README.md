@@ -83,7 +83,13 @@ follows GAMMA's new mod list but keeps what you did:
 - a GAMMA mod you replaced with your own version through MO2 keeps your version (**Reinstall this mod** on the Mods
   screen brings GAMMA's back).
 
-A copy of the previous `modlist.txt` goes to `.Grok's Modpack Installer\.provodnik\profile-backups` (the last 10).
+A copy of the previous `modlist.txt` goes to `.Grok's Modpack Installer\.provodnik\profile-backups` (the last 10), and
+the clock button next to the MO2 profile on Home puts it back. Your saves are zipped to `.provodnik\save-backups`
+before every install or update (the last 5).
+
+**GAMMA takes too much space.** Every GAMMA update leaves the old version of the archives it changed in `downloads`.
+**Free up space** on the Mods screen lists the ones nothing uses anymore and deletes them. Archives MO2 downloaded for
+you are never touched.
 
 **Something failed.** Press **Retry failed** on the Install screen first; most ModDB hiccups go away. If not, the
 **Log** screen has every install, and `.Grok's Modpack Installer\.provodnik\logs` has the files to attach to an
