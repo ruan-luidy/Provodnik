@@ -22,6 +22,7 @@ namespace Provodnik.Wpf.Features.Mods
     private readonly GammaSession _session;
     private readonly Navigator _navigator;
     private readonly ElevationService _elevation;
+    private readonly SettingsStore _settings;
 
     [ObservableProperty] private ObservableCollection<ModItemRow> _items = [];
     [ObservableProperty] private ModItemRow? _selected;
@@ -34,8 +35,9 @@ namespace Provodnik.Wpf.Features.Mods
     private int _missing;
     [ObservableProperty] private bool _onlyMissing;
 
-    public ModsViewModel(GammaSession session, InstallService install, Navigator navigator, ElevationService elevation)
+    public ModsViewModel(GammaSession session, InstallService install, Navigator navigator, ElevationService elevation, SettingsStore settings)
     {
+      _settings = settings;
       _session = session;
       _navigator = navigator;
       _elevation = elevation;
@@ -78,7 +80,7 @@ namespace Provodnik.Wpf.Features.Mods
     private void OpenModOrganizer()
     {
       if (_session.Layout is { } layout)
-        GameLauncher.OpenModOrganizer(layout, _elevation.Unelevated);
+        GameLauncher.OpenModOrganizer(layout, _settings.Current.Profile ?? _session.Metadata.FolderName, _elevation.Unelevated);
     }
 
     [RelayCommand]

@@ -7,6 +7,8 @@
   "home.noGamma.choose": "Escolher a pasta do GAMMA",
   "home.executable": "Executável",
   "home.executable.tip": "Qual executável do MO2 o Jogar abre (DX11-AVX é o recomendado)",
+  "home.profile": "Perfil",
+  "home.profile.tip": "Em qual perfil do MO2 o Jogar e o Abrir no MO2 abrem",
   "home.install": "Instalar / atualizar",
   "home.play": "Jogar",
   "home.stat.definition": "DEFINIÇÃO",

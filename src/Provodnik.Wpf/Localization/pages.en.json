@@ -7,6 +7,8 @@
   "home.noGamma.choose": "Choose the GAMMA folder",
   "home.executable": "Executable",
   "home.executable.tip": "Which MO2 executable Play launches (DX11-AVX is recommended)",
+  "home.profile": "Profile",
+  "home.profile.tip": "Which MO2 profile Play and Open in MO2 use",
   "home.install": "Install / update",
   "home.play": "Play",
   "home.stat.definition": "DEFINITION",

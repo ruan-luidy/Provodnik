@@ -7,6 +7,8 @@
   "home.noGamma.choose": "Выбрать папку GAMMA",
   "home.executable": "Исполняемый файл",
   "home.executable.tip": "Какой исполняемый файл MO2 запускает «Играть» (рекомендуется DX11-AVX)",
+  "home.profile": "Профиль",
+  "home.profile.tip": "Какой профиль MO2 открывают «Играть» и «Открыть в MO2»",
   "home.install": "Установить / обновить",
   "home.play": "Играть",
   "home.stat.definition": "ВЕРСИЯ",

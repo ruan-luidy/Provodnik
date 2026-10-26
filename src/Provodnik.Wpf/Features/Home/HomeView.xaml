@@ -201,6 +201,14 @@
               DockPanel.Dock="Right"
               Orientation="Horizontal">
               <controls:SelectField
+                Width="150"
+                Margin="0,0,8,0"
+                ItemsSource="{Binding Profiles}"
+                Placeholder="{loc:Tr home.profile}"
+                SelectedItem="{Binding SelectedProfile}"
+                ToolTip="{loc:Tr home.profile.tip}"
+                Visibility="{Binding HasProfileChoice, Converter={StaticResource Boolean2VisibilityConverter}}" />
+              <controls:SelectField
                 Width="190"
                 Margin="0,0,8,0"
                 ItemsSource="{Binding Executables}"

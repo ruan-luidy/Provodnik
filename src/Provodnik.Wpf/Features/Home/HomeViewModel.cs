@@ -53,6 +53,10 @@ namespace Provodnik.Wpf.Features.Home
     [ObservableProperty] private string _lastInstallCaption = L.T("home.stat.last.caption.never");
     [ObservableProperty] private IReadOnlyList<string> _executables = [];
     [ObservableProperty] private string? _selectedExecutable;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasProfileChoice))]
+    private IReadOnlyList<string> _profiles = [];
+    [ObservableProperty] private string? _selectedProfile;
 
     public HomeViewModel(GammaSession session, SettingsStore settings, UpdateChecker updates, Navigator navigator, InstallService install, ElevationService elevation)
     {
@@ -93,10 +97,19 @@ namespace Provodnik.Wpf.Features.Home
 
     public bool IsPortable => _session.IsPortable;
 
+    /// <summary>A escolha de perfil só aparece com mais de um (quase todo mundo só tem o do GAMMA).</summary>
+    public bool HasProfileChoice => Profiles.Count > 1;
+
     partial void OnSelectedExecutableChanged(string? value)
     {
       if (value is not null && value != _settings.Current.Executable)
         _settings.Update(s => s with { Executable = value });
+    }
+
+    partial void OnSelectedProfileChanged(string? value)
+    {
+      if (value is not null && value != _settings.Current.Profile)
+        _settings.Update(s => s with { Profile = value });
     }
 
     protected override async Task LoadAsync()
@@ -151,6 +164,12 @@ namespace Provodnik.Wpf.Features.Home
       SelectedExecutable = Executables.Contains(_settings.Current.Executable ?? string.Empty)
         ? _settings.Current.Executable
         : Executables.FirstOrDefault(e => e.Contains("DX11-AVX", StringComparison.OrdinalIgnoreCase)) ?? Executables.FirstOrDefault();
+      // o salvo, senão o do GAMMA (o que a instalação monta), senão o último que o MO2 usou
+      Profiles = _session.Layout is { } layout ? GameLauncher.Profiles(layout, _session.Metadata.FolderName) : [];
+      SelectedProfile = Profiles.FirstOrDefault(p => p == _settings.Current.Profile)
+        ?? Profiles.FirstOrDefault(p => p == _session.Metadata.FolderName)
+        ?? Profiles.FirstOrDefault(p => p == _session.Mo2.SelectedProfile)
+        ?? Profiles.FirstOrDefault();
       LastInstallText = _session.State.LastCompleted is { } done ? L.T("home.stat.last.date", done) : L.T("home.stat.last.never");
       // a legenda diz o que a data quer dizer; sem nenhuma completa, se já tentou ou nem começou
       LastInstallCaption = L.T(_session.State.LastCompleted is not null ? "home.stat.last.caption"
@@ -202,7 +221,7 @@ namespace Provodnik.Wpf.Features.Home
       }
       try
       {
-        GameLauncher.Play(layout, SelectedExecutable, _elevation.Unelevated);
+        GameLauncher.Play(layout, SelectedExecutable, SelectedProfile, _elevation.Unelevated);
         ToastService.Info(SelectedExecutable is null ? L.T("home.play.openingMo2") : L.T("home.play.opening", SelectedExecutable), L.T("home.play.goodHunting"));
       }
       catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception)
@@ -215,7 +234,7 @@ namespace Provodnik.Wpf.Features.Home
     private void OpenModOrganizer()
     {
       if (_session.Layout is { } layout)
-        GameLauncher.OpenModOrganizer(layout, _elevation.Unelevated);
+        GameLauncher.OpenModOrganizer(layout, SelectedProfile, _elevation.Unelevated);
     }
 
     [RelayCommand]
