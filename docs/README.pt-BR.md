@@ -30,6 +30,7 @@ dá errado.
 | Atualizações | reextrai todos os addons | só reextrai o que mudou |
 | Instalação interrompida | você descobre depois | roda de novo e ele continua de onde parou |
 | Pasta de mod vazia | passa calada | aparece, com um clique pra resolver |
+| Seus mods | voltam desligados e misturados com os do GAMMA a cada atualização | continuam ligados, na sua ordem, num separador "Meus mods" |
 | Erros | a saída crua das ferramentas no console | o mesmo console, com cada erro conhecido explicado e o que fazer |
 | Antes de instalar | — | confere permissão, espaço, antivírus, caminhos longos, MO2 e jogo fechados |
 
@@ -58,16 +59,24 @@ aqui.
 ![Cada addon, o arquivo e a pasta](images/pt/mods.png)
 
 Cada addon com o arquivo e a pasta, filtro, "só os vazios" e um clique pra refazer um mod só. Ligar, desligar e ordenar
-continua sendo com o MO2: o **Jogar** abre o MO2 direto no executável escolhido (DX11-AVX, DX11, DX9...).
+continua sendo com o MO2: o **Jogar** abre o MO2 direto no executável escolhido (DX11-AVX, DX11, DX9...) e no perfil do
+MO2 escolhido, quando você tem mais de um.
 
 ## Perguntas
 
 **Funciona num GAMMA instalado pelo launcher oficial?** Sim. A primeira rodada confere tudo e só conserta o que está
 errado.
 
-**Mexe nos meus perfis do MO2 ou em mods que eu pus por cima?** A instalação regrava o modlist do perfil `G.A.M.M.A` a
-partir da definição do GAMMA, igual ao launcher oficial. Os outros perfis e os mods que você pôs por cima (outros
-pacotes, ajustes seus) ficam como estão. Deixe o seu jeito numa cópia do perfil.
+**Mexe nos meus perfis do MO2 ou em mods que eu pus por cima?** Nos outros perfis, nunca. No perfil `G.A.M.M.A` a
+atualização segue a lista nova do GAMMA, mas guarda o que você fez:
+
+- os mods que você pôs ficam juntos, na sua ordem e ligados ou desligados como estavam, num separador "Meus mods" no
+  fim da lista do MO2 (a prioridade mais alta, então eles ganham dos do GAMMA);
+- mod do GAMMA que você ligou ou desligou continua assim, a não ser que o GAMMA tenha mudado esse mesmo mod;
+- mod do GAMMA que você trocou pela sua versão pelo MO2 fica com a sua (o **Reinstalar este mod** da tela Mods volta
+  pra do GAMMA).
+
+Uma cópia do `modlist.txt` de antes vai pra `.Grok's Modpack Installer\.provodnik\profile-backups` (as 10 últimas).
 
 **Algo falhou.** Primeiro o **Tentar de novo as falhas** na tela de instalação; a maioria dos soluços do ModDB passa. Se
 não, o **Registro** tem todas as instalações, e em `.Grok's Modpack Installer\.provodnik\logs` estão os arquivos pra

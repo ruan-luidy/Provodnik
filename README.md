@@ -37,6 +37,7 @@ something goes wrong.
 | Updates | re-extracts every addon | only re-extracts what changed |
 | Interrupted install | you find out later | run it again and it picks up where it stopped |
 | Empty mod folders | silent | detected, with one click to fix them |
+| Your own mods | come back disabled and mixed in with GAMMA's after every update | stay on, in your order, under a "My mods" separator |
 | Errors | raw tool output in a console | the same console, with each known error explained and what to do about it |
 | Before installing | — | checks permissions, disk space, antivirus, long paths, MO2 and the game being closed |
 
@@ -66,16 +67,23 @@ scratch took about 35 minutes here.
 
 Every addon with its archive and folder, a filter, "only empty" and one click to redo a single mod. Enabling,
 disabling and ordering mods is still MO2's job: **Play** opens MO2 straight into the executable you pick
-(DX11-AVX, DX11, DX9...).
+(DX11-AVX, DX11, DX9...), and into the MO2 profile you pick when you have more than one.
 
 ## FAQ
 
 **Can I use it on a GAMMA installed with the official launcher?** Yes. The first run checks everything and only fixes
 what's wrong.
 
-**Will it touch my own MO2 profiles or extra mods?** An install rewrites the `G.A.M.M.A` profile's mod list from
-GAMMA's definition, exactly like the official launcher. Other profiles, and mods you added on top (other packs,
-your own tweaks), are left alone. Keep your own setup in a copy of the profile.
+**Will it touch my own MO2 profiles or extra mods?** Other profiles, never. In the `G.A.M.M.A` profile an update
+follows GAMMA's new mod list but keeps what you did:
+
+- mods you added stay together, in your order and on/off state, under a "My mods" separator at the bottom of MO2's
+  list (the highest priority, so they win over GAMMA's);
+- GAMMA mods you turned on or off stay that way, unless GAMMA changed that same mod;
+- a GAMMA mod you replaced with your own version through MO2 keeps your version (**Reinstall this mod** on the Mods
+  screen brings GAMMA's back).
+
+A copy of the previous `modlist.txt` goes to `.Grok's Modpack Installer\.provodnik\profile-backups` (the last 10).
 
 **Something failed.** Press **Retry failed** on the Install screen first; most ModDB hiccups go away. If not, the
 **Log** screen has every install, and `.Grok's Modpack Installer\.provodnik\logs` has the files to attach to an

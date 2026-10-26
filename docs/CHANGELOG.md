@@ -1,5 +1,16 @@
 # Novidades
 
+## 0.3.3
+
+- A atualização não estraga mais o perfil do GAMMA. Em vez de trocar o modlist.txt inteiro pelo da definição (o que o launcher original faz), mescla a lista nova com o perfil como está e com a lista do GAMMA da última instalação:
+  - os mods da pessoa vão juntos, na ordem e no estado em que estavam, pro fim da lista do MO2, embaixo do separador "Meus mods" (separador da própria pessoa no fim do grupo dispensa o "Meus mods");
+  - mod do GAMMA que a pessoa ligou ou desligou fica como ela deixou, a não ser que o GAMMA também tenha mudado ele;
+  - addon opcional do GAMMA (modpack_addons, gamma_large_files_v2) que a pessoa ligou conta como dela; as sobras do GAMMA fora da lista ganham linha desligada no começo do MO2, senão o MO2 jogava elas no meio dos mods da pessoa;
+  - uma cópia do modlist.txt de antes fica em .provodnik\profile-backups (as 10 últimas).
+- Mod do GAMMA que a pessoa trocou pela versão dela pelo MO2 (o meta.ini aponta pra outro arquivo) não é sobrescrito quando o GAMMA atualiza: fica a dela, com um aviso no relatório. O Reinstalar da tela Mods volta pra do GAMMA.
+- Escolha do perfil do MO2 no Início, do lado do executável (aparece com mais de um perfil): o Jogar e o Abrir no MO2 abrem nele (`-p` do MO2).
+- Fechar depois de baixar uma versão nova dava "FileNotFoundException: Microsoft.Web.WebView2.Wpf": o exe era renomeado pra .old antes de o navegador do ModDB ser fechado, e o exe único não achava mais a biblioteca dentro dele. A troca agora é a última coisa ao fechar, e o Reiniciar agora passa pelo mesmo caminho.
+
 ## 0.3.2
 
 - O atalho da área de trabalho volta pro nome latino, "Provodnik (G.A.M.M.A.)"; o de nome cirílico da 0.3.1 é apagado.
