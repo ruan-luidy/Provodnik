@@ -240,6 +240,10 @@ namespace Provodnik.Features.Install
 
       var repository = layout.Repository(GitRepository.Definition.Name);
       var source = Path.Combine(repository, run.Metadata.FolderName);
+      // a lista do GAMMA da última instalação, antes de a nova tomar o lugar: a base da mescla do perfil
+      var installedList = DefinitionModList(layout, run.Metadata);
+      if (File.Exists(installedList))
+        run.PreviousGammaList = File.ReadAllText(installedList);
       if (Directory.Exists(source))
         FileTree.CopyContents(source, layout.Definition(run.Metadata.FolderName));
 
@@ -396,6 +400,17 @@ namespace Provodnik.Features.Install
             }
           }
 
+          // a pessoa instalou outra versão por cima pelo MO2 (ele grava no meta.ini o arquivo que usou): a dela fica, e o
+          // Reinstalar da tela Mods volta pra do GAMMA
+          if (!options.ForceExtract && ReplacedByUser(folder, mod, installed) is { } theirs)
+          {
+            Interlocked.Increment(ref run.UpToDate);
+            reporter.Mod(new ModProgress(mod.Index, ModStatus.UpToDate, Detail: L.T("features.mods.keptYours", theirs)));
+            run.Warn(L.T("features.mods.keptYoursWarning", mod.Title, theirs));
+            Tick();
+            return;
+          }
+
           reporter.Mod(new ModProgress(mod.Index, ModStatus.WaitingExtraction, Detail: L.T("features.mods.extractQueue")));
           await extractGate.WaitAsync(token).ConfigureAwait(false);
           try
@@ -476,6 +491,24 @@ namespace Provodnik.Features.Install
       }
     }
 
+    /// <summary>
+    /// O arquivo que a pessoa instalou na pasta de um mod do GAMMA, quando não é o do GAMMA: o meta.ini não tem a marca
+    /// dos instaladores do GAMMA e aponta pra outro arquivo. Nulo quando a pasta é do GAMMA.
+    /// </summary>
+    private static string? ReplacedByUser(string folder, ModEntry mod, InstalledMod? installed)
+    {
+      if (!FileTree.HasContent(folder) || MetaIni.WrittenByGammaInstaller(folder))
+        return null;
+      var (file, _) = MetaIni.ReadInstall(folder);
+      if (string.IsNullOrEmpty(file))
+        return null;
+      var name = Path.GetFileName(file.Replace('/', Path.DirectorySeparatorChar));
+      return name.Equals(installed?.Archive, StringComparison.OrdinalIgnoreCase) || name.Equals(mod.ArchiveName, StringComparison.OrdinalIgnoreCase) ? null : name;
+    }
+
+    private static string DefinitionModList(GammaLayout layout, ModpackMetadata metadata) =>
+      Path.Combine(layout.Definition(metadata.FolderName), metadata.ModOrganizerModList.Replace('/', Path.DirectorySeparatorChar));
+
     // "12- Armas_separator" -> "Armas_separator"
     private static string WithoutNumber(string folder)
     {
@@ -503,11 +536,19 @@ namespace Provodnik.Features.Install
       try
       {
         var fixes = new List<(string From, string To)>();
-        var profile = ProfileSetup.Apply(run.Layout, run.Metadata, fixes);
-        run.Reporter.Log(LogLevel.Info, L.T("features.profile.at", profile));
+        var installed = run.State.Mods.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var result = ProfileSetup.Apply(run.Layout, run.Metadata, fixes, run.PreviousGammaList, installed, run.SeparatorTemplate);
+        run.Reporter.Log(LogLevel.Info, L.T("features.profile.at", result.Profile));
         // erro de digitação no modlist do GAMMA: com o nome errado o MO2 desligava o mod
         foreach (var (from, to) in fixes)
           run.Reporter.Log(LogLevel.Info, L.T("features.profile.nameFixed", from, to));
+        var merge = result.Merge;
+        if (merge.KeptMods.Count > 0)
+          run.Reporter.Log(LogLevel.Info, L.T("features.profile.keptMods", merge.KeptMods.Count, string.Join(", ", merge.KeptMods)));
+        if (merge.KeptChoices.Count > 0)
+          run.Reporter.Log(LogLevel.Info, L.T("features.profile.keptChoices", merge.KeptChoices.Count, string.Join(", ", merge.KeptChoices)));
+        if (result.Backup is { } backup)
+          run.Reporter.Log(LogLevel.Info, L.T("features.profile.backup", backup));
         run.Reporter.Stage(InstallStage.Profile, StageState.Done, run.Metadata.FolderName);
       }
       catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -604,6 +645,9 @@ namespace Provodnik.Features.Install
       public string SeparatorTemplate { get; set; } = MetaIni.SeparatorTemplate;
 
       public ModList? List { get; set; }
+
+      /// <summary>O modlist.txt do GAMMA de antes desta instalação (nulo: primeira instalação ou não copiou a definição).</summary>
+      public string? PreviousGammaList { get; set; }
 
       public ConcurrentBag<ModFailure> Failures { get; } = [];
 

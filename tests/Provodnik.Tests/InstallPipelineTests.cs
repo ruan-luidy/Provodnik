@@ -5,6 +5,7 @@ using Provodnik.Core.Install;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Remote;
 using Provodnik.Core.Repos;
+using Provodnik.Core.Text;
 using Provodnik.Features.Install;
 
 namespace Provodnik.Tests
@@ -20,6 +21,7 @@ namespace Provodnik.Tests
     private readonly FakeApi _api = new();
     private readonly FakeExtractor _extractor = new();
     private readonly FakeDownloader _downloader = new();
+    private readonly FakeGit _git = new();
 
     public InstallPipelineTests()
     {
@@ -47,7 +49,7 @@ namespace Provodnik.Tests
       }
     }
 
-    private InstallPipeline Pipeline() => new(_api, new FakeGit(), _downloader, new FakeResolver(), _extractor, new NoShortcuts(), new FakeSystem());
+    private InstallPipeline Pipeline() => new(_api, _git, _downloader, new FakeResolver(), _extractor, new NoShortcuts(), new FakeSystem());
 
     private Task<InstallReport> RunAsync(InstallOptions? options = null) =>
       Pipeline().RunAsync(_layout, (options ?? new InstallOptions { CreateShortcuts = false }) with { ModDbSpacing = TimeSpan.Zero }, new NullReporter(), CancellationToken.None);
@@ -161,6 +163,58 @@ namespace Provodnik.Tests
       Assert.Equal(1, _downloader.Calls);
     }
 
+    [Fact]
+    public async Task Mod_que_a_pessoa_trocou_pelo_MO2_nao_volta_pro_do_GAMMA()
+    {
+      _api.List = Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip");
+      await RunAsync();
+      // a pessoa instala a versão dela por cima, pelo MO2 (que grava o arquivo dela no meta.ini)
+      var folder = Path.Combine(_layout.Mods, "1- Som - Ana");
+      File.WriteAllText(Path.Combine(folder, "meta.ini"), "[General]\r\nversion=2.0\r\ninstallationFile=C:/Mods/Som-2.0.zip\r\n");
+      File.WriteAllText(Path.Combine(folder, "gamedata", "file.txt"), "minha");
+
+      // o GAMMA troca o arquivo do mod
+      _api.List = Line("https://www.moddb.com/addons/start/11", "0", "Ana", "Som", "som2.zip");
+      var update = await RunAsync();
+
+      Assert.Equal(0, update.Installed);
+      Assert.Equal(1, update.UpToDate);
+      Assert.Equal("minha", File.ReadAllText(Path.Combine(folder, "gamedata", "file.txt")));
+      Assert.Contains(update.Warnings, w => w.Contains("Som-2.0.zip", StringComparison.Ordinal));
+
+      // o Reinstalar da tela Mods volta pro do GAMMA
+      var reinstall = await RunAsync(new InstallOptions { CreateShortcuts = false, ForceExtract = true });
+      Assert.Equal(1, reinstall.Installed);
+      Assert.NotEqual("minha", File.ReadAllText(Path.Combine(folder, "gamedata", "file.txt")));
+    }
+
+    [Fact]
+    public async Task Atualizacao_mantem_os_mods_da_pessoa_no_perfil()
+    {
+      _api.List = string.Join('\n', " Audio", Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip"));
+      _git.ModList = "# MO2\r\n+2- Som - Ana\r\n+1- Audio_separator\r\n";
+      await RunAsync();
+      var profile = Path.Combine(_layout.Profiles, "G.A.M.M.A", "modlist.txt");
+      Assert.Equal(_git.ModList, File.ReadAllText(profile));
+
+      // a pessoa instala um mod dela e desliga um do GAMMA
+      var mine = Path.Combine(_layout.Mods, "Shuler");
+      Directory.CreateDirectory(mine);
+      File.WriteAllText(Path.Combine(mine, "shuler.script"), "x");
+      File.WriteAllText(profile, "# MO2\r\n+Shuler\r\n-2- Som - Ana\r\n+1- Audio_separator\r\n");
+
+      // o GAMMA atualiza: mod novo na frente
+      _api.List = string.Join('\n', " Audio", Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip"), Line("https://www.moddb.com/addons/start/3", "0", "Bia", "Luz", "luz.zip"));
+      _git.ModList = "# MO2\r\n+3- Luz - Bia\r\n+2- Som - Ana\r\n+1- Audio_separator\r\n";
+      var update = await RunAsync();
+
+      Assert.True(update.Succeeded, string.Join("; ", update.Failures.Select(f => f.Reason)));
+      var separator = L.T("features.profile.myMods") + "_separator";
+      Assert.Equal($"# MO2\r\n+Shuler\r\n+{separator}\r\n+3- Luz - Bia\r\n-2- Som - Ana\r\n+1- Audio_separator\r\n", File.ReadAllText(profile));
+      Assert.True(Has(separator + @"\meta.ini"));
+      Assert.True(Has(@"Shuler\shuler.script"));
+    }
+
     // ===== Falsos =====
 
     private sealed class FakeApi : IGammaApi
@@ -175,6 +229,9 @@ namespace Provodnik.Tests
     /// <summary>"Clona" escrevendo a definição mínima do GAMMA na pasta do repositório.</summary>
     private sealed class FakeGit : IGitClient
     {
+      /// <summary>O modlist.txt do MO2 que a definição traz.</summary>
+      public string ModList { get; set; } = "# modlist\n";
+
       public Task SyncAsync(GitRepository repository, string directory, IProgress<string>? progress, CancellationToken cancellationToken)
       {
         Directory.CreateDirectory(Path.Combine(directory, ".git"));
@@ -182,7 +239,7 @@ namespace Provodnik.Tests
         {
           var data = Path.Combine(directory, "G.A.M.M.A", "modpack_data");
           Directory.CreateDirectory(data);
-          File.WriteAllText(Path.Combine(data, "modlist.txt"), "# modlist\n");
+          File.WriteAllText(Path.Combine(data, "modlist.txt"), ModList);
           File.WriteAllText(Path.Combine(directory, "G.A.M.M.A_definition_version.txt"), "920");
         }
         return Task.CompletedTask;

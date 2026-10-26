@@ -82,7 +82,7 @@ namespace Provodnik.Tests
       Directory.CreateDirectory(_layout.ProfileTemplate);
       var fixes = new List<(string From, string To)>();
 
-      var profile = ProfileSetup.Apply(_layout, ModpackMetadata.Gamma, fixes);
+      var profile = ProfileSetup.Apply(_layout, ModpackMetadata.Gamma, fixes).Profile;
 
       var lines = File.ReadAllText(Path.Combine(profile, "modlist.txt")).Split("\r\n");
       Assert.Equal(["# comentário", "+312- Mod Bom - Autor", "+Darkasleif's Stop Selling Documents", "+" + Real, "-Darkasleif's Nimble Upgrades Guns"], lines);

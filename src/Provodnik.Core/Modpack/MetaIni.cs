@@ -41,5 +41,32 @@ namespace Provodnik.Core.Modpack
 
       return string.Join("\r\n", lines);
     }
+
+    /// <summary>O "installationFile=" e o "version=" do meta.ini de uma pasta de mod (nulos se não tem).</summary>
+    public static (string? InstallationFile, string? Version) ReadInstall(string folder)
+    {
+      var meta = Path.Combine(folder, "meta.ini");
+      if (!File.Exists(meta))
+        return (null, null);
+      string? file = null, version = null;
+      foreach (var line in File.ReadLines(meta))
+      {
+        if (line.StartsWith("installationFile=", StringComparison.OrdinalIgnoreCase))
+          file = line["installationFile=".Length..].Trim();
+        else if (line.StartsWith("version=", StringComparison.OrdinalIgnoreCase))
+          version = line["version=".Length..].Trim();
+      }
+      return (file, version);
+    }
+
+    /// <summary>
+    /// O meta.ini que os instaladores do GAMMA (o original e o Проводник) escrevem: "version=" igual ao
+    /// "installationFile=", os dois com o nome do arquivo. O MO2 nunca grava assim.
+    /// </summary>
+    public static bool WrittenByGammaInstaller(string folder)
+    {
+      var (file, version) = ReadInstall(folder);
+      return !string.IsNullOrEmpty(file) && file == version;
+    }
   }
 }
