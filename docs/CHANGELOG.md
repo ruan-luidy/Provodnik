@@ -9,6 +9,8 @@
   - uma cópia do modlist.txt de antes fica em .provodnik\profile-backups (as 10 últimas).
 - Mod do GAMMA que a pessoa trocou pela versão dela pelo MO2 (o meta.ini aponta pra outro arquivo) não é sobrescrito quando o GAMMA atualiza: fica a dela, com um aviso no relatório. O Reinstalar da tela Mods volta pra do GAMMA.
 - Escolha do perfil do MO2 no Início, do lado do executável (aparece com mais de um perfil): o Jogar e o Abrir no MO2 abrem nele (`-p` do MO2).
+- Início: o Instalar / atualizar subiu pro topo, junto do Abrir no MO2 (novo ali), do Conferir e da Pasta do GAMMA, e fica azul quando tem o que instalar; no cartão ficam o perfil, o executável e o Jogar.
+- Abrir no MO2 que não abre mostra o motivo em vez de derrubar o app.
 - Fechar depois de baixar uma versão nova dava "FileNotFoundException: Microsoft.Web.WebView2.Wpf": o exe era renomeado pra .old antes de o navegador do ModDB ser fechado, e o exe único não achava mais a biblioteca dentro dele. A troca agora é a última coisa ao fechar, e o Reiniciar agora passa pelo mesmo caminho.
 
 ## 0.3.2
