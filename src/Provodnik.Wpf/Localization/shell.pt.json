@@ -25,7 +25,6 @@
   "shell.error.title": "Algo deu errado",
   "shell.gammaNotChosen": "A pasta do GAMMA não foi escolhida.",
   "appUpdate.busyInstalling": "Espere a instalação terminar. Ou deixe: a versão nova entra quando o Проводник fechar.",
-  "appUpdate.applyFailed": "Não deu pra atualizar agora. A versão nova entra quando o Проводник fechar.",
   "appUpdate.idle": "Atualiza sozinho pelo GitHub.",
   "appUpdate.demo": "A simulação não procura versão nova.",
   "appUpdate.notInstalled": "Rodando do código: não se atualiza.",

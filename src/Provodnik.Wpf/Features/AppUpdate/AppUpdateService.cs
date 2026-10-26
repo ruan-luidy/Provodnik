@@ -122,12 +122,7 @@ namespace Provodnik.Wpf.Features.AppUpdate
         ToastService.Warning(L.T("appUpdate.busyInstalling"));
         return;
       }
-      if (!Swap())
-      {
-        ToastService.Error(L.T("appUpdate.applyFailed"));
-        return;
-      }
-      ((App)Application.Current).Restart();
+      ((App)Application.Current).RestartWithUpdate();
     }
 
     /// <summary>Chamado ao fechar: a versão baixada toma o lugar do exe, e a próxima abertura já é ela.</summary>

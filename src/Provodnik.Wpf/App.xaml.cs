@@ -43,6 +43,7 @@ namespace Provodnik.Wpf
     private EventWaitHandle? _wake;
     private bool _showingError;
     private bool _elevating;
+    private bool _restartAfterUpdate;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -145,14 +146,24 @@ namespace Provodnik.Wpf
       _instance?.ReleaseMutex();
       _instance?.Dispose();
       _instance = null;
-      var args = Environment.GetCommandLineArgs().Skip(1)
-        .Where(a => a != "--demo-novo" && a != Shell.MainWindow.ReopenSettings && !a.StartsWith(Shell.MainWindow.BoundsArg, StringComparison.Ordinal))
-        .Concat(extra);
-      Process.Start(new ProcessStartInfo(Environment.ProcessPath!, args) { UseShellExecute = false })?.Dispose();
+      Process.Start(new ProcessStartInfo(Environment.ProcessPath!, RestartArgs(extra)) { UseShellExecute = false })?.Dispose();
       // a versão baixada fica pra quando fechar de vez: o Update.exe trocaria os arquivos com a nova já rodando
       _elevating = true;
       Shutdown();
     }
+
+    /// <summary>Fecha, troca o exe pela versão baixada e abre a nova: a troca e a abertura ficam pro <see cref="OnExit"/>.</summary>
+    public void RestartWithUpdate()
+    {
+      _restartAfterUpdate = true;
+      Shutdown();
+    }
+
+    private static IEnumerable<string> RestartArgs(string[] extra) =>
+      Environment.GetCommandLineArgs().Skip(1)
+        .Where(a => a != "--demo-novo" && a != Shell.MainWindow.ReopenSettings && !a.StartsWith(Shell.MainWindow.BoundsArg, StringComparison.Ordinal))
+        .Concat(extra)
+        .ToList();
 
     public bool RestartElevated()
     {
@@ -177,10 +188,17 @@ namespace Provodnik.Wpf
     {
       // versão nova baixada entra quando o processo terminar de sair; reabrindo como administrador não, que o
       // Update.exe trocaria os arquivos com a outra instância já rodando
-      if (!_elevating)
-        _services?.GetService<AppUpdateService>()?.ApplyOnExit();
+      var updater = _elevating ? null : _services?.GetService<AppUpdateService>();
+      var args = _restartAfterUpdate ? RestartArgs([]) : null;
       _services?.Dispose();
+      if (_restartAfterUpdate)
+        _instance?.ReleaseMutex();
       _instance?.Dispose();
+      // a troca é a última coisa: o exe único lê os assemblies de dentro dele sob demanda, e depois de renomeado pra
+      // .old o que ainda não tinha carregado (o WebView2 no Dispose dos serviços) dava FileNotFoundException
+      updater?.ApplyOnExit();
+      if (args is not null)
+        Process.Start(new ProcessStartInfo(Environment.ProcessPath!, args) { UseShellExecute = false })?.Dispose();
       base.OnExit(e);
     }
 

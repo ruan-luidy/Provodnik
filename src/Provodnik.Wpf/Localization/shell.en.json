@@ -25,7 +25,6 @@
   "shell.error.title": "Something went wrong",
   "shell.gammaNotChosen": "The GAMMA folder hasn't been chosen.",
   "appUpdate.busyInstalling": "Wait for the install to finish. Or leave it: the new version kicks in when Provodnik closes.",
-  "appUpdate.applyFailed": "Couldn't update right now. The new version kicks in when Provodnik closes.",
   "appUpdate.idle": "Updates itself from GitHub.",
   "appUpdate.demo": "The simulation doesn't check for new versions.",
   "appUpdate.notInstalled": "Running from source: no self-update.",
