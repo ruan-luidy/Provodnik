@@ -581,6 +581,9 @@
               <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
               <Setter TargetName="Clear" Property="Visibility" Value="Collapsed" />
             </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="Placeholder" Property="Visibility" Value="Collapsed" />
+            </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Box" Property="Background" Value="{DynamicResource Button.HoverBrush}" />
             </Trigger>
@@ -637,6 +640,10 @@
           <ControlTemplate.Triggers>
             <Trigger Property="Text" Value="">
               <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <!--  Em foco o exemplo some, mesmo vazio: o cursor fica sozinho no campo  -->
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="Placeholder" Property="Visibility" Value="Collapsed" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Box" Property="Background" Value="{DynamicResource Button.HoverBrush}" />
