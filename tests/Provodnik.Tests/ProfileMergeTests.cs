@@ -45,6 +45,19 @@ namespace Provodnik.Tests
     }
 
     [Fact]
+    public void Perfil_todo_desligado_vale_como_perfil_novo()
+    {
+      // o MO2 aberto sem modlist.txt lista as pastas desligadas: não é a pessoa desligando o GAMMA inteiro
+      string[] current = ["-Shuler", "-End", "-3- Luz - Bia", "-2- Som - Ana", "+1- Audio_separator"];
+
+      var result = Merge(Gamma, Gamma, current, Users("Shuler"));
+
+      Assert.Equal(Gamma, Lines(result));
+      Assert.Empty(result.KeptChoices);
+      Assert.Empty(result.KeptMods);
+    }
+
+    [Fact]
     public void Mods_da_pessoa_vao_pro_fim_do_MO2_embaixo_de_Meus_mods_com_o_estado_deles()
     {
       // como o launcher original deixa: a lista do GAMMA por cima e os mods da pessoa misturados no meio

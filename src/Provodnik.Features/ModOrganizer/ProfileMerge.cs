@@ -59,6 +59,9 @@ namespace Provodnik.Features.ModOrganizer
       var gammaNames = Entries(gammaLines).Select(e => e.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
       var previous = previousGamma is null ? null : States(Entries(previousGamma.Replace("\r\n", "\n").Split('\n')));
       var mine = current is null ? [] : Entries(current.Replace("\r\n", "\n").Split('\n')).Where(e => e.Prefix is '+' or '-').ToList();
+      // tudo desligado não é escolha: é o MO2 aberto sem modlist.txt, que lista as pastas desligadas. Vale como perfil novo
+      if (!mine.Any(e => e.Prefix == '+' && !e.IsSeparator))
+        mine = [];
       var now = States(mine);
       var ours = knownSeparators.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
