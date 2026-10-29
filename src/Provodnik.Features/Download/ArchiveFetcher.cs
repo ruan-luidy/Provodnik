@@ -18,8 +18,8 @@ namespace Provodnik.Features.Download
 
   /// <summary>
   /// Garante um arquivo em downloads\, no fluxo do original (existe? md5 bate? GitHub mudou?) mas com o que faltava:
-  ///   - o link do ModDB vem da fila cadenciada (<see cref="ModDbPacer"/>), de novo a cada tentativa; o download no CDN
-  ///     roda em paralelo, sem segurar a vez de quem só quer o link;
+  ///   - o link do ModDB vem da fila cadenciada (<see cref="ModDbPacer"/>), de novo a cada tentativa e só quando a vaga de
+  ///     download abriu (o CDN corta o link em 5 minutos);
   ///   - baixa num .part e continua de onde parou; o arquivo final só aparece inteiro e conferido;
   ///   - até N tentativas com espera crescente (5 s, 11 s, 24 s, 53 s) em vez de uma só;
   ///   - md5 errado duas vezes com o MESMO resultado não é download quebrado: o autor atualizou o arquivo no ModDB
@@ -87,19 +87,20 @@ namespace Provodnik.Features.Download
         var resolving = true;
         try
         {
-          var url = spec.Url;
-          if (spec.Kind == ModKind.ModDb)
-          {
-            // o link vem da fila cadenciada do ModDB; o download depois corre solto no CDN
-            report(ModStatus.Pending, detail: L.T("features.fetch.modDbQueue"));
-            url = await pacer.ResolveAsync(spec.Url, message => report(ModStatus.Resolving, detail: message), cancellationToken).ConfigureAwait(false);
-          }
-          resolving = false;
-
           report(ModStatus.Pending, detail: L.T("features.fetch.downloadQueue"));
           await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
           try
           {
+            // o link do ModDB só é pedido com a vaga de download na mão: o CDN corta o link em 5 minutos (403), e
+            // pedido antes, na instalação do zero (centenas de mods na fila), ele vencia esperando a vez
+            var url = spec.Url;
+            if (spec.Kind == ModKind.ModDb)
+            {
+              report(ModStatus.Pending, detail: L.T("features.fetch.modDbQueue"));
+              url = await pacer.ResolveAsync(spec.Url, message => report(ModStatus.Resolving, detail: message), cancellationToken).ConfigureAwait(false);
+            }
+            resolving = false;
+
             // zip de branch do GitHub muda de conteúdo: pedaço de uma versão velha não pode ser continuado
             if (spec.Kind == ModKind.GitHub)
               TryDelete(part);

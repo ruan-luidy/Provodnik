@@ -1,5 +1,9 @@
 # Novidades
 
+## Próxima
+
+- O link do ModDB só é pedido quando a vaga de download abre: na fila longa da instalação do zero ele vencia esperando (o CDN corta em 5 minutos) e o download levava 403.
+
 ## 0.3.4
 
 - Liberar espaço (tela Mods): apaga de downloads\ as versões velhas que as atualizações do GAMMA deixam e nada mais usa (nem a lista atual, nem o meta.ini de alguma pasta em mods\), depois de mostrar quais e quanto. O que o MO2 baixou pra pessoa (tem .meta do lado) nunca sai.
