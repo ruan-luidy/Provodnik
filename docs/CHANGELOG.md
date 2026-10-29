@@ -3,6 +3,7 @@
 ## Próxima
 
 - O link do ModDB só é pedido quando a vaga de download abre: na fila longa da instalação do zero ele vencia esperando (o CDN corta em 5 minutos) e o download levava 403.
+- Espelho do ModDB lento (abaixo de 300 KB/s depois de 30 s, com mais de 32 MB por vir) é trocado por outro link, até 2 vezes por arquivo; o download continua de onde parou.
 
 ## 0.3.4
 

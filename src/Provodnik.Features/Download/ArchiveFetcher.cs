@@ -19,7 +19,7 @@ namespace Provodnik.Features.Download
   /// <summary>
   /// Garante um arquivo em downloads\, no fluxo do original (existe? md5 bate? GitHub mudou?) mas com o que faltava:
   ///   - o link do ModDB vem da fila cadenciada (<see cref="ModDbPacer"/>), de novo a cada tentativa e só quando a vaga de
-  ///     download abriu (o CDN corta o link em 5 minutos);
+  ///     download abriu (o CDN corta o link em 5 minutos); espelho lento (<see cref="SlowMirror"/>) troca por outro link;
   ///   - baixa num .part e continua de onde parou; o arquivo final só aparece inteiro e conferido;
   ///   - até N tentativas com espera crescente (5 s, 11 s, 24 s, 53 s) em vez de uma só;
   ///   - md5 errado duas vezes com o MESMO resultado não é download quebrado: o autor atualizou o arquivo no ModDB
@@ -35,6 +35,9 @@ namespace Provodnik.Features.Download
     SemaphoreSlim httpGate,
     SemaphoreSlim hashGate)
   {
+    /// <summary>Quantas vezes um arquivo do ModDB troca de espelho lento (cada troca é mais um link pedido ao ModDB).</summary>
+    private const int MirrorSwitches = 2;
+
     public async Task<ArchiveOutcome> FetchAsync(ArchiveSpec spec, string? etag, Action<string> rememberETag, ArchiveReport report, CancellationToken cancellationToken)
     {
       var path = Path.Combine(downloads, spec.Name);
@@ -81,10 +84,12 @@ namespace Provodnik.Features.Download
       Exception? last = null;
 
       var throttles = 0;
+      var switches = 0;
       for (var attempt = 1; attempt <= options.Attempts; attempt++)
       {
         // o pacer já esfria sozinho quando o bloqueio vem do pedido de link; do download, avisa ele
         var resolving = true;
+        using var slow = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         try
         {
           report(ModStatus.Pending, detail: L.T("features.fetch.downloadQueue"));
@@ -106,10 +111,16 @@ namespace Provodnik.Features.Download
               TryDelete(part);
 
             report(ModStatus.Downloading, detail: attempt > 1 ? L.T("features.fetch.attempt", attempt, options.Attempts) : null);
+            var watch = spec.Kind == ModKind.ModDb && switches < MirrorSwitches ? new SlowMirror() : null;
             var result = await downloader.DownloadAsync(
               new DownloadRequest(url, part, Impersonate: spec.Kind == ModKind.ModDb, ETag: etag),
-              new Progress<TransferProgress>(p => report(ModStatus.Downloading, p)),
-              cancellationToken).ConfigureAwait(false);
+              new Progress<TransferProgress>(p =>
+              {
+                report(ModStatus.Downloading, p);
+                if (watch?.IsSlow(p) == true)
+                  TryCancel(slow);
+              }),
+              slow.Token).ConfigureAwait(false);
 
             if (result.NotModified)
             {
@@ -142,6 +153,13 @@ namespace Provodnik.Features.Download
           {
             gate.Release();
           }
+        }
+        catch (OperationCanceledException) when (slow.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+          // espelho lento: outro link, sem gastar tentativa; o .part continua de onde parou
+          switches++;
+          attempt--;
+          report(ModStatus.Retrying, detail: L.T("features.fetch.slowMirror"));
         }
         catch (Exception ex) when (IsTransient(ex) && !cancellationToken.IsCancellationRequested)
         {
@@ -180,6 +198,18 @@ namespace Provodnik.Features.Download
       finally
       {
         hashGate.Release();
+      }
+    }
+
+    private static void TryCancel(CancellationTokenSource source)
+    {
+      try
+      {
+        source.Cancel();
+      }
+      catch (ObjectDisposedException)
+      {
+        // o progresso chegou atrasado, depois do download acabar
       }
     }
 

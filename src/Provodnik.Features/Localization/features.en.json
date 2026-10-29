@@ -61,6 +61,7 @@
   "features.patches.noAnomaly": "MO2 doesn't know where Anomaly is yet. Open MO2 once, pick the Anomaly folder and install again.",
   "features.shortcuts.failed": "Shortcuts not created: {0}",
   "features.fetch.md5Redownload": "md5 of the downloaded file doesn't match, downloading again",
+  "features.fetch.slowMirror": "slow ModDB mirror, asking for another link",
   "features.fetch.keptOld": "couldn't update ({0}); using the file that was already in downloads",
   "features.fetch.modDbQueue": "in the ModDB queue",
   "features.fetch.downloadQueue": "in the download queue",

@@ -61,6 +61,7 @@
   "features.patches.noAnomaly": "O MO2 ainda não sabe onde está o Anomaly. Abra o MO2 uma vez, escolha a pasta do Anomaly e instale de novo.",
   "features.shortcuts.failed": "Atalhos não criados: {0}",
   "features.fetch.md5Redownload": "md5 do arquivo baixado não bate, baixando de novo",
+  "features.fetch.slowMirror": "espelho do ModDB lento, pedindo outro link",
   "features.fetch.keptOld": "não deu pra atualizar ({0}); usando o arquivo que já estava em downloads",
   "features.fetch.modDbQueue": "na fila do ModDB",
   "features.fetch.downloadQueue": "na fila de download",
