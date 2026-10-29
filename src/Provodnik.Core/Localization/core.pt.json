@@ -40,5 +40,20 @@
   "core.errors.antivirus.meaning": "O antivírus bloqueou um arquivo.",
   "core.errors.antivirus.hint": "Adicione a pasta do GAMMA nas exclusões do antivírus e tente de novo.",
   "core.errors.git.meaning": "O repositório git ficou travado ou estragado.",
-  "core.errors.git.hint": "Rode de novo: se continuar, apague a pasta do repositório em resources\\ que ele clona do zero."
+  "core.errors.git.hint": "Rode de novo: se continuar, apague a pasta do repositório em resources\\ que ele clona do zero.",
+  "core.bootstrap.notRooted": "Escolha uma pasta completa, com a letra do disco (D:\\Jogos).",
+  "core.bootstrap.sameDrive": "O GAMMA e o Anomaly precisam ficar no mesmo disco.",
+  "core.bootstrap.nested": "O GAMMA e o Anomaly precisam ser pastas separadas, uma fora da outra.",
+  "core.bootstrap.driveRoot": "Use uma pasta, não a raiz do disco.",
+  "core.bootstrap.forbidden": "Fora de {0}: a wiki do GAMMA proíbe a pasta do usuário (Documentos, Área de Trabalho, OneDrive) e o Program Files.",
+  "core.bootstrap.removable": "Pendrive e HD externo não servem: escolha um disco interno.",
+  "core.bootstrap.network": "Pasta de rede não serve: escolha um disco do computador.",
+  "core.bootstrap.noDrive": "Esse disco não existe ou não está pronto.",
+  "core.bootstrap.space": "Só {0} livres; precisa de pelo menos {1}.",
+  "core.bootstrap.spaceTight": "{0} livres: dá, mas a wiki recomenda uns 200 GB pra sobrar folga.",
+  "core.bootstrap.nonAscii": "O caminho tem acento ou letra fora do alfabeto latino: o jogo costuma se perder. Prefira um nome simples.",
+  "core.bootstrap.anomalyFound": "Já tem um Anomaly inteiro na pasta: ele é aproveitado, sem baixar de novo.",
+  "core.bootstrap.anomalyNotEmpty": "A pasta do Anomaly já tem arquivos: o Anomaly vai ser extraído por cima.",
+  "core.bootstrap.gammaFound": "O GAMMA RC3 já está extraído na pasta: só falta o resto.",
+  "core.bootstrap.gammaNotEmpty": "A pasta do GAMMA já tem arquivos: o RC3 vai ser extraído por cima."
 }

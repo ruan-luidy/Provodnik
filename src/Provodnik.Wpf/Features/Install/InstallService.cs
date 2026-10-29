@@ -116,7 +116,9 @@ namespace Provodnik.Wpf.Features.Install
       Reset(options);
       IsRunning = true;
       _cancel = new CancellationTokenSource();
-      _pipeline.LauncherPath = Environment.ProcessPath;
+      // o atalho aponta pra cópia que mora no GAMMA (a instalação do zero põe uma lá), senão pra este exe
+      var resident = Environment.ProcessPath is { } exe ? Path.Combine(layout.Root, Path.GetFileName(exe)) : null;
+      _pipeline.LauncherPath = resident is not null && File.Exists(resident) ? resident : Environment.ProcessPath;
       KeepAwake(true);
       _console.RecordTo(Path.Combine(layout.LogsDir, $"console-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log"));
       _console.Write("provodnik", L.T("install.console.started", layout.Root));

@@ -3,6 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:behaviors="clr-namespace:Provodnik.Wpf.Shared.Behaviors"
   xmlns:converters="clr-namespace:Provodnik.Wpf.Shared.Converters"
+  xmlns:core="clr-namespace:Provodnik.Core.Install;assembly=Provodnik.Core"
   xmlns:hc="https://handyorg.github.io/handycontrol"
   xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
   xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
@@ -1068,4 +1069,78 @@
     </Setter>
   </Style>
 
+  <!--
+    ========================================
+    ETAPAS - a linha do tempo da instalação
+    ========================================
+    O ícone, o traço até a próxima e o título de cada etapa (a instalação e a instalação do zero). Ligam no State,
+    IsRunning, IsDone e IsLast da linha.
+  -->
+  <!--  O ícone da etapa pelo estado: círculo vazio na fila, carregando rodando, ✓ verde, ! amarelo, ✕ vermelho  -->
+  <Style x:Key="StageIcon" TargetType="Path">
+    <Setter Property="Width" Value="16" />
+    <Setter Property="Height" Value="16" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <!--  Pendente: o círculo vazio no cinza do texto secundário (o ThirdlyTextBrush sumia em cima do cartão)  -->
+    <Setter Property="Data" Value="{icons:Phosphor CircleBold}" />
+    <Setter Property="Fill" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="Opacity" Value="0.55" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Running}">
+        <Setter Property="Visibility" Value="Collapsed" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Done}">
+        <Setter Property="Data" Value="{icons:Phosphor CheckCircleFill}" />
+        <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
+        <Setter Property="Opacity" Value="1" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Warning}">
+        <Setter Property="Data" Value="{icons:Phosphor WarningCircleFill}" />
+        <Setter Property="Fill" Value="{DynamicResource WarningBrush}" />
+        <Setter Property="Opacity" Value="1" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Failed}">
+        <Setter Property="Data" Value="{icons:Phosphor XCircleFill}" />
+        <Setter Property="Fill" Value="{DynamicResource DangerBrush}" />
+        <Setter Property="Opacity" Value="1" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Skipped}">
+        <!--  Pulada (nada mudou desde a última vez): o traço, sem opacidade baixa - a etapa está certa  -->
+        <Setter Property="Data" Value="{icons:Phosphor MinusCircleFill}" />
+        <Setter Property="Opacity" Value="0.8" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <!--  O traço da linha do tempo, do ícone até a próxima etapa: verde quando a etapa terminou, nenhum na última  -->
+  <Style x:Key="StageConnector" TargetType="Border">
+    <Setter Property="Width" Value="2" />
+    <Setter Property="Margin" Value="0,4,0,3" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="CornerRadius" Value="1" />
+    <Setter Property="Background" Value="{DynamicResource Progress.TrackBrush}" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding State}" Value="{x:Static core:StageState.Done}">
+        <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
+        <Setter Property="Opacity" Value="0.45" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding IsLast}" Value="True">
+        <Setter Property="Visibility" Value="Collapsed" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="StageTitle" TargetType="TextBlock">
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsRunning}" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+      </DataTrigger>
+      <DataTrigger Binding="{Binding IsDone}" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
 </ResourceDictionary>

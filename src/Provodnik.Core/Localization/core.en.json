@@ -40,5 +40,20 @@
   "core.errors.antivirus.meaning": "The antivirus blocked a file.",
   "core.errors.antivirus.hint": "Add the GAMMA folder to your antivirus exclusions and try again.",
   "core.errors.git.meaning": "The git repository got locked up or broken.",
-  "core.errors.git.hint": "Run it again: if it keeps happening, delete the repository folder in resources\\ and it gets cloned from scratch."
+  "core.errors.git.hint": "Run it again: if it keeps happening, delete the repository folder in resources\\ and it gets cloned from scratch.",
+  "core.bootstrap.notRooted": "Choose a full folder path, with the drive letter (D:\\Games).",
+  "core.bootstrap.sameDrive": "GAMMA and Anomaly must be on the same drive.",
+  "core.bootstrap.nested": "GAMMA and Anomaly must be separate folders, neither inside the other.",
+  "core.bootstrap.driveRoot": "Use a folder, not the root of the drive.",
+  "core.bootstrap.forbidden": "Keep out of {0}: the GAMMA wiki rules out the user folder (Documents, Desktop, OneDrive) and Program Files.",
+  "core.bootstrap.removable": "USB sticks and external drives won't do: choose an internal drive.",
+  "core.bootstrap.network": "Network folders won't do: choose a drive in this computer.",
+  "core.bootstrap.noDrive": "That drive doesn't exist or isn't ready.",
+  "core.bootstrap.space": "Only {0} free; at least {1} is needed.",
+  "core.bootstrap.spaceTight": "{0} free: it fits, but the wiki recommends about 200 GB for headroom.",
+  "core.bootstrap.nonAscii": "The path has accents or non-Latin letters, which the game often trips on. Prefer a plain name.",
+  "core.bootstrap.anomalyFound": "There's already a complete Anomaly in the folder: it will be reused, not downloaded again.",
+  "core.bootstrap.anomalyNotEmpty": "The Anomaly folder already has files: Anomaly will be extracted over them.",
+  "core.bootstrap.gammaFound": "GAMMA RC3 is already extracted in the folder: only the rest is left.",
+  "core.bootstrap.gammaNotEmpty": "The GAMMA folder already has files: RC3 will be extracted over them."
 }

@@ -40,6 +40,7 @@ something goes wrong.
 | Your own mods | come back disabled and mixed in with GAMMA's after every update | stay on, in your order, under a "My mods" separator |
 | Errors | raw tool output in a console | the same console, with each known error explained and what to do about it |
 | Before installing | — | checks permissions, disk space, antivirus, long paths, MO2 and the game being closed |
+| First time | create folders, download Anomaly and RC3, extract, antivirus exclusions, "First Install Initialization" by hand | one click: Provodnik does every wiki step itself |
 
 It also checks the result the way the community does by eye (every mod GAMMA enables in MO2 must actually have files),
 and fixes a typo in GAMMA's own mod list that leaves one mod disabled for everybody.
@@ -48,11 +49,27 @@ and fixes a typo in GAMMA's own mod list that leaves one mod disabled for everyb
 
 ## Install
 
-No installer. One file:
+No installer. One file: download **`Provodnik.exe`** from the [latest release](https://github.com/ruan-luidy/Provodnik/releases/latest).
 
-1. Download **`Provodnik.exe`** from the [latest release](https://github.com/ruan-luidy/Provodnik/releases/latest).
-2. Drop it in your GAMMA folder, next to `ModOrganizer.exe`.
-3. Run it and press **Install / update**. Right-click → *Send to → Desktop* if you want a shortcut.
+**Already have GAMMA:** drop the exe in your GAMMA folder, next to `ModOrganizer.exe`, run it and press **Install /
+update**. Right-click → *Send to → Desktop* if you want a shortcut.
+
+**From scratch:** run the exe from wherever it is (your Downloads folder is fine). With no GAMMA on the computer, the
+Home screen becomes the from-scratch install: pick a drive and press **Install everything**. It does every step of the
+[wiki](https://github.com/Grokitach/Stalker_GAMMA/wiki/Installing-GAMMA):
+
+- creates `GAMMA` and `Anomaly` side by side on the chosen drive, and rules out what the wiki forbids (different
+  drives, the user folder, OneDrive, Program Files, USB drives, not enough space);
+- adds both folders to the Windows Defender exclusions and installs any missing Visual C++ and DirectX, behind a single
+  administrator prompt (Microsoft's own installers, checked by their signature);
+- downloads GAMMA RC3 from Mediafire and Anomaly 1.5.3 from ModDB, checks the SHA-256 of each and extracts them;
+- does the "First Install Initialization": MO2 comes out already pointing at Anomaly;
+- copies itself into the GAMMA folder and starts the regular install.
+
+If it stops halfway, running it again picks up where it left off. If you already downloaded `GAMMA RC3.7z` or
+`Anomaly-1.5.3-Full.2.7z`, leave them in your Windows Downloads folder and it uses them instead of downloading again.
+A clean Anomaly 1.5.3 you already have works too (**I already have Anomaly**). Provodnik can't configure Norton, Avast,
+AVG or Bitdefender: it warns you, and you add the folders to their exclusions.
 
 It finds everything on its own, uses the tools GAMMA already ships, and keeps itself up to date: new versions download
 in the background and swap in when you close it (or right away with **Restart now**).

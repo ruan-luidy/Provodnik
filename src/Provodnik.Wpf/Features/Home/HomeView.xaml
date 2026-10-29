@@ -2,6 +2,7 @@
   x:Class="Provodnik.Wpf.Features.Home.HomeView"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:bootstrap="clr-namespace:Provodnik.Wpf.Features.Bootstrap"
   xmlns:controls="clr-namespace:Provodnik.Wpf.Shared.Controls"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:hc="https://handyorg.github.io/handycontrol"
@@ -170,43 +171,11 @@
       </controls:PageHeader.Actions>
     </controls:PageHeader>
 
-    <!--  ===== Sem GAMMA: escolher a pasta =====  -->
-    <Border
+    <!--  ===== Sem GAMMA: a instalação do zero (ou apontar pra um GAMMA que já existe) =====  -->
+    <bootstrap:BootstrapView
       Grid.Row="1"
-      MaxWidth="560"
-      VerticalAlignment="Center"
-      Style="{StaticResource SurfaceCard}"
-      Visibility="{Binding HasGamma, Converter={StaticResource Boolean2VisibilityReConverter}}">
-      <StackPanel Margin="12">
-        <Path
-          Width="36"
-          Height="36"
-          Data="{icons:Phosphor CompassBold}"
-          Fill="{DynamicResource PrimaryBrush}"
-          Stretch="Uniform" />
-        <TextBlock
-          Margin="0,12,0,0"
-          HorizontalAlignment="Center"
-          FontSize="{StaticResource FontSize.Lg}"
-          FontWeight="SemiBold"
-          Foreground="{DynamicResource PrimaryTextBrush}"
-          Text="{loc:Tr home.noGamma.title}" />
-        <TextBlock
-          Margin="0,6,0,0"
-          Style="{StaticResource CaptionText}"
-          Text="{loc:Tr home.noGamma.text}"
-          TextAlignment="Center"
-          TextTrimming="None"
-          TextWrapping="Wrap" />
-        <Button
-          Margin="0,16,0,0"
-          HorizontalAlignment="Center"
-          hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
-          Command="{Binding ChooseFolderCommand}"
-          Content="{loc:Tr home.noGamma.choose}"
-          Style="{StaticResource Action.Primary}" />
-      </StackPanel>
-    </Border>
+      DataContext="{Binding Bootstrap}"
+      Visibility="{Binding DataContext.HasGamma, RelativeSource={RelativeSource AncestorType=home:HomeView}, Converter={StaticResource Boolean2VisibilityReConverter}}" />
 
     <!--  ===== Com GAMMA =====  -->
     <ScrollViewer

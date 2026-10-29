@@ -30,7 +30,7 @@ namespace Provodnik.Wpf.Shared.Services
     {
       _settings = settings;
       // na simulação, só a pasta de mentira: nunca o GAMMA de verdade ao lado do exe
-      Layout = options.DemoRoot is { } demo ? GammaLayout.Find(demo) : Detect(settings.Current.GammaRoot);
+      Layout = options.FromScratch ? null : options.DemoRoot is { } demo ? GammaLayout.Find(demo) : Detect(settings.Current.GammaRoot);
       Reload();
     }
 

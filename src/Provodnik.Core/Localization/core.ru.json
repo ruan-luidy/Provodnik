@@ -40,5 +40,20 @@
   "core.errors.antivirus.meaning": "Антивирус заблокировал файл.",
   "core.errors.antivirus.hint": "Добавьте папку GAMMA в исключения антивируса и попробуйте снова.",
   "core.errors.git.meaning": "Git-репозиторий заблокирован или повреждён.",
-  "core.errors.git.hint": "Запустите ещё раз; если повторяется — удалите папку репозитория в resources\\, и он склонируется заново."
+  "core.errors.git.hint": "Запустите ещё раз; если повторяется — удалите папку репозитория в resources\\, и он склонируется заново.",
+  "core.bootstrap.notRooted": "Выберите полный путь к папке, с буквой диска (D:\\Games).",
+  "core.bootstrap.sameDrive": "GAMMA и Anomaly должны быть на одном диске.",
+  "core.bootstrap.nested": "GAMMA и Anomaly должны быть отдельными папками, не одна внутри другой.",
+  "core.bootstrap.driveRoot": "Нужна папка, а не корень диска.",
+  "core.bootstrap.forbidden": "Не внутри {0}: вики GAMMA запрещает папку пользователя (Документы, Рабочий стол, OneDrive) и Program Files.",
+  "core.bootstrap.removable": "Флешка и внешний диск не подходят: выберите внутренний диск.",
+  "core.bootstrap.network": "Сетевая папка не подходит: выберите диск этого компьютера.",
+  "core.bootstrap.noDrive": "Этого диска нет или он не готов.",
+  "core.bootstrap.space": "Свободно только {0}; нужно минимум {1}.",
+  "core.bootstrap.spaceTight": "Свободно {0}: хватит, но вики советует около 200 ГБ с запасом.",
+  "core.bootstrap.nonAscii": "В пути есть кириллица или символы с диакритикой, на которых игра часто ломается. Лучше простое латинское имя.",
+  "core.bootstrap.anomalyFound": "В папке уже есть полный Anomaly: он будет использован, без повторной загрузки.",
+  "core.bootstrap.anomalyNotEmpty": "В папке Anomaly уже есть файлы: Anomaly распакуется поверх них.",
+  "core.bootstrap.gammaFound": "GAMMA RC3 уже распакован в папке: осталось остальное.",
+  "core.bootstrap.gammaNotEmpty": "В папке GAMMA уже есть файлы: RC3 распакуется поверх них."
 }

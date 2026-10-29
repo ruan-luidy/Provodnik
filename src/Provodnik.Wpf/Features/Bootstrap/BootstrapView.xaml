@@ -1,0 +1,254 @@
+<UserControl
+  x:Class="Provodnik.Wpf.Features.Bootstrap.BootstrapView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:bootstrap="clr-namespace:Provodnik.Wpf.Features.Bootstrap"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:hc="https://handyorg.github.io/handycontrol"
+  xmlns:icons="clr-namespace:Provodnik.Wpf.Shared.Icons"
+  xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:shared="clr-namespace:Provodnik.Wpf.Shared"
+  d:DataContext="{d:DesignInstance Type=bootstrap:BootstrapViewModel}"
+  mc:Ignorable="d">
+
+  <UserControl.Resources>
+    <!--  O aviso da checagem: ✕ vermelho impede, ! amarelo só avisa, ✓ verde é coisa boa (o Anomaly que já existe)  -->
+    <Style x:Key="IssueIcon" TargetType="Path">
+      <Setter Property="Width" Value="14" />
+      <Setter Property="Height" Value="14" />
+      <Setter Property="Margin" Value="0,2,8,0" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Data" Value="{icons:Phosphor CheckCircleFill}" />
+      <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Warning}">
+          <Setter Property="Data" Value="{icons:Phosphor WarningCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource WarningBrush}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Tone}" Value="{x:Static shared:RowTone.Error}">
+          <Setter Property="Data" Value="{icons:Phosphor XCircleFill}" />
+          <Setter Property="Fill" Value="{DynamicResource DangerBrush}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <!--  "GAMMA ..... D:\GAMMA" e "Anomaly ..... D:\Anomaly"  -->
+    <Style x:Key="FolderLabel" TargetType="TextBlock">
+      <Setter Property="Width" Value="80" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    </Style>
+    <Style x:Key="FolderValue" TargetType="TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontFamily" Value="{StaticResource FontFamily.Numbers}" />
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+  </UserControl.Resources>
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Border
+      MaxWidth="680"
+      Margin="0,8"
+      VerticalAlignment="Center"
+      Style="{StaticResource SurfaceCard}">
+      <StackPanel Margin="12">
+        <!--  ===== O que é =====  -->
+        <DockPanel>
+          <Border
+            Width="44"
+            Height="44"
+            Margin="0,0,14,0"
+            VerticalAlignment="Top"
+            Background="{DynamicResource Accent.SoftBrush}"
+            CornerRadius="12">
+            <Path
+              Width="22"
+              Height="22"
+              Data="{icons:Phosphor DownloadSimpleBold}"
+              Fill="{DynamicResource PrimaryBrush}"
+              Stretch="Uniform" />
+          </Border>
+          <StackPanel>
+            <TextBlock
+              FontSize="{StaticResource FontSize.Lg}"
+              FontWeight="SemiBold"
+              Foreground="{DynamicResource PrimaryTextBrush}"
+              Text="{loc:Tr bootstrap.title}" />
+            <TextBlock
+              Margin="0,4,0,0"
+              Style="{StaticResource CaptionText}"
+              Text="{loc:Tr bootstrap.text}"
+              TextTrimming="None"
+              TextWrapping="Wrap" />
+          </StackPanel>
+        </DockPanel>
+
+        <!--  ===== Onde =====  -->
+        <StackPanel Margin="0,18,0,0" Visibility="{Binding IsIdle, Converter={StaticResource Boolean2VisibilityConverter}}">
+          <TextBlock
+            Margin="0,0,0,6"
+            Style="{StaticResource StatLabel}"
+            Text="{loc:Tr bootstrap.where}" />
+          <DockPanel>
+            <Button
+              Margin="6,0,0,0"
+              hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
+              Command="{Binding ChooseParentCommand}"
+              DockPanel.Dock="Right"
+              Style="{StaticResource Action.Icon}"
+              ToolTip="{loc:Tr bootstrap.chooseParent}" />
+            <hc:TextBox
+              hc:InfoElement.Placeholder="D:\"
+              Style="{StaticResource FieldBox}"
+              Text="{Binding ParentFolder, UpdateSourceTrigger=LostFocus}" />
+          </DockPanel>
+
+          <StackPanel Margin="2,10,0,0">
+            <DockPanel>
+              <TextBlock Style="{StaticResource FolderLabel}" Text="GAMMA" />
+              <TextBlock Style="{StaticResource FolderValue}" Text="{Binding GammaFolder}" />
+            </DockPanel>
+            <DockPanel Margin="0,6,0,0">
+              <TextBlock Style="{StaticResource FolderLabel}" Text="Anomaly" />
+              <Button
+                Margin="8,0,0,0"
+                Command="{Binding ChooseAnomalyCommand}"
+                Content="{loc:Tr bootstrap.haveAnomaly}"
+                DockPanel.Dock="Right"
+                Style="{StaticResource Action.Small}"
+                ToolTip="{loc:Tr bootstrap.haveAnomaly.tip}"
+                Visibility="{Binding HasAnomalyOverride, Converter={StaticResource Boolean2VisibilityReConverter}}" />
+              <Button
+                Margin="8,0,0,0"
+                Command="{Binding ClearAnomalyCommand}"
+                Content="{loc:Tr bootstrap.anomalyBeside}"
+                DockPanel.Dock="Right"
+                Style="{StaticResource Action.Small}"
+                Visibility="{Binding HasAnomalyOverride, Converter={StaticResource Boolean2VisibilityConverter}}" />
+              <TextBlock Style="{StaticResource FolderValue}" Text="{Binding AnomalyFolder}" />
+            </DockPanel>
+            <TextBlock
+              Margin="0,8,0,0"
+              Style="{StaticResource CaptionText}"
+              Text="{Binding FreeSpaceText}"
+              Visibility="{Binding FreeSpaceText, Converter={StaticResource String2VisibilityConverter}}" />
+          </StackPanel>
+
+          <ItemsControl Margin="2,10,0,0" ItemsSource="{Binding Issues}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="{x:Type bootstrap:BootstrapIssueRow}">
+                <DockPanel Margin="0,0,0,6">
+                  <Path Style="{StaticResource IssueIcon}" />
+                  <TextBlock
+                    Foreground="{DynamicResource PrimaryTextBrush}"
+                    Text="{Binding Text}"
+                    TextWrapping="Wrap" />
+                </DockPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <CheckBox
+            Margin="0,8,0,0"
+            Content="{loc:Tr bootstrap.defender}"
+            IsChecked="{Binding DefenderExclusion}"
+            ToolTip="{loc:Tr bootstrap.defender.tip}" />
+          <CheckBox
+            Margin="0,8,0,0"
+            Content="{loc:Tr bootstrap.dependencies}"
+            IsChecked="{Binding Dependencies}"
+            ToolTip="{loc:Tr bootstrap.dependencies.tip}" />
+          <TextBlock
+            Margin="0,12,0,0"
+            Style="{StaticResource CaptionText}"
+            Text="{loc:Tr bootstrap.note}"
+            TextTrimming="None"
+            TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!--  ===== A linha do tempo (depois de começar) =====  -->
+        <ItemsControl
+          Margin="0,18,0,0"
+          ItemsSource="{Binding Steps}"
+          Visibility="{Binding Started, Converter={StaticResource Boolean2VisibilityConverter}}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type bootstrap:BootstrapStepRow}">
+              <DockPanel MinHeight="44">
+                <Grid
+                  Width="18"
+                  Margin="0,1,10,0"
+                  DockPanel.Dock="Left">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="18" />
+                    <RowDefinition Height="*" />
+                  </Grid.RowDefinitions>
+                  <Path Style="{StaticResource StageIcon}" />
+                  <hc:CircleProgressBar
+                    Width="16"
+                    Height="16"
+                    IsIndeterminate="True"
+                    Style="{StaticResource BusyCircle}"
+                    Visibility="{Binding IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                  <Border Grid.Row="1" Style="{StaticResource StageConnector}" />
+                </Grid>
+                <StackPanel Margin="0,0,0,8">
+                  <TextBlock Style="{StaticResource StageTitle}" Text="{Binding Title}" />
+                  <TextBlock
+                    Margin="0,1,0,0"
+                    Style="{StaticResource CaptionText}"
+                    Text="{Binding Detail}"
+                    TextTrimming="None"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Detail, Converter={StaticResource String2VisibilityConverter}}" />
+                  <ProgressBar
+                    Height="4"
+                    Margin="0,6,0,0"
+                    Maximum="1"
+                    Value="{Binding Fraction, Mode=OneWay, TargetNullValue=0}"
+                    Visibility="{Binding HasFraction, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                </StackPanel>
+              </DockPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock
+          Margin="0,6,0,0"
+          FontWeight="SemiBold"
+          Foreground="{DynamicResource PrimaryTextBrush}"
+          Text="{Binding Headline}"
+          TextWrapping="Wrap"
+          Visibility="{Binding Headline, Converter={StaticResource String2VisibilityConverter}}" />
+
+        <!--  ===== Os botões =====  -->
+        <DockPanel Margin="0,16,0,0" LastChildFill="False">
+          <Button
+            hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
+            Command="{Binding ChooseExistingCommand}"
+            Content="{loc:Tr bootstrap.haveGamma}"
+            DockPanel.Dock="Left"
+            Style="{StaticResource Action}"
+            Visibility="{Binding IsIdle, Converter={StaticResource Boolean2VisibilityConverter}}" />
+          <Button
+            hc:IconElement.Geometry="{icons:Phosphor DownloadSimpleBold}"
+            Command="{Binding StartCommand}"
+            Content="{loc:Tr bootstrap.start}"
+            DockPanel.Dock="Right"
+            Style="{StaticResource Action.Primary}"
+            Visibility="{Binding IsIdle, Converter={StaticResource Boolean2VisibilityConverter}}" />
+          <Button
+            hc:IconElement.Geometry="{icons:Phosphor StopBold}"
+            Command="{Binding CancelCommand}"
+            Content="{loc:Tr bootstrap.stop}"
+            DockPanel.Dock="Right"
+            IsEnabled="{Binding IsCancelling, Converter={StaticResource Boolean2BooleanReConverter}}"
+            Style="{StaticResource Action}"
+            Visibility="{Binding IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
+        </DockPanel>
+      </StackPanel>
+    </Border>
+  </ScrollViewer>
+</UserControl>

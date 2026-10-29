@@ -12,6 +12,7 @@ namespace Provodnik.Wpf.Shared.Services
   ///   - Profile: o perfil do MO2 em que o Jogar e o Abrir no MO2 abrem (nulo: o do GAMMA);
   ///   - AutoUpdateApp: procura e baixa sozinho a versão nova do próprio Проводник nos Releases do GitHub;
   ///   - Language: "pt", "en" ou "ru" (nulo: o do Windows);
+  ///   - BootstrapFolder: onde a última instalação do zero pôs o GAMMA e o Anomaly (a pasta de cima dos dois);
   ///   - o resto vira <see cref="InstallOptions"/>, com os padrões do launcher original.
   /// </summary>
   public sealed record AppSettings(
@@ -33,7 +34,8 @@ namespace Provodnik.Wpf.Shared.Services
     bool Mica = true,
     bool DarkTheme = true,
     bool AutoUpdateApp = true,
-    string? Language = null)
+    string? Language = null,
+    string? BootstrapFolder = null)
   {
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 

@@ -2,9 +2,18 @@
 
 ## Próxima
 
+- Instalação do zero, num clique: sem GAMMA no computador, o Início escolhe o disco e faz cada passo da wiki do GAMMA.
+  - Cria GAMMA\ e Anomaly\ lado a lado e barra o que a wiki proíbe: discos diferentes, uma dentro da outra, pasta do usuário (Documentos, Área de Trabalho, OneDrive), Program Files, pendrive, pouco espaço; avisa de acento no caminho.
+  - Um pedido de administrador só pra exclusão das duas pastas no Windows Defender, o Visual C++ e o DirectX que faltarem (instaladores da Microsoft, conferidos pela assinatura antes de rodar) e os caminhos longos. Antivírus de outra marca (Norton, Avast...) é avisado.
+  - Baixa o GAMMA RC3 pelo Mediafire (o link pelo navegador embutido, o tamanho e o SHA-256 pela API deles) e o Anomaly 1.5.3 pelo ModDB, confere o SHA-256 e extrai. O RC3 abre com o 7za de 64 bits do pacote oficial do 7-Zip (versão e hash fixos).
+  - O "First Install Initialization" sem abrir o MO2: o ModOrganizer.ini sai com o Anomaly, o perfil do GAMMA e os executáveis.
+  - Se copia pra pasta do GAMMA, reabre de lá (o exe baixado é apagado) e começa a instalação de sempre.
+  - O perfil do MO2 que vem no RC3 é o GAMMA de quando o RC3 saiu: ele é descartado e o perfil sai só com a lista atual (antes ficava ligado, por exemplo, o Desert Eagle Gunslinger Port, que o GAMMA desligou, e o jogo fechava ao abrir com "Duplicate section wpn_desert_eagle_rmr").
+  - Parou no meio: rodar de novo continua (download pelo .part, passo pronto é pulado). Arquivo que a pessoa já baixou na pasta Downloads é usado; um Anomaly 1.5.3 que já existe também.
 - O link do ModDB só é pedido quando a vaga de download abre: na fila longa da instalação do zero ele vencia esperando (o CDN corta em 5 minutos) e o download levava 403.
 - Espelho do ModDB lento (abaixo de 300 KB/s depois de 30 s, com mais de 32 MB por vir) é trocado por outro link, até 2 vezes por arquivo; o download continua de onde parou.
 - Perfil com todos os mods desligados (o MO2 aberto sem modlist.txt) vale como perfil novo, em vez de manter o GAMMA inteiro desligado.
+- `--do-zero` abre o Provodnik como se não tivesse GAMMA, pra testar a instalação do zero numa máquina que já tem.
 
 ## 0.3.4
 

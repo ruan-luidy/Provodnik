@@ -21,6 +21,10 @@ namespace Provodnik.Wpf.Features.Install
   /// Os cookies ficam em %LocalAppData%\Provodnik\webview: o Cloudflare passa uma vez e vale pros próximos.
   /// Desafio que pede clique ("confirme que é humano"): a janela aparece por cima pra pessoa clicar e some depois.
   /// Sem WebView2 instalado, usa o resolvedor de reserva (o dl-cli).
+  ///
+  /// Serve também pra instalação do zero: a página de start de um download do ModDB (o Anomaly), que segue o mesmo
+  /// caminho, e a página de um arquivo do Mediafire (o RC3), que também tem Cloudflare: quando ela termina de
+  /// carregar, o botão de download é clicado aqui e o download que o navegador começa vira o link.
   /// </summary>
   public sealed partial class ModDbBrowser(IModDbResolver fallback, IToolConsole console) : IModDbResolver, IDisposable
   {
@@ -132,12 +136,34 @@ namespace Provodnik.Wpf.Features.Install
       _core.Settings.IsStatusBarEnabled = false;
       _core.WebResourceResponseReceived += OnResponse;
       _core.DownloadStarting += OnDownload;
+      _core.NavigationCompleted += OnLoaded;
+      // propaganda que abre janela nova (o Mediafire abre uma no clique) não abre
+      _core.NewWindowRequested += (_, e) => e.Handled = true;
+    }
+
+    private static bool IsModDbStart(string uri) =>
+      uri.Contains("/addons/start/", StringComparison.OrdinalIgnoreCase) || uri.Contains("/downloads/start/", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>A página do arquivo do Mediafire carregou (o Cloudflare já passou): clica no botão de download.</summary>
+    private async void OnLoaded(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+    {
+      if (_pending is null || !e.IsSuccess || _core is null || !_core.Source.Contains("mediafire.com/file/", StringComparison.OrdinalIgnoreCase))
+        return;
+      try
+      {
+        await _core.ExecuteScriptAsync(
+          "(() => { const b = document.getElementById('downloadButton') || document.querySelector('a[aria-label=\"Download file\"]'); if (b) b.click(); })()");
+      }
+      catch (Exception ex) when (ex is InvalidOperationException or System.Runtime.InteropServices.COMException)
+      {
+        // sem o botão: a janela aparece depois da paciência e a pessoa clica
+      }
     }
 
     /// <summary>O HTML da página de start chegou: pula a contagem e os anúncios e vai direto pro espelho.</summary>
     private async void OnResponse(object? sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
     {
-      if (_pending is not { } pending || !e.Request.Uri.Contains("/addons/start/", StringComparison.OrdinalIgnoreCase))
+      if (_pending is not { } pending || !IsModDbStart(e.Request.Uri))
         return;
       try
       {

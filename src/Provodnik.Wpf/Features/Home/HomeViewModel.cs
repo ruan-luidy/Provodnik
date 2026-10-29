@@ -1,7 +1,6 @@
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 using Provodnik.Core.Text;
 using Provodnik.Core.Desktop;
 using Provodnik.Features.Launch;
@@ -9,6 +8,7 @@ using Provodnik.Features.ModOrganizer;
 using Provodnik.Features.Mods;
 using Provodnik.Features.Update;
 using Provodnik.Features.Verify;
+using Provodnik.Wpf.Features.Bootstrap;
 using Provodnik.Wpf.Features.Install;
 using Provodnik.Wpf.Shared;
 using Provodnik.Wpf.Shared.Services;
@@ -63,8 +63,9 @@ namespace Provodnik.Wpf.Features.Home
     private IReadOnlyList<string> _profiles = [];
     [ObservableProperty] private string? _selectedProfile;
 
-    public HomeViewModel(GammaSession session, SettingsStore settings, UpdateChecker updates, Navigator navigator, InstallService install, ElevationService elevation, ISystemInfo system)
+    public HomeViewModel(GammaSession session, SettingsStore settings, UpdateChecker updates, Navigator navigator, InstallService install, ElevationService elevation, ISystemInfo system, BootstrapViewModel bootstrap)
     {
+      Bootstrap = bootstrap;
       _system = system;
       _session = session;
       _settings = settings;
@@ -83,6 +84,9 @@ namespace Provodnik.Wpf.Features.Home
     }
 
     public InstallService Install { get; }
+
+    /// <summary>Sem GAMMA: a instalação do zero.</summary>
+    public BootstrapViewModel Bootstrap { get; }
 
     /// <summary>A barrinha dos cartões de proporção (verde quando completa).</summary>
     public double ModsFraction => ModsTotal > 0 ? (double)ModsInstalled / ModsTotal : 0;
@@ -302,16 +306,6 @@ namespace Provodnik.Wpf.Features.Home
 
     [RelayCommand]
     private Task CheckAsync() => RunAsync(LoadAsync);
-
-    [RelayCommand]
-    private async Task ChooseFolderAsync()
-    {
-      var dialog = new OpenFolderDialog { Title = L.T("home.chooseFolder.title") };
-      if (dialog.ShowDialog() != true)
-        return;
-      if (_session.SetRoot(dialog.FolderName) is { } error)
-        await DialogService.WarningAsync(L.T("home.chooseFolder.wrong"), error);
-    }
 
     [RelayCommand]
     private void OpenFolder(string? which)

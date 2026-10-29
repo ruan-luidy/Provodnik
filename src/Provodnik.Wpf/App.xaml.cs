@@ -14,12 +14,14 @@ using Provodnik.Core.Layout;
 using Provodnik.Core.Remote;
 using Provodnik.Core.Repos;
 using Provodnik.Core.Text;
+using Provodnik.Features.Bootstrap;
 using Provodnik.Features.Install;
 using Provodnik.Features.Update;
 using Provodnik.Infrastructure.Desktop;
 using Provodnik.Infrastructure.Http;
 using Provodnik.Infrastructure.Tools;
 using Provodnik.Wpf.Features.AppUpdate;
+using Provodnik.Wpf.Features.Bootstrap;
 using Provodnik.Wpf.Features.Demo;
 using Provodnik.Wpf.Features.Home;
 using Provodnik.Wpf.Features.Install;
@@ -56,6 +58,10 @@ namespace Provodnik.Wpf
         demo.Prepare(reset: e.Args.Contains("--demo-novo"));
       }
 
+      // a do zero também tem a trava dela: abre do lado do Проводник de sempre
+      if (e.Args.Contains(AppOptions.FromScratchFlag))
+        InstanceName = RealInstance + "-zero";
+
       _instance = new Mutex(true, InstanceName, out var first);
       if (!first)
       {
@@ -82,6 +88,39 @@ namespace Provodnik.Wpf
       DemoConsole(_services.GetRequiredService<IToolConsole>());
       // versão nova do próprio Проводник pelos Releases do GitHub (o exe único, fora da simulação)
       _services.GetRequiredService<AppUpdateService>().Start();
+
+      var flag = Array.IndexOf(e.Args, AppOptions.ContinueFlag);
+      if (flag >= 0 && flag + 1 < e.Args.Length)
+        _ = ContinueAfterBootstrapAsync(e.Args[flag + 1]);
+    }
+
+    /// <summary>
+    /// Aberto pela instalação do zero, já da pasta do GAMMA: começa a instalação de sempre e apaga o exe baixado
+    /// (assim que ele terminar de fechar).
+    /// </summary>
+    private async Task ContinueAfterBootstrapAsync(string downloaded)
+    {
+      var services = _services!;
+      services.GetRequiredService<Navigator>().Open(Tab.Install);
+      _ = services.GetRequiredService<InstallService>().InstallAsync(forceExtract: false);
+
+      // só apaga outro Проводник, nunca o exe que está rodando
+      var self = Environment.ProcessPath;
+      if (self is null || !System.IO.File.Exists(downloaded) || string.Equals(System.IO.Path.GetFullPath(downloaded), System.IO.Path.GetFullPath(self), StringComparison.OrdinalIgnoreCase)
+          || FileVersionInfo.GetVersionInfo(downloaded).ProductName != FileVersionInfo.GetVersionInfo(self).ProductName)
+        return;
+      for (var i = 0; i < 30; i++)
+      {
+        try
+        {
+          System.IO.File.Delete(downloaded);
+          return;
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+          await Task.Delay(1000);
+        }
+      }
     }
 
     /// <summary>Só no Debug: --demo-console enche o console com linhas típicas (pra ver as explicações sem instalar).</summary>
@@ -152,6 +191,18 @@ namespace Provodnik.Wpf
       Shutdown();
     }
 
+    /// <summary>Fecha e abre outro exe do Проводник (a cópia na pasta do GAMMA) no lugar deste, soltando a instância única antes.</summary>
+    public void ReopenAs(string exe, params string[] args)
+    {
+      _instance?.ReleaseMutex();
+      _instance?.Dispose();
+      _instance = null;
+      Process.Start(new ProcessStartInfo(exe, args) { UseShellExecute = false, WorkingDirectory = System.IO.Path.GetDirectoryName(exe) })?.Dispose();
+      // atualização baixada por este exe não vale pro outro
+      _elevating = true;
+      Shutdown();
+    }
+
     /// <summary>Fecha, troca o exe pela versão baixada e abre a nova: a troca e a abertura ficam pro <see cref="OnExit"/>.</summary>
     public void RestartWithUpdate()
     {
@@ -216,7 +267,8 @@ namespace Provodnik.Wpf
       download.DefaultRequestHeaders.UserAgent.ParseAdd(agent);
 
       services.AddSingleton(settings);
-      services.AddSingleton(new AppOptions(demo is not null, demo?.Root, demo is null ? null : ScreenshotTour.Folder(Environment.GetCommandLineArgs())));
+      var args = Environment.GetCommandLineArgs();
+      services.AddSingleton(new AppOptions(demo is not null, demo?.Root, demo is null ? null : ScreenshotTour.Folder(args), args.Contains(AppOptions.FromScratchFlag)));
       services.AddSingleton(new SettingsStore(settings));
       services.AddSingleton<Navigator>();
       services.AddSingleton<LogBook>();
@@ -258,6 +310,11 @@ namespace Provodnik.Wpf
         services.AddSingleton<ISystemInfo>(new DemoTools.System(new SystemInfo()));
       }
       services.AddSingleton<InstallPipeline>();
+      // a instalação do zero: o Mediafire pela API (sem Cloudflare) e o resto pelas mesmas ferramentas
+      services.AddSingleton(new MediafireApi(api));
+      services.AddSingleton<BootstrapServices>();
+      services.AddSingleton(sp => new BootstrapPipeline(sp.GetRequiredService<BootstrapServices>()));
+      services.AddSingleton<BootstrapViewModel>();
       services.AddSingleton<UpdateChecker>();
       services.AddSingleton<InstallService>();
       services.AddSingleton<AppUpdateService>();
