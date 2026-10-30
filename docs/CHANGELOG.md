@@ -13,6 +13,7 @@
 - O link do ModDB só é pedido quando a vaga de download abre: na fila longa da instalação do zero ele vencia esperando (o CDN corta em 5 minutos) e o download levava 403.
 - Espelho do ModDB lento (abaixo de 300 KB/s depois de 30 s, com mais de 32 MB por vir) é trocado por outro link, até 2 vezes por arquivo; o download continua de onde parou.
 - Perfil com todos os mods desligados (o MO2 aberto sem modlist.txt) vale como perfil novo, em vez de manter o GAMMA inteiro desligado.
+- Arquivo de mod que não abre (CRC, cabeçalho, cortado no meio) é apagado e baixado de novo uma vez, e o mod é extraído de novo. Antes o mod só falhava, e rodar de novo dava no mesmo: o md5 guardado não pega zip que estragou sem mudar de tamanho nem de data. Disco cheio não conta como arquivo estragado.
 - `--do-zero` abre o Provodnik como se não tivesse GAMMA, pra testar a instalação do zero numa máquina que já tem.
 
 ## 0.3.4

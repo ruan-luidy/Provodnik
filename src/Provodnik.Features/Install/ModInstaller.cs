@@ -24,7 +24,7 @@ namespace Provodnik.Features.Install
       {
         await extractor.ExtractAsync(archive, staging, progress, cancellationToken).ConfigureAwait(false);
         if (!Directory.EnumerateFileSystemEntries(staging).Any())
-          throw new ArchiveException(L.T("features.install.emptyArchive"));
+          throw new ArchiveException(L.T("features.install.emptyArchive"), damaged: true);
 
         if (mod.Instructions.Count > 0 && InstructionApplier.Apply(staging, mod.Instructions, warn) && !FileTree.HasContent(staging))
         {

@@ -78,6 +78,34 @@ namespace Provodnik.Tests
     }
 
     [Fact]
+    public async Task Arquivo_estragado_e_baixado_de_novo_uma_vez()
+    {
+      _api.List = string.Join('\n', Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip"), Line("https://www.moddb.com/addons/start/2", "0", "Bia", "Luz", "luz.7z"));
+      _extractor.DamagedOnce.Add("som.zip");
+
+      var report = await RunAsync();
+
+      Assert.True(report.Succeeded, string.Join("; ", report.Failures.Select(f => f.Reason)));
+      Assert.Equal(2, report.Installed);
+      Assert.Equal(3, _downloader.Calls);
+      Assert.True(Has(@"1- Som - Ana\gamedata\file.txt"));
+    }
+
+    [Fact]
+    public async Task Arquivo_que_continua_estragado_falha_sem_baixar_de_novo_sem_fim()
+    {
+      _api.List = Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip");
+      _extractor.Damaged.Add("som.zip");
+
+      var report = await RunAsync();
+
+      Assert.False(report.Succeeded);
+      Assert.Single(report.Failures);
+      Assert.Equal(2, _downloader.Calls);
+      Assert.Equal(2, _extractor.Calls);
+    }
+
+    [Fact]
     public async Task Instrucao_nova_com_o_mesmo_arquivo_reextrai()
     {
       _api.List = Line("https://www.moddb.com/addons/start/2", "pack", "Bia", "Luz", "luz.7z");
@@ -294,9 +322,20 @@ namespace Provodnik.Tests
 
       public int Calls => _calls;
 
+      /// <summary>Arquivos que o "7-Zip" acha estragados: sempre, ou só na primeira vez (o download novo vem bom).</summary>
+      public HashSet<string> Damaged { get; } = [];
+
+      public HashSet<string> DamagedOnce { get; } = [];
+
       public Task ExtractAsync(string archive, string destination, IProgress<double>? progress, CancellationToken cancellationToken)
       {
         Interlocked.Increment(ref _calls);
+        var name = Path.GetFileName(archive);
+        lock (Damaged)
+        {
+          if (Damaged.Contains(name) || DamagedOnce.Remove(name))
+            throw new ArchiveException("ERROR: Headers Error", damaged: true);
+        }
         void Write(string relative)
         {
           var path = Path.Combine(destination, relative);

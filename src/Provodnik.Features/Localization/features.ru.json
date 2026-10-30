@@ -55,6 +55,8 @@
   "features.profile.backup": "Копия прежнего modlist.txt: {0}",
   "features.saves.backedUp": "Сохранения скопированы в {0}",
   "features.saves.failed": "Не удалось скопировать сохранения ({0}); установка продолжается без копии",
+  "features.mods.damaged": "{0}: архив {1} не открылся ({2}). Скачиваю заново.",
+  "features.mods.damagedRetry": "архив повреждён, скачиваю заново",
   "features.mods.keptYours": "ваша версия: {0}",
   "features.mods.keptYoursWarning": "{0}: оставлена установленная вами версия ({1}) вместо версии GAMMA. Чтобы вернуть версию GAMMA, нажмите «Переустановить этот мод» на экране «Моды».",
   "features.patches.applied": "Патчи применены к Anomaly в {0}",

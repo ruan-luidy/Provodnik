@@ -55,6 +55,8 @@
   "features.profile.backup": "Cópia do modlist.txt de antes: {0}",
   "features.saves.backedUp": "Saves copiados pra {0}",
   "features.saves.failed": "Não deu pra copiar os saves ({0}); a instalação segue sem a cópia",
+  "features.mods.damaged": "{0}: o arquivo {1} não abriu ({2}). Baixando de novo.",
+  "features.mods.damagedRetry": "arquivo estragado, baixando de novo",
   "features.mods.keptYours": "sua versão: {0}",
   "features.mods.keptYoursWarning": "{0}: ficou a versão que você instalou ({1}) no lugar da do GAMMA. Pra voltar pra do GAMMA, use \"Reinstalar este mod\" na tela Mods.",
   "features.patches.applied": "Patches aplicados no Anomaly em {0}",

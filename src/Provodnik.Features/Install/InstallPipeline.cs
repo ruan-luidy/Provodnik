@@ -333,12 +333,11 @@ namespace Provodnik.Features.Install
       var done = 0;
       void Tick() => reporter.Stage(InstallStage.Mods, StageState.Running, L.T("features.mods.progress", Interlocked.Increment(ref done), mods.Count));
 
-      Task<ArchiveOutcome> Fetch(ModEntry mod)
+      Task<ArchiveOutcome> FetchNow(ModEntry mod)
       {
         var name = mod.ArchiveName!;
-        var spec = new ArchiveSpec(name, mod.Kind, mod.Url!, mod.Md5);
-        return archives.GetOrAdd(name, _ => new Lazy<Task<ArchiveOutcome>>(() => fetcher.FetchAsync(
-          spec,
+        return fetcher.FetchAsync(
+          new ArchiveSpec(name, mod.Kind, mod.Url!, mod.Md5),
           run.ETagOf(name),
           tag => run.RememberETag(name, tag),
           (status, transfer, detail) =>
@@ -348,8 +347,22 @@ namespace Provodnik.Features.Install
               reporter.Mod(new ModProgress(index, status, transfer?.Fraction, transfer?.Received ?? 0, transfer?.Total, transfer?.BytesPerSecond, detail));
             }
           },
-          cancellationToken))).Value;
+          cancellationToken);
       }
+
+      Task<ArchiveOutcome> Fetch(ModEntry mod) =>
+        archives.GetOrAdd(mod.ArchiveName!, _ => new Lazy<Task<ArchiveOutcome>>(() => FetchNow(mod))).Value;
+
+      // arquivo que não abre: apaga e baixa de novo, uma vez por arquivo (os mods que dividem o zip esperam o mesmo).
+      // O md5 guardado não pega zip que estragou sem mudar de tamanho nem de data; o 7-Zip pega
+      var refetches = new ConcurrentDictionary<string, Lazy<Task<ArchiveOutcome>>>(StringComparer.OrdinalIgnoreCase);
+      Task<ArchiveOutcome> Refetch(ModEntry mod, string damaged) =>
+        refetches.GetOrAdd(mod.ArchiveName!, _ => new Lazy<Task<ArchiveOutcome>>(() =>
+        {
+          if (File.Exists(damaged))
+            File.Delete(damaged);
+          return FetchNow(mod);
+        })).Value;
 
       await Parallel.ForEachAsync(
         mods,
@@ -413,34 +426,56 @@ namespace Provodnik.Features.Install
             return;
           }
 
-          reporter.Mod(new ModProgress(mod.Index, ModStatus.WaitingExtraction, Detail: L.T("features.mods.extractQueue")));
-          await extractGate.WaitAsync(token).ConfigureAwait(false);
-          try
+          for (var pass = 1; ; pass++)
           {
-            reporter.Mod(new ModProgress(mod.Index, ModStatus.Extracting, 0));
-            await installer.InstallAsync(
-              layout,
-              mod,
-              outcome.Path,
-              run.MetaTemplate,
-              new Progress<double>(f => reporter.Mod(new ModProgress(mod.Index, ModStatus.Extracting, f))),
-              // pasta de instrução que não existe: o original também ignora calado; fica como informação, não aviso
-              message => reporter.Log(LogLevel.Info, L.T("features.mods.instruction", mod.Title, message)),
-              token).ConfigureAwait(false);
+            reporter.Mod(new ModProgress(mod.Index, ModStatus.WaitingExtraction, Detail: L.T("features.mods.extractQueue")));
+            await extractGate.WaitAsync(token).ConfigureAwait(false);
+            try
+            {
+              reporter.Mod(new ModProgress(mod.Index, ModStatus.Extracting, 0));
+              await installer.InstallAsync(
+                layout,
+                mod,
+                outcome.Path,
+                run.MetaTemplate,
+                new Progress<double>(f => reporter.Mod(new ModProgress(mod.Index, ModStatus.Extracting, f))),
+                // pasta de instrução que não existe: o original também ignora calado; fica como informação, não aviso
+                message => reporter.Log(LogLevel.Info, L.T("features.mods.instruction", mod.Title, message)),
+                token).ConfigureAwait(false);
 
-            run.MarkInstalled(mod.FolderName, new InstalledMod(mod.ArchiveName!, fingerprint, DateTime.Now));
-            Interlocked.Increment(ref run.Installed);
-            reporter.Mod(new ModProgress(mod.Index, ModStatus.Installed, 1));
+              run.MarkInstalled(mod.FolderName, new InstalledMod(mod.ArchiveName!, fingerprint, DateTime.Now));
+              Interlocked.Increment(ref run.Installed);
+              reporter.Mod(new ModProgress(mod.Index, ModStatus.Installed, 1));
+              break;
+            }
+            catch (ArchiveException ex) when (ex.Damaged && pass == 1)
+            {
+              reporter.Log(LogLevel.Info, L.T("features.mods.damaged", mod.Title, Path.GetFileName(outcome.Path), ex.Message));
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+              run.Fail(mod, L.T("features.mods.fail.extract", ex.Message));
+              break;
+            }
+            finally
+            {
+              extractGate.Release();
+            }
+
+            // fora da vaga de extração: baixar pode demorar
+            reporter.Mod(new ModProgress(mod.Index, ModStatus.Retrying, Detail: L.T("features.mods.damagedRetry")));
+            try
+            {
+              outcome = await Refetch(mod, outcome.Path).ConfigureAwait(false);
+              fingerprint = InstalledMod.FingerprintOf(outcome.Md5, mod.Instructions);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+              run.Fail(mod, L.T("features.mods.fail.download", ex.Message));
+              break;
+            }
           }
-          catch (Exception ex) when (ex is not OperationCanceledException)
-          {
-            run.Fail(mod, L.T("features.mods.fail.extract", ex.Message));
-          }
-          finally
-          {
-            extractGate.Release();
-            Tick();
-          }
+          Tick();
         }).ConfigureAwait(false);
 
       if (pacer.Cooldowns > 0)
