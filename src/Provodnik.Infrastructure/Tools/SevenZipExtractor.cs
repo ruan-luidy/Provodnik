@@ -39,9 +39,10 @@ namespace Provodnik.Infrastructure.Tools
         throw new ArchiveException(L.T("infra.sevenZip.failed", result.ExitCode, result.Tail()), IsDamaged(result));
     }
 
-    // as frases do 7-Zip pra arquivo estragado (o texto dele é sempre em inglês); disco cheio também sai com código 2
+    // as frases do 7-Zip pra arquivo estragado (o texto dele é sempre em inglês; o tipo pode vir no meio, "as [7z] archive");
+    // disco cheio também sai com código 2
     private static readonly string[] DamageMarkers =
-      ["headers error", "data error", "crc failed", "unexpected end", "can not open the file as archive", "cannot open the file as archive", "is not archive"];
+      ["headers error", "data error", "crc failed", "unexpected end", "can not open the file as", "cannot open the file as", "can't open as archive", "is not archive"];
 
     internal static bool IsDamaged(ProcessResult result)
     {
