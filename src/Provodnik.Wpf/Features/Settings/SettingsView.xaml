@@ -91,19 +91,6 @@
               <Border Style="{StaticResource SettingRow}">
                 <DockPanel>
                   <controls:Stepper
-                    Maximum="8"
-                    Style="{StaticResource Count}"
-                    Value="{Binding ModDbParallel}" />
-                  <StackPanel>
-                    <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr settings.moddb.title}" />
-                    <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr settings.moddb.caption}" />
-                  </StackPanel>
-                </DockPanel>
-              </Border>
-              <Border Style="{StaticResource InfoDivider}" />
-              <Border Style="{StaticResource SettingRow}">
-                <DockPanel>
-                  <controls:Stepper
                     Maximum="16"
                     Style="{StaticResource Count}"
                     Value="{Binding HttpParallel}" />

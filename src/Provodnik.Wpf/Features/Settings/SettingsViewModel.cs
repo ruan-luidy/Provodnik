@@ -18,7 +18,7 @@ namespace Provodnik.Wpf.Features.Settings
     // o que grava assim que muda
     private static readonly HashSet<string> Live =
     [
-      nameof(ModDbParallel), nameof(HttpParallel), nameof(ExtractParallel), nameof(CheckMd5), nameof(UpdateGitHubAddons),
+      nameof(HttpParallel), nameof(ExtractParallel), nameof(CheckMd5), nameof(UpdateGitHubAddons),
       nameof(DeleteReshadeDlls), nameof(CreateShortcuts), nameof(BackupSaves), nameof(Mica), nameof(AutoUpdateApp),
     ];
 
@@ -26,7 +26,6 @@ namespace Provodnik.Wpf.Features.Settings
     private readonly GammaSession _session;
 
     [ObservableProperty] private string _gammaRoot;
-    [ObservableProperty] private int _modDbParallel;
     [ObservableProperty] private int _httpParallel;
     [ObservableProperty] private int _extractParallel;
     [ObservableProperty] private bool _checkMd5;
@@ -45,7 +44,6 @@ namespace Provodnik.Wpf.Features.Settings
       _session = session;
       var current = store.Current;
       _gammaRoot = session.Layout?.Root ?? string.Empty;
-      _modDbParallel = current.ModDbParallel;
       _httpParallel = current.HttpParallel;
       _extractParallel = current.ExtractParallel;
       _checkMd5 = current.CheckMd5;
@@ -116,7 +114,6 @@ namespace Provodnik.Wpf.Features.Settings
     private void Persist() =>
       _store.Update(s => s with
       {
-        ModDbParallel = Math.Clamp(ModDbParallel, 1, 8),
         HttpParallel = Math.Clamp(HttpParallel, 1, 16),
         ExtractParallel = Math.Clamp(ExtractParallel, 1, 8),
         CheckMd5 = CheckMd5,

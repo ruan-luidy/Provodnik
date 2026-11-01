@@ -322,7 +322,8 @@ namespace Provodnik.Features.Install
         .ToDictionary(g => g.Key, g => g.Select(m => m.Index).ToList(), StringComparer.OrdinalIgnoreCase);
       var archives = new ConcurrentDictionary<string, Lazy<Task<ArchiveOutcome>>>(StringComparer.OrdinalIgnoreCase);
 
-      using var modDbGate = new SemaphoreSlim(Math.Max(1, options.ModDbParallel));
+      // o GAMMA pede pra não baixar do ModDB em paralelo (pesa no CDN dele): um de cada vez, como no launcher original
+      using var modDbGate = new SemaphoreSlim(1);
       using var httpGate = new SemaphoreSlim(Math.Max(1, options.HttpParallel));
       using var hashGate = new SemaphoreSlim(2);
       using var extractGate = new SemaphoreSlim(Math.Max(1, options.ExtractParallel));

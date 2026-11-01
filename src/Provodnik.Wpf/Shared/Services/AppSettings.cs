@@ -19,7 +19,6 @@ namespace Provodnik.Wpf.Shared.Services
     string? GammaRoot = null,
     string? Executable = null,
     string? Profile = null,
-    int ModDbParallel = 3,
     int HttpParallel = 4,
     int ExtractParallel = 2,
     bool CheckMd5 = true,
@@ -74,7 +73,6 @@ namespace Provodnik.Wpf.Shared.Services
       DeleteReshadeDlls = DeleteReshadeDlls,
       CreateShortcuts = CreateShortcuts,
       BackupSaves = BackupSaves,
-      ModDbParallel = Math.Clamp(ModDbParallel, 1, 8),
       HttpParallel = Math.Clamp(HttpParallel, 1, 16),
       ExtractParallel = Math.Clamp(ExtractParallel, 1, 8),
     };

@@ -24,9 +24,6 @@ namespace Provodnik.Core.Install
     /// <summary>Os saves num zip antes de instalar ou atualizar (não no "tentar de novo" nem no reinstalar de um mod).</summary>
     public bool BackupSaves { get; init; } = true;
 
-    /// <summary>Downloads do ModDB ao mesmo tempo, no CDN (os pedidos de link vão um por vez, no ritmo de <see cref="ModDbSpacing"/>).</summary>
-    public int ModDbParallel { get; init; } = 3;
-
     /// <summary>O respiro entre dois pedidos de link ao ModDB (a página que ele limita).</summary>
     public TimeSpan ModDbSpacing { get; init; } = TimeSpan.FromSeconds(1.5);
 

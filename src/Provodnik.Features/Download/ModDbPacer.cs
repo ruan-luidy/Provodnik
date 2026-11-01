@@ -10,7 +10,7 @@ namespace Provodnik.Features.Download
   ///   - quando o ModDB reclama (403, 429, Cloudflare, sem link), todo mundo esfria junto, em vez de cada mod
   ///     insistir por conta própria e piorar o bloqueio: 30 s, depois 60, 120... até 5 min;
   ///   - cada link que vem certo diminui a espera de novo.
-  /// O download em si fica livre pra rodar em paralelo, no limite das Configurações.
+  /// O download em si também vai um de cada vez: o GAMMA pede, baixar em paralelo pesa no CDN do ModDB.
   /// </summary>
   public sealed class ModDbPacer(IModDbResolver resolver, TimeSpan? spacing = null, TimeSpan? firstCooldown = null)
   {

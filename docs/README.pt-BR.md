@@ -25,7 +25,7 @@ dá errado.
 
 |  | Launcher oficial | Provodnik |
 |---|---|---|
-| Downloads | um de cada vez | em paralelo, continuando de onde pararam |
+| Downloads | um de cada vez | continuam de onde pararam; o ModDB também um de cada vez (o GAMMA pede: baixar em paralelo pesa no CDN do ModDB), os addons do GitHub em paralelo |
 | ModDB | o downloader agora falha com "Failed to generate download link" | passa por um navegador de verdade (WebView2), no ritmo que o Cloudflare aceita |
 | Atualizações | reextrai todos os addons | só reextrai o que mudou |
 | Instalação interrompida | você descobre depois | roda de novo e ele continua de onde parou |
@@ -68,8 +68,7 @@ Ele acha tudo sozinho, usa as ferramentas que o GAMMA já traz e se mantém atua
 entra quando você fecha o app (ou na hora, com **Reiniciar agora**).
 
 Windows 10/11 x64, com tudo embutido. A primeira instalação baixa uns 45 GB e precisa de uns 200 GB livres (só os mods
-extraídos dão uns 150 GB); depois, as atualizações só trazem o que mudou. Uma instalação do zero levou uns 35 minutos
-aqui.
+extraídos dão uns 150 GB); depois, as atualizações só trazem o que mudou.
 
 ## Mods
 
