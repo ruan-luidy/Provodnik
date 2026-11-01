@@ -1,6 +1,6 @@
 # Novidades
 
-## Próxima
+## 1.0.0
 
 - Instalação do zero, num clique: sem GAMMA no computador, o Início escolhe o disco e faz cada passo da wiki do GAMMA.
   - Cria GAMMA\ e Anomaly\ lado a lado e barra o que a wiki proíbe: discos diferentes, uma dentro da outra, pasta do usuário (Documentos, Área de Trabalho, OneDrive), Program Files, pendrive, pouco espaço; avisa de acento no caminho.
