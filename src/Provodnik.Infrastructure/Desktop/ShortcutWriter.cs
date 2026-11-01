@@ -30,6 +30,28 @@ namespace Provodnik.Infrastructure.Desktop
       }
     }
 
+    public string? TargetOf(string shortcutPath)
+    {
+      if (!File.Exists(shortcutPath))
+        return null;
+      var link = (IShellLinkW)new ShellLink();
+      try
+      {
+        ((IPersistFile)link).Load(shortcutPath, 0);
+        var target = new StringBuilder(1024);
+        link.GetPath(target, target.Capacity, IntPtr.Zero, 0);
+        return target.Length > 0 ? target.ToString() : null;
+      }
+      catch (COMException)
+      {
+        return null;
+      }
+      finally
+      {
+        Marshal.FinalReleaseComObject(link);
+      }
+    }
+
     [ComImport]
     [Guid("00021401-0000-0000-C000-000000000046")]
     private class ShellLink { }

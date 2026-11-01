@@ -4,5 +4,8 @@ namespace Provodnik.Core.Desktop
   public interface IShortcutWriter
   {
     void Create(string shortcutPath, string target, string? icon = null, string? workingDirectory = null, string? arguments = null);
+
+    /// <summary>Pra onde o atalho que já existe aponta (nulo: não existe ou não deu pra ler).</summary>
+    string? TargetOf(string shortcutPath);
   }
 }

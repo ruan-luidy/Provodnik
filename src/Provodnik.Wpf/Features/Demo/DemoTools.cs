@@ -183,6 +183,8 @@ namespace Provodnik.Wpf.Features.Demo
       public void Create(string shortcutPath, string target, string? icon = null, string? workingDirectory = null, string? arguments = null)
       {
       }
+
+      public string? TargetOf(string shortcutPath) => null;
     }
 
     private static void Write(string path, string content)

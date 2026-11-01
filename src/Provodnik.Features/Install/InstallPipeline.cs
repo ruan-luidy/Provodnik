@@ -651,10 +651,13 @@ namespace Provodnik.Features.Install
         // a área de trabalho de verdade (o original usava $Home\Desktop e quebrava com o OneDrive)
         var desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         var icon = Path.Combine(run.Layout.Definition(run.Metadata.FolderName), "modpack_data", "modpack_icon.ico");
-        shortcuts.Create(Path.Combine(desktop, "G.A.M.M.A..lnk"), run.Layout.ModOrganizerExe, icon, run.Layout.Root);
-        if (LauncherPath is { } launcher && File.Exists(launcher))
+        var mo2 = Path.Combine(desktop, "G.A.M.M.A..lnk");
+        if (Ours(run, mo2, run.Layout.ModOrganizerExe))
+          shortcuts.Create(mo2, run.Layout.ModOrganizerExe, icon, run.Layout.Root);
+        var app = Path.Combine(desktop, "Provodnik (G.A.M.M.A.).lnk");
+        if (LauncherPath is { } launcher && File.Exists(launcher) && Ours(run, app, launcher))
         {
-          shortcuts.Create(Path.Combine(desktop, "Provodnik (G.A.M.M.A.).lnk"), launcher, launcher, Path.GetDirectoryName(launcher));
+          shortcuts.Create(app, launcher, launcher, Path.GetDirectoryName(launcher));
           // o de nome cirílico da 0.3.1
           File.Delete(Path.Combine(desktop, "Проводник (G.A.M.M.A.).lnk"));
         }
@@ -666,6 +669,21 @@ namespace Provodnik.Features.Install
         run.Reporter.Stage(InstallStage.Shortcuts, StageState.Warning, ex.Message);
       }
     }
+
+    // quem tem dois GAMMA (o de jogar e um de teste) não perde o atalho do outro; atalho pra pasta que sumiu é trocado
+    private bool Ours(Run run, string shortcutPath, string target)
+    {
+      var existing = shortcuts.TargetOf(shortcutPath);
+      if (!PointsElsewhere(existing, target))
+        return true;
+      run.Reporter.Log(LogLevel.Info, L.T("features.shortcuts.otherGamma", Path.GetFileNameWithoutExtension(shortcutPath), Path.GetDirectoryName(existing)));
+      return false;
+    }
+
+    internal static bool PointsElsewhere(string? existing, string target) =>
+      existing is not null
+      && !string.Equals(Path.GetFullPath(existing), Path.GetFullPath(target), StringComparison.OrdinalIgnoreCase)
+      && File.Exists(existing);
 
     private static void TrySave(Run run)
     {

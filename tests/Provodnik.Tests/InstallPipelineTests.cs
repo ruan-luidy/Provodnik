@@ -259,6 +259,20 @@ namespace Provodnik.Tests
       Assert.EndsWith(".zip", backups[0], StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Atalho_de_outro_GAMMA_fica_e_o_de_pasta_que_sumiu_e_trocado()
+    {
+      var mine = Path.Combine(_root, "ModOrganizer.exe");
+      var other = Path.Combine(_root, "outro", "ModOrganizer.exe");
+      Directory.CreateDirectory(Path.GetDirectoryName(other)!);
+      File.WriteAllText(other, "mo2");
+
+      Assert.True(InstallPipeline.PointsElsewhere(other, mine));
+      Assert.False(InstallPipeline.PointsElsewhere(mine.ToUpperInvariant(), mine));
+      Assert.False(InstallPipeline.PointsElsewhere(Path.Combine(_root, "sumiu", "ModOrganizer.exe"), mine));
+      Assert.False(InstallPipeline.PointsElsewhere(null, mine));
+    }
+
     // ===== Falsos =====
 
     private sealed class FakeApi : IGammaApi
@@ -370,6 +384,8 @@ namespace Provodnik.Tests
       public void Create(string shortcutPath, string target, string? icon = null, string? workingDirectory = null, string? arguments = null)
       {
       }
+
+      public string? TargetOf(string shortcutPath) => null;
     }
 
     private sealed class NullReporter : IInstallReporter

@@ -61,6 +61,7 @@
   "features.mods.keptYoursWarning": "{0}: оставлена установленная вами версия ({1}) вместо версии GAMMA. Чтобы вернуть версию GAMMA, нажмите «Переустановить этот мод» на экране «Моды».",
   "features.patches.applied": "Патчи применены к Anomaly в {0}",
   "features.patches.noAnomaly": "MO2 ещё не знает, где лежит Anomaly. Откройте MO2 один раз, выберите папку Anomaly и установите заново.",
+  "features.shortcuts.otherGamma": "Ярлык {0} оставлен: он открывает другую GAMMA, в {1}",
   "features.shortcuts.failed": "Ярлыки не созданы: {0}",
   "features.fetch.md5Redownload": "md5 скачанного файла не совпадает, качаю заново",
   "features.fetch.slowMirror": "медленное зеркало ModDB, запрашиваю другую ссылку",

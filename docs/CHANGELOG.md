@@ -15,6 +15,7 @@
 - Perfil com todos os mods desligados (o MO2 aberto sem modlist.txt) vale como perfil novo, em vez de manter o GAMMA inteiro desligado.
 - Arquivo de mod que não abre (CRC, cabeçalho, cortado no meio) é apagado e baixado de novo uma vez, e o mod é extraído de novo. Antes o mod só falhava, e rodar de novo dava no mesmo: o md5 guardado não pega zip que estragou sem mudar de tamanho nem de data. Disco cheio não conta como arquivo estragado.
 - Downloads do ModDB um de cada vez, como o GAMMA pede (em paralelo pesa no CDN do ModDB); a opção saiu das Configurações. Os addons do GitHub continuam em paralelo.
+- Atalho da área de trabalho que abre outro GAMMA (quem tem um de jogar e um de teste) não é mais trocado pelo da instalação de agora; se a pasta dele sumiu, aí sim.
 - `--do-zero` abre o Provodnik como se não tivesse GAMMA, pra testar a instalação do zero numa máquina que já tem.
 
 ## 0.3.4

@@ -61,6 +61,7 @@
   "features.mods.keptYoursWarning": "{0}: ficou a versão que você instalou ({1}) no lugar da do GAMMA. Pra voltar pra do GAMMA, use \"Reinstalar este mod\" na tela Mods.",
   "features.patches.applied": "Patches aplicados no Anomaly em {0}",
   "features.patches.noAnomaly": "O MO2 ainda não sabe onde está o Anomaly. Abra o MO2 uma vez, escolha a pasta do Anomaly e instale de novo.",
+  "features.shortcuts.otherGamma": "Atalho {0} mantido: ele abre outro GAMMA, em {1}",
   "features.shortcuts.failed": "Atalhos não criados: {0}",
   "features.fetch.md5Redownload": "md5 do arquivo baixado não bate, baixando de novo",
   "features.fetch.slowMirror": "espelho do ModDB lento, pedindo outro link",
