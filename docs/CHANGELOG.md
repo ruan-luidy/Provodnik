@@ -4,6 +4,7 @@
 
 - Uma vaga só pro ModDB no app inteiro: a instalação dos mods e o Anomaly da instalação do zero dividem a mesma, então nunca há dois downloads do ModDB ao mesmo tempo, nem com as duas rodando juntas.
 - Menos pedidos ao ModDB: espelho lento vai até o fim em vez de pedir outro link (a troca de espelho da 1.0 saiu), bloqueio do ModDB espera no máximo 3 vezes (eram 8) e o curl repete uma vez só (eram 3).
+- A página de download do ModDB carrega inteira, com a contagem e os anúncios, como num navegador comum, e o próprio ModDB manda pro arquivo quando a contagem acaba. Antes o Provodnik pulava direto pro espelho, o que contornava o site. Leva uns 30 a 50 s por mod. O desafio do Cloudflare agora é reconhecido pela página dele, sem a janela aparecer à toa.
 
 ## 1.0.0
 

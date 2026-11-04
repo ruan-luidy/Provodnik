@@ -1,6 +1,6 @@
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Provodnik.Core.Diagnostics;
@@ -15,20 +15,26 @@ namespace Provodnik.Wpf.Features.Install
   /// na página "addons/start/N" e só navegador passa: o stalker-gamma-dl-cli que vem no GAMMA responde "Failed to
   /// generate download link" pra todo mundo, e o curl-impersonate leva o "Just a moment...".
   ///
-  /// O caminho, medido: abre a página de start; assim que o HTML chega (antes de carregar anúncio, ~0,3 s) tira dele o
-  /// "/downloads/mirror/..." e vai direto pra lá; o ModDB redireciona pro CDN (fmtN.dl.dbolical.com), o navegador
-  /// começa a baixar e aqui o download é cancelado e o link vai pro curl (que continua de onde parou e confere o md5).
-  /// Os cookies ficam em %LocalAppData%\Provodnik\webview: o Cloudflare passa uma vez e vale pros próximos.
-  /// Desafio que pede clique ("confirme que é humano"): a janela aparece por cima pra pessoa clicar e some depois.
+  /// O caminho: abre a página de start e deixa ela carregar inteira, com a contagem e os anúncios, como num navegador
+  /// comum (o ModDB pede que o site não seja contornado); quando a contagem acaba, o próprio ModDB redireciona pro CDN
+  /// (fmtN.dl.dbolical.com), o navegador começa a baixar e aqui o download é cancelado e o link vai pro curl (que
+  /// continua de onde parou e confere o md5). Da página só se lê o 429 e o "temporarily blocked", pra esfriar a fila.
+  /// A página aparece no card "Baixando do ModDB" da tela de Instalação (<see cref="Attach"/>); sem card na tela, ela
+  /// fica na janela própria, fora da vista. Os cookies ficam em %LocalAppData%\Provodnik\webview: o Cloudflare passa
+  /// uma vez e vale pros próximos. Desafio que pede clique ("confirme que é humano"): o card avisa (<see cref="Attention"/>)
+  /// ou, sem card, a janela aparece por cima pra pessoa clicar e some depois.
   /// Sem WebView2 instalado, usa o resolvedor de reserva (o dl-cli).
   ///
   /// Serve também pra instalação do zero: a página de start de um download do ModDB (o Anomaly), que segue o mesmo
   /// caminho, e a página de um arquivo do Mediafire (o RC3), que também tem Cloudflare: quando ela termina de
   /// carregar, o botão de download é clicado aqui e o download que o navegador começa vira o link.
   /// </summary>
-  public sealed partial class ModDbBrowser(IModDbResolver fallback, IToolConsole console) : IModDbResolver, IDisposable
+  public sealed class ModDbBrowser(IModDbResolver fallback, IToolConsole console) : IModDbResolver, IDisposable
   {
-    private static readonly TimeSpan Patience = TimeSpan.FromSeconds(20);
+    // a página inteira leva uns 50 s (medido: os anúncios terminam de carregar em ~45 s e só aí a contagem de 5 s
+    // começa); o desafio do Cloudflare é visto pelo quadro dele, e sem nada disso a janela aparece depois de 2 min
+    private static readonly TimeSpan ChallengeGrace = TimeSpan.FromSeconds(8);
+    private static readonly TimeSpan Patience = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan Limit = TimeSpan.FromMinutes(4);
 
     private readonly SemaphoreSlim _gate = new(1);
@@ -36,7 +42,48 @@ namespace Provodnik.Wpf.Features.Install
     private WebView2? _web;
     private CoreWebView2? _core;
     private TaskCompletionSource<string>? _pending;
+    private ContentControl? _host;
+    private bool _revealed;
+    private bool _challenged;
     private bool? _available;
+
+    /// <summary>O desafio do Cloudflare pede um clique e a página está num card: quem hospeda mostra ela.</summary>
+    public event Action? Attention;
+
+    /// <summary>Mostra a página do ModDB dentro de <paramref name="host"/> (no thread da interface).</summary>
+    public void Attach(ContentControl host)
+    {
+      _host = host;
+      Place();
+    }
+
+    /// <summary>O card saiu da tela: a página volta pra janela própria.</summary>
+    public void Detach(ContentControl host)
+    {
+      if (_host != host)
+        return;
+      _host = null;
+      Place();
+    }
+
+    private void Place()
+    {
+      if (_web is null)
+        return;
+      if (_host is { } host)
+      {
+        if (_window?.Content == _web)
+          _window.Content = null;
+        host.Content = _web;
+      }
+      else
+      {
+        if (_web.Parent is ContentControl owner && owner != _window)
+          owner.Content = null;
+        if (_window is not null)
+          _window.Content = _web;
+      }
+    }
 
     /// <summary>Tem o WebView2 Runtime no Windows (o Windows 11 já vem com ele).</summary>
     public static string? RuntimeVersion
@@ -78,6 +125,8 @@ namespace Provodnik.Wpf.Features.Install
       await EnsureAsync();
       var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
       _pending = pending;
+      _revealed = false;
+      _challenged = false;
       console.Write("moddb", L.T("install.moddb.requesting", addonUrl));
       _core!.Navigate(addonUrl);
 
@@ -89,9 +138,12 @@ namespace Provodnik.Wpf.Features.Install
         var waited = DateTime.UtcNow - clock;
         if (pending.Task.IsCompleted)
           break;
-        // passou do normal: provavelmente o desafio do Cloudflare com clique; a pessoa vê e resolve
-        if (waited > Patience && !IsVisibleToUser)
+        // o desafio do Cloudflare que não passou sozinho (pede clique), ou passou muito do normal: a pessoa vê e resolve
+        if (!_revealed && (_challenged && waited > ChallengeGrace || waited > Patience))
+        {
+          _revealed = true;
           Reveal();
+        }
         if (waited > Limit)
           pending.TrySetException(new DownloadException(L.T("install.moddb.timeout")));
       }
@@ -139,6 +191,17 @@ namespace Provodnik.Wpf.Features.Install
       _core.NavigationCompleted += OnLoaded;
       // propaganda que abre janela nova (o Mediafire abre uma no clique) não abre
       _core.NewWindowRequested += (_, e) => e.Handled = true;
+      _core.FrameNavigationStarting += (_, e) =>
+      {
+        if (e.Uri.Contains("challenges.cloudflare.com", StringComparison.OrdinalIgnoreCase))
+          _challenged = true;
+      };
+      _core.DocumentTitleChanged += (_, _) =>
+      {
+        if (_core.DocumentTitle.StartsWith("Just a moment", StringComparison.OrdinalIgnoreCase))
+          _challenged = true;
+      };
+      Place();
     }
 
     private static bool IsModDbStart(string uri) =>
@@ -160,7 +223,7 @@ namespace Provodnik.Wpf.Features.Install
       }
     }
 
-    /// <summary>O HTML da página de start chegou: pula a contagem e os anúncios e vai direto pro espelho.</summary>
+    /// <summary>A resposta da página de start: só o bloqueio interessa, o resto a página faz sozinha.</summary>
     private async void OnResponse(object? sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
     {
       if (_pending is not { } pending || !IsModDbStart(e.Request.Uri))
@@ -180,16 +243,11 @@ namespace Provodnik.Wpf.Features.Install
           return;
         var html = await new StreamReader(stream).ReadToEndAsync();
         if (html.Contains("temporarily blocked", StringComparison.OrdinalIgnoreCase))
-        {
           pending.TrySetException(new DownloadException(L.T("install.moddb.blockedIp")));
-          return;
-        }
-        if (MirrorLink().Match(html) is { Success: true } mirror)
-          _core?.Navigate("https://www.moddb.com" + mirror.Value.Replace("&amp;", "&"));
       }
       catch (Exception ex) when (ex is IOException or InvalidOperationException or System.Runtime.InteropServices.COMException)
       {
-        // sem o corpo: a própria página redireciona em alguns segundos
+        // sem o corpo: a página segue e o tempo limite pega um bloqueio que não deu pra ler
       }
     }
 
@@ -210,6 +268,11 @@ namespace Provodnik.Wpf.Features.Install
         return;
       console.Write("moddb", L.T("install.moddb.challenge.console"));
       ToastService.Warning(L.T("install.moddb.challenge.toast"), "ModDB");
+      if (_host is { IsVisible: true })
+      {
+        Attention?.Invoke();
+        return;
+      }
       var area = SystemParameters.WorkArea;
       _window.Left = area.Left + (area.Width - _window.Width) / 2;
       _window.Top = area.Top + (area.Height - _window.Height) / 2;
@@ -233,8 +296,5 @@ namespace Provodnik.Wpf.Features.Install
       _web?.Dispose();
       _gate.Dispose();
     }
-
-    [GeneratedRegex(@"/downloads/mirror/[^""'<> ]+")]
-    private static partial Regex MirrorLink();
   }
 }

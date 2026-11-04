@@ -39,7 +39,7 @@
   "features.mods.renameFailed": "{0}: não deu pra renomear \"{1}\" ({2}); extraindo de novo",
   "features.mods.extractQueue": "na fila de extração",
   "features.mods.instruction": "{0}: {1} (igual ao launcher original)",
-  "features.mods.cooldowns": "O ModDB pediu calma {0} vez(es) e a fila esperou. Se acontecer sempre, deixe 2 downloads do ModDB nas Configurações.",
+  "features.mods.cooldowns": "O ModDB pediu calma {0} vez(es) e a fila esperou.",
   "features.mods.stage.failed": "{0} com falha",
   "features.mods.stage.done": "{0} instalados, {1} em dia",
   "features.mods.orphanRemoved": "Removida \"{0}\": saiu da lista do GAMMA",

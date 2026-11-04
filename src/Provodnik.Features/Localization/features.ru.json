@@ -39,7 +39,7 @@
   "features.mods.renameFailed": "{0}: не удалось переименовать «{1}» ({2}); распаковываю заново",
   "features.mods.extractQueue": "в очереди на распаковку",
   "features.mods.instruction": "{0}: {1} (так же, как в оригинальном лаунчере)",
-  "features.mods.cooldowns": "ModDB просил притормозить {0} раз(а), и очередь ждала. Если это повторяется постоянно, поставьте 2 загрузки с ModDB в настройках.",
+  "features.mods.cooldowns": "ModDB просил притормозить {0} раз(а), и очередь ждала.",
   "features.mods.stage.failed": "с ошибкой: {0}",
   "features.mods.stage.done": "установлено {0}, актуальны {1}",
   "features.mods.orphanRemoved": "Удалена «{0}»: её больше нет в списке GAMMA",

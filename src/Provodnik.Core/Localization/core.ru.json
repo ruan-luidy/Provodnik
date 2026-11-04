@@ -4,7 +4,7 @@
   "core.errors.dlcli.meaning": "stalker-gamma-dl-cli из GAMMA не смог получить ссылку (он устарел: ModDB теперь требует браузер).",
   "core.errors.dlcli.hint": "Проводник использует вместо него встроенный браузер (WebView2); если вы это видите, значит WebView2 Runtime не установлен.",
   "core.errors.cloudflare.meaning": "ModDB (Cloudflare) отклонил запрос.",
-  "core.errors.cloudflare.hint": "Подождите пару минут и попробуйте снова; если повторяется — уменьшите число загрузок с ModDB в настройках (1 или 2).",
+  "core.errors.cloudflare.hint": "Подождите несколько минут и попробуйте снова; ModDB снимет ограничение сам.",
   "core.errors.tooMany.meaning": "Слишком много запросов к серверу подряд.",
   "core.errors.tooMany.hint": "Уменьшите число одновременных загрузок в настройках и попробуйте чуть позже.",
   "core.errors.dns.meaning": "Не удалось определить адрес сайта (DNS).",

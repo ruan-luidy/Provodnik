@@ -4,7 +4,7 @@
   "core.errors.dlcli.meaning": "O stalker-gamma-dl-cli do GAMMA não conseguiu o link (ele está defasado: o ModDB agora exige navegador).",
   "core.errors.dlcli.hint": "O Проводник usa o navegador embutido (WebView2) no lugar dele; se aparecer isto, o WebView2 Runtime não está instalado.",
   "core.errors.cloudflare.meaning": "O ModDB (Cloudflare) recusou o pedido.",
-  "core.errors.cloudflare.hint": "Espere uns minutos e tente de novo; se repetir, diminua os downloads do ModDB nas Configurações (1 ou 2).",
+  "core.errors.cloudflare.hint": "Espere uns minutos e tente de novo; o ModDB libera sozinho.",
   "core.errors.tooMany.meaning": "Pedidos demais seguidos pro servidor.",
   "core.errors.tooMany.hint": "Diminua os downloads simultâneos nas Configurações e tente de novo daqui a pouco.",
   "core.errors.dns.meaning": "Sem resolver o nome do site (DNS).",

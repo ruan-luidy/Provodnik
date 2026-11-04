@@ -4,7 +4,7 @@
   "core.errors.dlcli.meaning": "GAMMA's stalker-gamma-dl-cli couldn't get the link (it's outdated: ModDB now requires a browser).",
   "core.errors.dlcli.hint": "Provodnik uses the built-in browser (WebView2) instead; if you see this, the WebView2 Runtime isn't installed.",
   "core.errors.cloudflare.meaning": "ModDB (Cloudflare) refused the request.",
-  "core.errors.cloudflare.hint": "Wait a few minutes and try again; if it keeps happening, lower the ModDB downloads in Settings (1 or 2).",
+  "core.errors.cloudflare.hint": "Wait a few minutes and try again; ModDB lifts it on its own.",
   "core.errors.tooMany.meaning": "Too many requests to the server in a row.",
   "core.errors.tooMany.hint": "Lower the simultaneous downloads in Settings and try again in a little while.",
   "core.errors.dns.meaning": "Couldn't resolve the site's name (DNS).",
