@@ -64,7 +64,6 @@
   "features.shortcuts.otherGamma": "Atalho {0} mantido: ele abre outro GAMMA, em {1}",
   "features.shortcuts.failed": "Atalhos não criados: {0}",
   "features.fetch.md5Redownload": "md5 do arquivo baixado não bate, baixando de novo",
-  "features.fetch.slowMirror": "espelho do ModDB lento, pedindo outro link",
   "features.fetch.keptOld": "não deu pra atualizar ({0}); usando o arquivo que já estava em downloads",
   "features.fetch.modDbQueue": "na fila do ModDB",
   "features.fetch.downloadQueue": "na fila de download",

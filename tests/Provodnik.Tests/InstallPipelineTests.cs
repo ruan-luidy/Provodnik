@@ -17,6 +17,7 @@ namespace Provodnik.Tests
   /// </summary>
   public sealed class InstallPipelineTests : IDisposable
   {
+    private readonly FakeResolver _resolver = new();
     private readonly string _root = Path.Combine(Path.GetTempPath(), "provodnik-pipeline", Guid.NewGuid().ToString("N"));
     private readonly GammaLayout _layout;
     private readonly FakeApi _api = new();
@@ -50,7 +51,7 @@ namespace Provodnik.Tests
       }
     }
 
-    private InstallPipeline Pipeline() => new(_api, _git, _downloader, new FakeResolver(), _extractor, new NoShortcuts(), new FakeSystem(), new ModDbGate());
+    private InstallPipeline Pipeline() => new(_api, _git, _downloader, _resolver, _extractor, new NoShortcuts(), new FakeSystem(), new ModDbGate());
 
     private Task<InstallReport> RunAsync(InstallOptions? options = null) =>
       Pipeline().RunAsync(_layout, (options ?? new InstallOptions { CreateShortcuts = false }) with { ModDbSpacing = TimeSpan.Zero }, new NullReporter(), CancellationToken.None);
@@ -274,6 +275,19 @@ namespace Provodnik.Tests
       Assert.False(InstallPipeline.PointsElsewhere(null, mine));
     }
 
+    [Fact]
+    public async Task Bloqueio_do_ModDB_espera_no_maximo_tres_vezes()
+    {
+      _resolver.Blocked = true;
+      _api.List = Line("https://www.moddb.com/addons/start/1", "0", "Ana", "Som", "som.zip");
+
+      var report = await RunAsync(new InstallOptions { CreateShortcuts = false, Attempts = 1, ModDbCooldown = TimeSpan.Zero });
+
+      // o pedido de link da tentativa e mais 3 esperas por bloqueio, e o mod falha em vez de insistir
+      Assert.Equal(4, _resolver.Calls);
+      Assert.Single(report.Failures);
+    }
+
     // ===== Falsos =====
 
     private sealed class FakeApi : IGammaApi
@@ -307,7 +321,17 @@ namespace Provodnik.Tests
 
     private sealed class FakeResolver : IModDbResolver
     {
-      public Task<string> ResolveAsync(string addonUrl, CancellationToken cancellationToken) => Task.FromResult(addonUrl + "?mirror");
+      private int _calls;
+
+      public bool Blocked { get; set; }
+
+      public int Calls => Volatile.Read(ref _calls);
+
+      public Task<string> ResolveAsync(string addonUrl, CancellationToken cancellationToken)
+      {
+        Interlocked.Increment(ref _calls);
+        return Blocked ? Task.FromException<string>(new DownloadException("429 Too Many Requests")) : Task.FromResult(addonUrl + "?mirror");
+      }
     }
 
     /// <summary>O "arquivo" baixado é o próprio link (o md5 muda quando o link muda).</summary>

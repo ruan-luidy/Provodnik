@@ -48,7 +48,8 @@ namespace Provodnik.Infrastructure.Tools
         "--connect-timeout", "30",
         "--speed-limit", "1024",
         "--speed-time", "60",
-        "--retry", "3",
+        // o curl só baixa do CDN do ModDB: uma repetição dele, o resto fica com a fila (ArchiveFetcher), no ritmo do ModDB
+        "--retry", "1",
         "--retry-delay", "3",
         "--retry-connrefused",
         "--output", destination,

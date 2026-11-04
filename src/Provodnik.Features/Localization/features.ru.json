@@ -64,7 +64,6 @@
   "features.shortcuts.otherGamma": "Ярлык {0} оставлен: он открывает другую GAMMA, в {1}",
   "features.shortcuts.failed": "Ярлыки не созданы: {0}",
   "features.fetch.md5Redownload": "md5 скачанного файла не совпадает, качаю заново",
-  "features.fetch.slowMirror": "медленное зеркало ModDB, запрашиваю другую ссылку",
   "features.fetch.keptOld": "не удалось обновить ({0}); использую файл, который уже был в downloads",
   "features.fetch.modDbQueue": "в очереди ModDB",
   "features.fetch.downloadQueue": "в очереди на загрузку",
