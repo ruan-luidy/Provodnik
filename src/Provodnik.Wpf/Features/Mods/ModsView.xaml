@@ -128,7 +128,8 @@
                   Command="{Binding DataContext.OpenPageCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                   CommandParameter="{Binding}"
                   Style="{StaticResource Action.Icon.Small}"
-                  ToolTip="{loc:Tr mods.openPage}" />
+                  ToolTip="{Binding PageTip}"
+                  Visibility="{Binding WebPage, Converter={StaticResource String2VisibilityConverter}}" />
                 <Button
                   hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
                   Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"

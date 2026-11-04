@@ -33,6 +33,8 @@ namespace Provodnik.Wpf.Features.Mods
 
     public string? WebPage => Item.Entry.WebPage;
 
+    public string PageTip => Item.Entry.Kind == ModKind.ModDb ? L.T("mods.openModDb") : L.T("mods.openPage");
+
     /// <summary>Instalado pelo Проводник (sabe de qual arquivo veio) ou só "tem coisa na pasta" (instalado pelo original).</summary>
     public string Origin => Item.Installed is { } installed ? L.T("mods.origin.provodnik", installed.InstalledAt) : Item.FolderHasContent ? L.T("mods.origin.original") : "—";
 

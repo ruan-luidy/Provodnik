@@ -93,6 +93,7 @@
   "mods.column.folder": "Pasta",
   "mods.column.installedBy": "Instalado por",
   "mods.openPage": "Página do addon",
+  "mods.openModDb": "Ver no ModDB",
   "mods.openFolder": "Pasta em mods\\",
   "mods.reinstall": "Reinstalar este mod",
   "mods.empty": "Nenhum addon aqui: sem mods.txt ainda (rode a instalação uma vez) ou nenhum vazio.",

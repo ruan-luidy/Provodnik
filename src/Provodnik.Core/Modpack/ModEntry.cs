@@ -27,8 +27,17 @@ namespace Provodnik.Core.Modpack
     /// <summary>"DesmanMetzger" a partir de " - DesmanMetzger".</summary>
     public string Author => Suffix.Trim().TrimStart('-').Trim();
 
-    /// <summary>Página pra abrir no navegador: a do addon quando tem, senão o próprio link.</summary>
+    /// <summary>
+    /// Página pra abrir no navegador: a do addon quando tem; sem ela, o repositório de um addon do GitHub. Nunca um
+    /// link de download do ModDB ("addons/start", "downloads/start"): ele baixa o arquivo em vez de abrir a página
+    /// onde o autor recebe comentário. Sem página, nulo (o botão some).
+    /// </summary>
     public string? WebPage =>
-      PageUrl is { Length: > 0 } page && page.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? page : Url;
+      PageUrl is { Length: > 0 } page && page.StartsWith("http", StringComparison.OrdinalIgnoreCase) && !IsDownloadLink(page) ? page
+      : Kind == ModKind.GitHub && Url is { Length: > 0 } repo && !IsDownloadLink(repo) ? repo
+      : null;
+
+    private static bool IsDownloadLink(string url) =>
+      url.Contains("/addons/start/", StringComparison.OrdinalIgnoreCase) || url.Contains("/downloads/start/", StringComparison.OrdinalIgnoreCase);
   }
 }

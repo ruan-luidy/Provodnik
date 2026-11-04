@@ -93,6 +93,7 @@
   "mods.column.folder": "Папка",
   "mods.column.installedBy": "Кем установлен",
   "mods.openPage": "Страница аддона",
+  "mods.openModDb": "Открыть на ModDB",
   "mods.openFolder": "Папка в mods\\",
   "mods.reinstall": "Переустановить этот мод",
   "mods.empty": "Аддонов нет: mods.txt ещё нет (запустите установку один раз) или пустых нет.",

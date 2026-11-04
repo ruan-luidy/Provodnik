@@ -93,6 +93,7 @@
   "mods.column.folder": "Folder",
   "mods.column.installedBy": "Installed by",
   "mods.openPage": "Addon page",
+  "mods.openModDb": "View on ModDB",
   "mods.openFolder": "Folder in mods\\",
   "mods.reinstall": "Reinstall this mod",
   "mods.empty": "No addons here: no mods.txt yet (run the install once) or none empty.",
