@@ -6,6 +6,7 @@ using Provodnik.Core.Layout;
 using Provodnik.Core.Remote;
 using Provodnik.Core.Repos;
 using Provodnik.Core.Text;
+using Provodnik.Features.Download;
 using Provodnik.Features.Install;
 
 namespace Provodnik.Tests
@@ -49,7 +50,7 @@ namespace Provodnik.Tests
       }
     }
 
-    private InstallPipeline Pipeline() => new(_api, _git, _downloader, new FakeResolver(), _extractor, new NoShortcuts(), new FakeSystem());
+    private InstallPipeline Pipeline() => new(_api, _git, _downloader, new FakeResolver(), _extractor, new NoShortcuts(), new FakeSystem(), new ModDbGate());
 
     private Task<InstallReport> RunAsync(InstallOptions? options = null) =>
       Pipeline().RunAsync(_layout, (options ?? new InstallOptions { CreateShortcuts = false }) with { ModDbSpacing = TimeSpan.Zero }, new NullReporter(), CancellationToken.None);

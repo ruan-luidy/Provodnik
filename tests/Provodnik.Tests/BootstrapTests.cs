@@ -6,6 +6,7 @@ using Provodnik.Core.Downloads;
 using Provodnik.Core.Install;
 using Provodnik.Core.Layout;
 using Provodnik.Features.Bootstrap;
+using Provodnik.Features.Download;
 
 namespace Provodnik.Tests
 {
@@ -148,8 +149,9 @@ namespace Provodnik.Tests
     public async Task Do_zero_baixa_confere_extrai_e_configura_o_mo2()
     {
       var target = BootstrapTarget.Under(_root);
-      var services = new FakeServices();
-      var pipeline = new BootstrapPipeline(services) { SevenZipSha256 = FakeServices.Hash("7zr"), SevenZipExtraSha256 = FakeServices.Hash("7zextra"), AnomalySha256 = FakeServices.Hash("anomaly") };
+      var gate = new ModDbGate();
+      var services = new FakeServices { Gate = gate };
+      var pipeline = new BootstrapPipeline(services, gate) { SevenZipSha256 = FakeServices.Hash("7zr"), SevenZipExtraSha256 = FakeServices.Hash("7zextra"), AnomalySha256 = FakeServices.Hash("anomaly") };
       var events = new List<BootstrapProgress>();
 
       var result = await pipeline.RunAsync(target, new BootstrapOptions(), new Sync<BootstrapProgress>(events.Add), CancellationToken.None);
@@ -165,6 +167,8 @@ namespace Provodnik.Tests
       // o RC3 pelo Mediafire (link da página do arquivo), o Anomaly pelo ModDB com o curl-impersonate
       Assert.Contains(services.Downloads, d => d.Url.Contains("mediafire") && !d.Impersonate);
       Assert.Contains(services.Downloads, d => d.Url.Contains("dbolical") && d.Impersonate);
+      // o Anomaly baixa dentro da vaga do ModDB, a mesma da instalação dos mods
+      Assert.True(services.ModDbInsideGate);
       // a exclusão no Defender vem ligada: um UAC mesmo sem nada faltando
       Assert.True(services.Elevated);
       Assert.Contains(events, e => e.Step == BootstrapStep.ModOrganizer && e.State == StageState.Done);
@@ -181,7 +185,7 @@ namespace Provodnik.Tests
     {
       var target = BootstrapTarget.Under(_root);
       var services = new FakeServices { CorruptGamma = true };
-      var pipeline = new BootstrapPipeline(services) { SevenZipSha256 = FakeServices.Hash("7zr"), SevenZipExtraSha256 = FakeServices.Hash("7zextra"), AnomalySha256 = FakeServices.Hash("anomaly") };
+      var pipeline = new BootstrapPipeline(services, new ModDbGate()) { SevenZipSha256 = FakeServices.Hash("7zr"), SevenZipExtraSha256 = FakeServices.Hash("7zextra"), AnomalySha256 = FakeServices.Hash("anomaly") };
 
       var result = await pipeline.RunAsync(target, new BootstrapOptions(), new Sync<BootstrapProgress>(_ => { }), CancellationToken.None);
 
@@ -203,6 +207,10 @@ namespace Provodnik.Tests
       public bool Elevated { get; private set; }
 
       public bool CorruptGamma { get; init; }
+
+      public ModDbGate? Gate { get; init; }
+
+      public bool ModDbInsideGate { get; private set; }
 
       public static string Hash(string content) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(content)));
 
@@ -230,6 +238,8 @@ namespace Provodnik.Tests
       public Task<DownloadResult> DownloadAsync(DownloadRequest request, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
       {
         Downloads.Add(request);
+        if (request.Url.Contains("dbolical"))
+          ModDbInsideGate = Gate?.Slot.CurrentCount == 0;
         var content = request.Url switch
         {
           var u when u.Contains("7zr") => "7zr",

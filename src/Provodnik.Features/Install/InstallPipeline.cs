@@ -21,7 +21,7 @@ namespace Provodnik.Features.Install
   /// A instalação/atualização inteira, na ordem do botão "Install / Update G.A.M.M.A." do launcher original
   /// (repositórios → definição → lista → addons → extras → perfil → patches → atalhos), com as diferenças que motivaram
   /// o Проводник:
-  ///   - downloads em paralelo (ModDB limitado pra não acordar o Cloudflare), cada arquivo baixado uma vez só mesmo
+  ///   - downloads em paralelo (o ModDB um de cada vez, na vaga do <see cref="ModDbGate"/>), cada arquivo baixado uma vez só mesmo
   ///     quando vários mods usam ele, e a extração andando junto com os downloads;
   ///   - só reextrai o mod cujo arquivo mudou (o md5 instalado fica no state.json);
   ///   - falha de um mod não para os outros, não estraga a pasta dele e entra no relatório pra "tentar de novo";
@@ -34,7 +34,8 @@ namespace Provodnik.Features.Install
     IModDbResolver resolver,
     IArchiveExtractor extractor,
     IShortcutWriter shortcuts,
-    ISystemInfo system)
+    ISystemInfo system,
+    ModDbGate modDbGate)
   {
     /// <summary>O exe do Проводник, pro atalho da área de trabalho (nulo: não cria).</summary>
     public string? LauncherPath { get; set; }
@@ -322,13 +323,11 @@ namespace Provodnik.Features.Install
         .ToDictionary(g => g.Key, g => g.Select(m => m.Index).ToList(), StringComparer.OrdinalIgnoreCase);
       var archives = new ConcurrentDictionary<string, Lazy<Task<ArchiveOutcome>>>(StringComparer.OrdinalIgnoreCase);
 
-      // o GAMMA pede pra não baixar do ModDB em paralelo (pesa no CDN dele): um de cada vez, como no launcher original
-      using var modDbGate = new SemaphoreSlim(1);
       using var httpGate = new SemaphoreSlim(Math.Max(1, options.HttpParallel));
       using var hashGate = new SemaphoreSlim(2);
       using var extractGate = new SemaphoreSlim(Math.Max(1, options.ExtractParallel));
       var pacer = new ModDbPacer(resolver, options.ModDbSpacing, options.ModDbCooldown);
-      var fetcher = new ArchiveFetcher(downloader, pacer, run.Hashes, layout.Downloads, options, modDbGate, httpGate, hashGate);
+      var fetcher = new ArchiveFetcher(downloader, pacer, run.Hashes, layout.Downloads, options, modDbGate.Slot, httpGate, hashGate);
       var installer = new ModInstaller(extractor);
 
       var done = 0;

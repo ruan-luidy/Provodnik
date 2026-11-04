@@ -6,6 +6,7 @@ using Provodnik.Core.IO;
 using Provodnik.Core.Layout;
 using Provodnik.Core.Modpack;
 using Provodnik.Core.Text;
+using Provodnik.Features.Download;
 
 namespace Provodnik.Features.Bootstrap
 {
@@ -41,7 +42,7 @@ namespace Provodnik.Features.Bootstrap
   /// usado no lugar de baixar de novo. O "abrir o Anomaly até o menu" da wiki fica de fora: o que ele cria (o
   /// appdata\user.ltx) vem pronto no modpack_patches do GAMMA, que a instalação copia por cima.
   /// </summary>
-  public sealed class BootstrapPipeline(IBootstrapServices services)
+  public sealed class BootstrapPipeline(IBootstrapServices services, ModDbGate modDbGate)
   {
     private const int Attempts = 3;
 
@@ -395,6 +396,8 @@ namespace Provodnik.Features.Bootstrap
       {
         try
         {
+          // o Anomaly vem do ModDB (impersonate): a vaga é a mesma da instalação dos mods, do link até o fim
+          using var slot = impersonate ? await modDbGate.EnterAsync(cancellationToken).ConfigureAwait(false) : null;
           progress.Report(new(step, StageState.Running, L.T("features.bootstrap.linking", name)));
           var url = await link(cancellationToken).ConfigureAwait(false);
           var transfer = new Reporter<TransferProgress>(t => progress.Report(new(step, StageState.Running, Describe(name, t, size), t.Fraction)));

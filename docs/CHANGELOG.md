@@ -1,5 +1,9 @@
 # Novidades
 
+## Próxima
+
+- Uma vaga só pro ModDB no app inteiro: a instalação dos mods e o Anomaly da instalação do zero dividem a mesma, então nunca há dois downloads do ModDB ao mesmo tempo, nem com as duas rodando juntas.
+
 ## 1.0.0
 
 - Instalação do zero, num clique: sem GAMMA no computador, o Início escolhe o disco e faz cada passo da wiki do GAMMA.

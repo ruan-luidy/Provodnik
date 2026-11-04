@@ -15,6 +15,7 @@ using Provodnik.Core.Remote;
 using Provodnik.Core.Repos;
 using Provodnik.Core.Text;
 using Provodnik.Features.Bootstrap;
+using Provodnik.Features.Download;
 using Provodnik.Features.Install;
 using Provodnik.Features.Update;
 using Provodnik.Infrastructure.Desktop;
@@ -309,11 +310,13 @@ namespace Provodnik.Wpf
         services.AddSingleton<IShortcutWriter, DemoTools.Shortcuts>();
         services.AddSingleton<ISystemInfo>(new DemoTools.System(new SystemInfo()));
       }
+      // a vaga única do ModDB: instalação e instalação do zero dividem
+      services.AddSingleton<ModDbGate>();
       services.AddSingleton<InstallPipeline>();
       // a instalação do zero: o Mediafire pela API (sem Cloudflare) e o resto pelas mesmas ferramentas
       services.AddSingleton(new MediafireApi(api));
       services.AddSingleton<BootstrapServices>();
-      services.AddSingleton(sp => new BootstrapPipeline(sp.GetRequiredService<BootstrapServices>()));
+      services.AddSingleton(sp => new BootstrapPipeline(sp.GetRequiredService<BootstrapServices>(), sp.GetRequiredService<ModDbGate>()));
       services.AddSingleton<BootstrapViewModel>();
       services.AddSingleton<UpdateChecker>();
       services.AddSingleton<InstallService>();
