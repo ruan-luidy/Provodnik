@@ -278,236 +278,259 @@
           O mod do ModDB da vez (a vaga é uma só): quem fez, o progresso, a página e os comentários dele. A página
           aberta é o navegador que baixa (ModDbBrowser), hospedado aqui pelo código da tela.
         -->
-        <Border
-          Margin="0,16,0,0"
-          DockPanel.Dock="Top"
-          Style="{StaticResource SurfaceCard}"
-          Visibility="{Binding Service.CurrentModDb, Converter={StaticResource Object2VisibilityConverter}}">
-          <StackPanel>
-            <DockPanel Margin="0,0,0,8">
-              <Button
-                hc:IconElement.Geometry="{icons:Phosphor CaretDownBold}"
-                Command="{Binding ToggleModDbPageCommand}"
-                Content="{Binding PageToggleText}"
-                DockPanel.Dock="Right"
-                ToolTip="{loc:Tr install.moddb.pageTip}">
-                <Button.Style>
-                  <Style BasedOn="{StaticResource Action.Small}" TargetType="Button">
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding ModDbPageOpen}" Value="True">
-                        <Setter Property="hc:IconElement.Geometry" Value="{icons:Phosphor CaretUpBold}" />
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </Button.Style>
-              </Button>
-              <TextBlock
-                VerticalAlignment="Center"
-                Style="{StaticResource StatLabel}"
-                Text="{loc:Tr install.moddb.card}" />
-            </DockPanel>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <!--  A página aberta ocupa a coluna até o console: com altura fixa ela passaria por cima dele  -->
+          <Border Margin="0,16,0,0" Visibility="{Binding Service.CurrentModDb, Converter={StaticResource Object2VisibilityConverter}}">
+            <Border.Style>
+              <Style BasedOn="{StaticResource SurfaceCard}" TargetType="Border">
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding PageShown}" Value="True">
+                    <Setter Property="Grid.RowSpan" Value="2" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
+            <DockPanel>
+              <DockPanel Margin="0,0,0,8" DockPanel.Dock="Top">
+                <Button
+                  hc:IconElement.Geometry="{icons:Phosphor CaretDownBold}"
+                  Command="{Binding ToggleModDbPageCommand}"
+                  Content="{Binding PageToggleText}"
+                  DockPanel.Dock="Right"
+                  ToolTip="{loc:Tr install.moddb.pageTip}">
+                  <Button.Style>
+                    <Style BasedOn="{StaticResource Action.Small}" TargetType="Button">
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding ModDbPageOpen}" Value="True">
+                          <Setter Property="hc:IconElement.Geometry" Value="{icons:Phosphor CaretUpBold}" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                </Button>
+                <TextBlock
+                  VerticalAlignment="Center"
+                  Style="{StaticResource StatLabel}"
+                  Text="{loc:Tr install.moddb.card}" />
+              </DockPanel>
 
-            <Grid DataContext="{Binding Service.CurrentModDb}">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="132" />
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="84" />
-              </Grid.ColumnDefinitions>
-              <TextBlock
-                VerticalAlignment="Center"
-                FontWeight="SemiBold"
-                Foreground="{DynamicResource PrimaryTextBrush}"
-                TextTrimming="CharacterEllipsis">
-                <Run Text="{Binding Title, Mode=OneWay}" /><Run
-                  FontWeight="Normal"
+              <Grid DataContext="{Binding Service.CurrentModDb}" DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="132" />
+                  <ColumnDefinition Width="150" />
+                  <ColumnDefinition Width="84" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                  VerticalAlignment="Center"
+                  FontWeight="SemiBold"
+                  Foreground="{DynamicResource PrimaryTextBrush}"
+                  TextTrimming="CharacterEllipsis">
+                  <Run Text="{Binding Title, Mode=OneWay}" /><Run
+                    FontWeight="Normal"
+                    Foreground="{DynamicResource SecondaryTextBrush}"
+                    Text="{Binding Byline, Mode=OneWay}" />
+                </TextBlock>
+                <Border
+                  Grid.Column="1"
+                  Margin="12,0,0,0"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  Style="{StaticResource TonePill}">
+                  <TextBlock Text="{Binding StatusText}" />
+                </Border>
+                <ProgressBar
+                  Grid.Column="2"
+                  Height="6"
+                  VerticalAlignment="Center"
+                  IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}"
+                  Value="{Binding Percent, Mode=OneWay}" />
+                <TextBlock
+                  Grid.Column="3"
+                  VerticalAlignment="Center"
+                  FontFamily="{StaticResource FontFamily.Numbers}"
                   Foreground="{DynamicResource SecondaryTextBrush}"
-                  Text="{Binding Byline, Mode=OneWay}" />
-              </TextBlock>
-              <Border
-                Grid.Column="1"
-                Margin="12,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Style="{StaticResource TonePill}">
-                <TextBlock Text="{Binding StatusText}" />
-              </Border>
-              <ProgressBar
-                Grid.Column="2"
-                Height="6"
-                VerticalAlignment="Center"
-                IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}"
-                Value="{Binding Percent, Mode=OneWay}" />
-              <TextBlock
-                Grid.Column="3"
-                VerticalAlignment="Center"
-                FontFamily="{StaticResource FontFamily.Numbers}"
-                Foreground="{DynamicResource SecondaryTextBrush}"
-                Text="{Binding SpeedText}"
-                TextAlignment="Right" />
-            </Grid>
+                  Text="{Binding SpeedText}"
+                  TextAlignment="Right" />
+              </Grid>
 
-            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-              <Button
-                Margin="0,0,8,0"
-                hc:IconElement.Geometry="{icons:Phosphor GlobeBold}"
-                Command="{Binding OpenModDbPageCommand}"
-                Content="{loc:Tr install.moddb.view}"
-                Style="{StaticResource Action.Small}" />
-              <Button
-                hc:IconElement.Geometry="{icons:Phosphor ChatCircleBold}"
-                Command="{Binding CommentModDbCommand}"
-                Content="{loc:Tr install.moddb.comment}"
-                Style="{StaticResource Action.Small}"
-                ToolTip="{loc:Tr install.moddb.commentTip}" />
-            </StackPanel>
+              <StackPanel
+                Margin="0,10,0,0"
+                DockPanel.Dock="Top"
+                Orientation="Horizontal">
+                <Button
+                  Margin="0,0,8,0"
+                  hc:IconElement.Geometry="{icons:Phosphor GlobeBold}"
+                  Command="{Binding OpenModDbPageCommand}"
+                  Content="{loc:Tr install.moddb.view}"
+                  Style="{StaticResource Action.Small}" />
+                <Button
+                  hc:IconElement.Geometry="{icons:Phosphor ChatCircleBold}"
+                  Command="{Binding CommentModDbCommand}"
+                  Content="{loc:Tr install.moddb.comment}"
+                  Style="{StaticResource Action.Small}"
+                  ToolTip="{loc:Tr install.moddb.commentTip}" />
+              </StackPanel>
 
-            <ContentControl
-              x:Name="ModDbPage"
-              Height="380"
-              Margin="0,12,0,0"
-              Visibility="{Binding ModDbPageOpen, Converter={StaticResource Boolean2VisibilityConverter}}" />
-          </StackPanel>
-        </Border>
-
-        <Border Margin="0,16,0,0" Style="{StaticResource SurfaceCard}">
-          <DockPanel>
-            <!--  Parado: a checagem antes de instalar, com o conserto num botão  -->
-            <DockPanel
-              Margin="0,0,0,8"
-              DockPanel.Dock="Top"
-              Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}">
-              <Button
-                hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
-                Command="{Binding CheckAgainCommand}"
-                DockPanel.Dock="Right"
-                Style="{StaticResource Action.Icon.Small}"
-                ToolTip="{loc:Tr install.checkAgain}" />
-              <TextBlock
-                VerticalAlignment="Center"
-                Style="{StaticResource StatLabel}"
-                Text="{loc:Tr install.beforeInstall}" />
+              <ContentControl
+                x:Name="ModDbPage"
+                Margin="0,12,0,0"
+                Visibility="{Binding PageShown, Converter={StaticResource Boolean2VisibilityConverter}}" />
             </DockPanel>
-            <ScrollViewer
-              DockPanel.Dock="Top"
-              VerticalScrollBarVisibility="Auto"
-              Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}">
-              <ItemsControl ItemsSource="{Binding Checks}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate DataType="{x:Type install:PreflightRow}">
-                    <DockPanel Margin="0,0,0,7">
-                      <Ellipse
-                        Width="8"
-                        Height="8"
-                        Margin="2,6,12,0"
-                        VerticalAlignment="Top"
-                        DockPanel.Dock="Left"
-                        Style="{StaticResource ToneDot}" />
-                      <Button
-                        Margin="12,0,0,0"
-                        VerticalAlignment="Center"
-                        Command="{Binding DataContext.FixCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                        CommandParameter="{Binding}"
-                        Content="{Binding FixText}"
-                        DockPanel.Dock="Right"
-                        Style="{StaticResource Action.Small}"
-                        Visibility="{Binding HasFix, Converter={StaticResource Boolean2VisibilityConverter}}" />
-                      <StackPanel>
-                        <TextBlock
-                          FontWeight="SemiBold"
-                          Foreground="{DynamicResource PrimaryTextBrush}"
-                          Text="{Binding Title}" />
-                        <TextBlock
-                          Style="{StaticResource CaptionText}"
-                          Text="{Binding Message}"
-                          TextTrimming="None"
-                          TextWrapping="Wrap" />
-                      </StackPanel>
-                    </DockPanel>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+          </Border>
 
-            <TextBlock
-              Margin="0,0,0,8"
-              DockPanel.Dock="Top"
-              Style="{StaticResource StatLabel}"
-              Text="{loc:Tr install.now}"
-              Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
-            <Grid Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
-              <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Service.Active}">
+          <Border Grid.Row="1" Margin="0,16,0,0">
+            <Border.Style>
+              <Style BasedOn="{StaticResource SurfaceCard}" TargetType="Border">
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding PageShown}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
+            <DockPanel>
+              <!--  Parado: a checagem antes de instalar, com o conserto num botão  -->
+              <DockPanel
+                Margin="0,0,0,8"
+                DockPanel.Dock="Top"
+                Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}">
+                <Button
+                  hc:IconElement.Geometry="{icons:Phosphor ArrowsClockwiseBold}"
+                  Command="{Binding CheckAgainCommand}"
+                  DockPanel.Dock="Right"
+                  Style="{StaticResource Action.Icon.Small}"
+                  ToolTip="{loc:Tr install.checkAgain}" />
+                <TextBlock
+                  VerticalAlignment="Center"
+                  Style="{StaticResource StatLabel}"
+                  Text="{loc:Tr install.beforeInstall}" />
+              </DockPanel>
+              <ScrollViewer
+                DockPanel.Dock="Top"
+                VerticalScrollBarVisibility="Auto"
+                Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityReConverter}}">
+                <ItemsControl ItemsSource="{Binding Checks}">
                   <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type install:ModRow}">
-                      <Grid Margin="0,4">
-                        <Grid.ColumnDefinitions>
-                          <ColumnDefinition Width="*" />
-                          <ColumnDefinition Width="132" />
-                          <ColumnDefinition Width="150" />
-                          <ColumnDefinition Width="84" />
-                        </Grid.ColumnDefinitions>
+                    <DataTemplate DataType="{x:Type install:PreflightRow}">
+                      <DockPanel Margin="0,0,0,7">
+                        <Ellipse
+                          Width="8"
+                          Height="8"
+                          Margin="2,6,12,0"
+                          VerticalAlignment="Top"
+                          DockPanel.Dock="Left"
+                          Style="{StaticResource ToneDot}" />
+                        <Button
+                          Margin="12,0,0,0"
+                          VerticalAlignment="Center"
+                          Command="{Binding DataContext.FixCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                          CommandParameter="{Binding}"
+                          Content="{Binding FixText}"
+                          DockPanel.Dock="Right"
+                          Style="{StaticResource Action.Small}"
+                          Visibility="{Binding HasFix, Converter={StaticResource Boolean2VisibilityConverter}}" />
                         <StackPanel>
                           <TextBlock
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource PrimaryTextBrush}"
-                            TextTrimming="CharacterEllipsis">
-                            <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding Index, StringFormat=#{0}, Mode=OneWay}" /><Run Text="  " /><Run Text="{Binding Title, Mode=OneWay}" />
-                          </TextBlock>
+                            Text="{Binding Title}" />
                           <TextBlock
                             Style="{StaticResource CaptionText}"
-                            Text="{Binding Detail}"
-                            TextTrimming="CharacterEllipsis"
-                            ToolTip="{Binding Detail}"
-                            Visibility="{Binding Detail, Converter={StaticResource String2VisibilityConverter}}" />
+                            Text="{Binding Message}"
+                            TextTrimming="None"
+                            TextWrapping="Wrap" />
                         </StackPanel>
-                        <Border
-                          Grid.Column="1"
-                          Margin="12,0,0,0"
-                          HorizontalAlignment="Left"
-                          Style="{StaticResource TonePill}">
-                          <TextBlock Text="{Binding StatusText}" />
-                        </Border>
-                        <!--  A barra sempre no meio da linha (na altura da pílula); o "12 de 40 MB" embaixo dela  -->
-                        <Grid Grid.Column="2">
-                          <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                          </Grid.RowDefinitions>
-                          <ProgressBar
-                            Grid.Row="1"
-                            Height="6"
-                            IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}"
-                            Value="{Binding Percent, Mode=OneWay}" />
-                          <TextBlock
-                            Grid.Row="2"
-                            Margin="0,2,0,0"
-                            VerticalAlignment="Top"
-                            FontFamily="{StaticResource FontFamily.Numbers}"
-                            Style="{StaticResource CaptionText}"
-                            Text="{Binding ProgressText}"
-                            Visibility="{Binding ProgressText, Converter={StaticResource String2VisibilityConverter}}" />
-                        </Grid>
-                        <TextBlock
-                          Grid.Column="3"
-                          VerticalAlignment="Center"
-                          FontFamily="{StaticResource FontFamily.Numbers}"
-                          Foreground="{DynamicResource SecondaryTextBrush}"
-                          Text="{Binding SpeedText}"
-                          TextAlignment="Right" />
-                      </Grid>
+                      </DockPanel>
                     </DataTemplate>
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>
               </ScrollViewer>
-              <controls:EmptyState
-                Icon="{icons:Phosphor CompassBold}"
-                Text="{Binding Service.Headline}"
-                Visibility="{Binding Service.Active.Count, Converter={StaticResource WhenEmpty}}" />
-            </Grid>
-          </DockPanel>
-        </Border>
+
+              <TextBlock
+                Margin="0,0,0,8"
+                DockPanel.Dock="Top"
+                Style="{StaticResource StatLabel}"
+                Text="{loc:Tr install.now}"
+                Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}" />
+              <Grid Visibility="{Binding Service.IsRunning, Converter={StaticResource Boolean2VisibilityConverter}}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                  <ItemsControl ItemsSource="{Binding Service.Active}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="{x:Type install:ModRow}">
+                        <Grid Margin="0,4">
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="132" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="84" />
+                          </Grid.ColumnDefinitions>
+                          <StackPanel>
+                            <TextBlock
+                              FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}"
+                              TextTrimming="CharacterEllipsis">
+                              <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding Index, StringFormat=#{0}, Mode=OneWay}" /><Run Text="  " /><Run Text="{Binding Title, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock
+                              Style="{StaticResource CaptionText}"
+                              Text="{Binding Detail}"
+                              TextTrimming="CharacterEllipsis"
+                              ToolTip="{Binding Detail}"
+                              Visibility="{Binding Detail, Converter={StaticResource String2VisibilityConverter}}" />
+                          </StackPanel>
+                          <Border
+                            Grid.Column="1"
+                            Margin="12,0,0,0"
+                            HorizontalAlignment="Left"
+                            Style="{StaticResource TonePill}">
+                            <TextBlock Text="{Binding StatusText}" />
+                          </Border>
+                          <!--  A barra sempre no meio da linha (na altura da pílula); o "12 de 40 MB" embaixo dela  -->
+                          <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="*" />
+                              <RowDefinition Height="Auto" />
+                              <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ProgressBar
+                              Grid.Row="1"
+                              Height="6"
+                              IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}"
+                              Value="{Binding Percent, Mode=OneWay}" />
+                            <TextBlock
+                              Grid.Row="2"
+                              Margin="0,2,0,0"
+                              VerticalAlignment="Top"
+                              FontFamily="{StaticResource FontFamily.Numbers}"
+                              Style="{StaticResource CaptionText}"
+                              Text="{Binding ProgressText}"
+                              Visibility="{Binding ProgressText, Converter={StaticResource String2VisibilityConverter}}" />
+                          </Grid>
+                          <TextBlock
+                            Grid.Column="3"
+                            VerticalAlignment="Center"
+                            FontFamily="{StaticResource FontFamily.Numbers}"
+                            Foreground="{DynamicResource SecondaryTextBrush}"
+                            Text="{Binding SpeedText}"
+                            TextAlignment="Right" />
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+                <controls:EmptyState
+                  Icon="{icons:Phosphor CompassBold}"
+                  Text="{Binding Service.Headline}"
+                  Visibility="{Binding Service.Active.Count, Converter={StaticResource WhenEmpty}}" />
+              </Grid>
+            </DockPanel>
+          </Border>
+        </Grid>
       </DockPanel>
 
       <!--  O console das ferramentas: faixa da largura inteira embaixo das duas colunas (liga e desliga no cabeçalho)  -->

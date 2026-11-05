@@ -35,7 +35,7 @@ namespace Provodnik.Wpf.Features.Install
 
     /// <summary>A página do ModDB aberta no cartão. A escolha da pessoa fica nas configurações; o desafio do Cloudflare abre sem guardar.</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PageToggleText))]
+    [NotifyPropertyChangedFor(nameof(PageToggleText), nameof(PageShown))]
     private bool _modDbPageOpen;
 
     public InstallViewModel(InstallService service, GammaSession session, SettingsStore settings, ToolConsole console, ISystemInfo system, ElevationService elevation, Navigator navigator, IModDbResolver resolver)
@@ -60,6 +60,8 @@ namespace Provodnik.Wpf.Features.Install
         }
         if (e.PropertyName is nameof(InstallService.Credits))
           OnPropertyChanged(nameof(CreditsText));
+        if (e.PropertyName is nameof(InstallService.CurrentModDb))
+          OnPropertyChanged(nameof(PageShown));
       };
       service.Failures.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasFailures));
       service.Finished += (_, _) => _ = RunAsync(LoadAsync);
@@ -74,6 +76,9 @@ namespace Provodnik.Wpf.Features.Install
     public ModDbBrowser? Browser { get; }
 
     public string PageToggleText => L.T(ModDbPageOpen ? "install.moddb.hidePage" : "install.moddb.showPage");
+
+    /// <summary>A página está no cartão: ele ocupa a coluna e a lista do "Agora" sai da frente.</summary>
+    public bool PageShown => ModDbPageOpen && Service.CurrentModDb is not null;
 
     /// <summary>"Você instalou 40 mods do ModDB, de 31 autores."</summary>
     public string? CreditsText => Service.Credits switch
