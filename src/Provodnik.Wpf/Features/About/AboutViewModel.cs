@@ -21,6 +21,10 @@ namespace Provodnik.Wpf.Features.About
     [RelayCommand]
     private void OpenReleases() => FolderOpener.Browse($"{AppUpdateService.RepositoryUrl}/releases");
 
+    /// <summary>Os addons do Anomaly no ModDB, de onde vem quase todo mod do GAMMA.</summary>
+    [RelayCommand]
+    private void OpenModDb() => FolderOpener.Browse("https://www.moddb.com/mods/stalker-anomaly/addons");
+
     [RelayCommand]
     private void OpenDataFolder() => FolderOpener.Open(session.Layout?.DataDir);
   }

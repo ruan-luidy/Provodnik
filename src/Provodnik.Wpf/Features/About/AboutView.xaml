@@ -98,6 +98,27 @@
         </Border>
       </Border>
 
+      <!--  O crédito aos autores dos mods, com o link pros addons no ModDB  -->
+      <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr about.mods.section}" />
+      <Border Style="{StaticResource SettingGroup}">
+        <Border Style="{StaticResource SettingRow}">
+          <DockPanel>
+            <Button
+              Margin="12,0,0,0"
+              VerticalAlignment="Center"
+              hc:IconElement.Geometry="{icons:Phosphor GlobeBold}"
+              Command="{Binding OpenModDbCommand}"
+              Content="{loc:Tr about.mods.open}"
+              DockPanel.Dock="Right"
+              Style="{StaticResource Action}" />
+            <StackPanel VerticalAlignment="Center">
+              <TextBlock Style="{StaticResource SettingTitle}" Text="{loc:Tr about.mods.title}" />
+              <TextBlock Style="{StaticResource SettingCaption}" Text="{loc:Tr about.mods.caption}" />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+      </Border>
+
       <TextBlock Style="{StaticResource SettingSection}" Text="{loc:Tr about.links.section}" />
       <StackPanel Orientation="Horizontal">
         <Button

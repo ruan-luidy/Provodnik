@@ -33,7 +33,7 @@ something goes wrong.
 |  | Official launcher | Provodnik |
 |---|---|---|
 | Downloads | one at a time | resumed where they stopped; ModDB one at a time too (GAMMA asks for it: parallel downloads strain ModDB's CDN), GitHub addons in parallel |
-| ModDB | the downloader now fails with "Failed to generate download link" | goes through a real browser engine (WebView2), paced so Cloudflare stays calm |
+| ModDB | the downloader now fails with "Failed to generate download link" | goes through a real browser engine (WebView2): one download at a time, the ModDB page loads like in any browser, and every mod links back to its ModDB page |
 | Updates | re-extracts every addon | only re-extracts what changed |
 | Interrupted install | you find out later | run it again and it picks up where it stopped |
 | Empty mod folders | silent | detected, with one click to fix them |
@@ -81,9 +81,25 @@ Windows 10/11 x64, everything bundled. A first install downloads around 45 GB an
 
 ![Every addon, its archive and its folder](docs/images/mods.png)
 
-Every addon with its archive and folder, a filter, "only empty" and one click to redo a single mod. Enabling,
-disabling and ordering mods is still MO2's job: **Play** opens MO2 straight into the executable you pick
-(DX11-AVX, DX11, DX9...), and into the MO2 profile you pick when you have more than one.
+Every addon with its archive and folder, a filter, "only empty", grouping by author and one click to redo a single
+mod. The globe opens the mod's ModDB page. Enabling, disabling and ordering mods is still MO2's job: **Play** opens MO2
+straight into the executable you pick (DX11-AVX, DX11, DX9...), and into the MO2 profile you pick when you have more
+than one.
+
+## ModDB
+
+Almost every GAMMA addon lives on [ModDB](https://www.moddb.com/mods/stalker-anomaly/addons), and its authors get
+nothing but comments and ratings there. ModDB asked launchers not to download in parallel and not to bypass the site, so
+Provodnik:
+
+- downloads from ModDB one file at a time, across the whole app (the from-scratch install included);
+- loads each download page in full, countdown and ads included, and takes the file only when ModDB hands it over. That
+  costs about 30 to 50 seconds per mod;
+- shows the mod it's downloading on the Install screen, with **View on ModDB**, **Comment** and the page itself if you
+  open it;
+- ends every install with how many ModDB mods and authors you got, and a shortcut to the Mods screen grouped by author.
+
+If a mod makes your run, tell its author on ModDB.
 
 ## FAQ
 
@@ -126,7 +142,8 @@ pipeline), `Provodnik.Infrastructure` (HTTP and the GAMMA tools) and `Provodnik.
 
 ## Credits
 
-G.A.M.M.A. by Grok and the GAMMA team. Atom icon by [Icons8](https://icons8.com). Built with
+G.A.M.M.A. by Grok and the GAMMA team; its addons by their authors, almost all on
+[ModDB](https://www.moddb.com/mods/stalker-anomaly/addons). Atom icon by [Icons8](https://icons8.com). Built with
 [HandyControl](https://github.com/HandyOrg/HandyControl) and [Phosphor icons](https://phosphoricons.com).
 
 ## License

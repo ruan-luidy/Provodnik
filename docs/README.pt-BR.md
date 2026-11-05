@@ -26,7 +26,7 @@ dá errado.
 |  | Launcher oficial | Provodnik |
 |---|---|---|
 | Downloads | um de cada vez | continuam de onde pararam; o ModDB também um de cada vez (o GAMMA pede: baixar em paralelo pesa no CDN do ModDB), os addons do GitHub em paralelo |
-| ModDB | o downloader agora falha com "Failed to generate download link" | passa por um navegador de verdade (WebView2), no ritmo que o Cloudflare aceita |
+| ModDB | o downloader agora falha com "Failed to generate download link" | passa por um navegador de verdade (WebView2): um download por vez, a página do ModDB carrega como em qualquer navegador, e cada mod leva pra página dele no ModDB |
 | Atualizações | reextrai todos os addons | só reextrai o que mudou |
 | Instalação interrompida | você descobre depois | roda de novo e ele continua de onde parou |
 | Pasta de mod vazia | passa calada | aparece, com um clique pra resolver |
@@ -74,9 +74,24 @@ extraídos dão uns 150 GB); depois, as atualizações só trazem o que mudou.
 
 ![Cada addon, o arquivo e a pasta](images/pt/mods.png)
 
-Cada addon com o arquivo e a pasta, filtro, "só os vazios" e um clique pra refazer um mod só. Ligar, desligar e ordenar
-continua sendo com o MO2: o **Jogar** abre o MO2 direto no executável escolhido (DX11-AVX, DX11, DX9...) e no perfil do
-MO2 escolhido, quando você tem mais de um.
+Cada addon com o arquivo e a pasta, filtro, "só os vazios", agrupamento por autor e um clique pra refazer um mod só. O
+globo abre a página do mod no ModDB. Ligar, desligar e ordenar continua sendo com o MO2: o **Jogar** abre o MO2 direto no
+executável escolhido (DX11-AVX, DX11, DX9...) e no perfil do MO2 escolhido, quando você tem mais de um.
+
+## ModDB
+
+Quase todo addon do GAMMA mora no [ModDB](https://www.moddb.com/mods/stalker-anomaly/addons), e os autores só ganham
+comentário e nota por lá. O ModDB pediu que os launchers não baixem em paralelo nem contornem o site, então o Provodnik:
+
+- baixa do ModDB um arquivo por vez, no app inteiro (a instalação do zero também);
+- carrega cada página de download inteira, com a contagem e os anúncios, e só pega o arquivo quando o ModDB entrega.
+  Isso custa uns 30 a 50 segundos por mod;
+- mostra na tela de instalação o mod que está baixando, com **Ver no ModDB**, **Comentar** e a própria página, se você
+  abrir;
+- termina cada instalação com quantos mods do ModDB e de quantos autores você instalou, e um atalho pra tela Mods por
+  autor.
+
+Se um mod fez diferença no seu jogo, conte pro autor no ModDB.
 
 ## Perguntas
 
@@ -120,7 +135,8 @@ ficam em `Localization/*.{pt,en,ru}.json`.
 
 ## Créditos
 
-G.A.M.M.A. do Grok e da equipe do GAMMA. Ícone do átomo do [Icons8](https://icons8.com). Feito com
+G.A.M.M.A. do Grok e da equipe do GAMMA; os addons, dos autores deles, quase todos no
+[ModDB](https://www.moddb.com/mods/stalker-anomaly/addons). Ícone do átomo do [Icons8](https://icons8.com). Feito com
 [HandyControl](https://github.com/HandyOrg/HandyControl) e [Phosphor](https://phosphoricons.com).
 
 ## Licença

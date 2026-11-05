@@ -6,6 +6,10 @@
 - Menos pedidos ao ModDB: espelho lento vai até o fim em vez de pedir outro link (a troca de espelho da 1.0 saiu), bloqueio do ModDB espera no máximo 3 vezes (eram 8) e o curl repete uma vez só (eram 3).
 - A página de download do ModDB carrega inteira, com a contagem e os anúncios, como num navegador comum, e o próprio ModDB manda pro arquivo quando a contagem acaba. Antes o Provodnik pulava direto pro espelho, o que contornava o site. Leva uns 30 a 50 s por mod. O desafio do Cloudflare agora é reconhecido pela página dele, sem a janela aparecer à toa.
 - Tela Mods: o botão de globo de um mod do ModDB abre a página dele no ModDB ("Ver no ModDB"), onde dá pra comentar. Antes, sem a página na lista, ele abria o link de download. Mod sem página fica sem o botão.
+- Cartão "Baixando do ModDB" na tela de instalação: o mod da vez, quem fez, o progresso, **Ver no ModDB** e **Comentar** (abre os comentários do mod). **Mostrar página** traz pro cartão a própria página que está baixando; aberta ou fechada, ela carrega igual, e a escolha fica lembrada. O desafio do Cloudflare aparece ali, em vez da janela solta, quando a tela está aberta.
+- No fim da instalação, quantos mods do ModDB e de quantos autores (ou quantos o GAMMA tem, quando nada do ModDB mudou), com **Ver mods por autor**.
+- Tela Mods: **Por autor** agrupa a lista por quem fez, com quantos mods cada um tem; fica lembrado.
+- Sobre: os mods e os autores deles, com o link pros addons do Anomaly no ModDB. README com uma seção sobre o ModDB.
 - Diálogos e tooltips no jeito do Windows 11: um cartão só, ícone no título, tooltip que quebra a linha, e o botão vermelho só quando a ação apaga de verdade (Liberar espaço). A caixa de marcar desmarcada não some mais nos cartões, e o texto de exemplo dos campos fica até a primeira letra.
 - Tema claro: os diálogos, os menus e a caixa de marcar saíam com as cores do escuro (título preto no cinza escuro, caixa invisível).
 
