@@ -6,6 +6,8 @@
 - Menos pedidos ao ModDB: espelho lento vai até o fim em vez de pedir outro link (a troca de espelho da 1.0 saiu), bloqueio do ModDB espera no máximo 3 vezes (eram 8) e o curl repete uma vez só (eram 3).
 - A página de download do ModDB carrega inteira, com a contagem e os anúncios, como num navegador comum, e o próprio ModDB manda pro arquivo quando a contagem acaba. Antes o Provodnik pulava direto pro espelho, o que contornava o site. Leva uns 30 a 50 s por mod. O desafio do Cloudflare agora é reconhecido pela página dele, sem a janela aparecer à toa.
 - Tela Mods: o botão de globo de um mod do ModDB abre a página dele no ModDB ("Ver no ModDB"), onde dá pra comentar. Antes, sem a página na lista, ele abria o link de download. Mod sem página fica sem o botão.
+- Diálogos e tooltips no jeito do Windows 11: um cartão só, ícone no título, tooltip que quebra a linha, e o botão vermelho só quando a ação apaga de verdade (Liberar espaço). A caixa de marcar desmarcada não some mais nos cartões, e o texto de exemplo dos campos fica até a primeira letra.
+- Tema claro: os diálogos, os menus e a caixa de marcar saíam com as cores do escuro (título preto no cinza escuro, caixa invisível).
 
 ## 1.0.0
 
