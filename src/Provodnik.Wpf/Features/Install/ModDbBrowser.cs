@@ -33,7 +33,7 @@ namespace Provodnik.Wpf.Features.Install
   public sealed class ModDbBrowser(IModDbResolver fallback, IToolConsole console) : IModDbResolver, IDisposable
   {
     // a página inteira leva uns 50 s (medido: os anúncios terminam de carregar em ~45 s e só aí a contagem de 5 s
-    // começa); o desafio do Cloudflare é visto pelo quadro dele, e sem nada disso a janela aparece depois de 2 min
+    // começa); o desafio do Cloudflare é a página "Just a moment..." parada, e sem ela a janela aparece depois de 2 min
     private static readonly TimeSpan ChallengeGrace = TimeSpan.FromSeconds(8);
     private static readonly TimeSpan Patience = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan Limit = TimeSpan.FromMinutes(4);
@@ -192,16 +192,9 @@ namespace Provodnik.Wpf.Features.Install
       _core.NavigationCompleted += OnLoaded;
       // propaganda que abre janela nova (o Mediafire abre uma no clique) não abre
       _core.NewWindowRequested += (_, e) => e.Handled = true;
-      _core.FrameNavigationStarting += (_, e) =>
-      {
-        if (e.Uri.Contains("challenges.cloudflare.com", StringComparison.OrdinalIgnoreCase))
-          _challenged = true;
-      };
+      // o quadro do challenges.cloudflare.com não conta: a página de start carrega ele em toda visita e passa sozinha
       _core.DocumentTitleChanged += (_, _) =>
-      {
-        if (_core.DocumentTitle.StartsWith("Just a moment", StringComparison.OrdinalIgnoreCase))
-          _challenged = true;
-      };
+        _challenged = _core.DocumentTitle.StartsWith("Just a moment", StringComparison.OrdinalIgnoreCase);
       Place();
     }
 

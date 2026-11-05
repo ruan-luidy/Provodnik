@@ -75,7 +75,7 @@
   "install.moddb.tooManyRequests": "ModDB временно заблокировал запросы (429 too many requests).",
   "install.moddb.blockedIp": "ModDB временно заблокировал этот IP (temporarily blocked, 429).",
   "install.moddb.windowTitle": "ModDB · подтвердите, что вы человек",
-  "install.moddb.challenge.console": "Cloudflare на ModDB хочет убедиться, что вы человек: отметьте галочку на странице ModDB (в карточке «Установка» или в открывшемся окне)",
+  "install.moddb.challenge.console": "ModDB хочет убедиться, что вы человек: отметьте галочку на странице ModDB (в карточке «Установка» или в открывшемся окне)",
   "install.moddb.challenge.toast": "ModDB хочет убедиться, что вы человек. Отметьте галочку на его странице, в карточке «Установка» или в открывшемся окне, дальше всё пойдёт само.",
   "install.moddb.card": "ЗАГРУЗКА С MODDB",
   "install.moddb.by": "автор: {0}",

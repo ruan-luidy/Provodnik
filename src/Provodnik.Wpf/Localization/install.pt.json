@@ -75,7 +75,7 @@
   "install.moddb.tooManyRequests": "O ModDB bloqueou temporariamente (429 too many requests).",
   "install.moddb.blockedIp": "O ModDB bloqueou temporariamente este IP (temporarily blocked, 429).",
   "install.moddb.windowTitle": "ModDB · confirme que você é humano",
-  "install.moddb.challenge.console": "o Cloudflare do ModDB quer confirmar que você é humano: clique na caixa da página do ModDB (no cartão da Instalação ou na janela que abriu)",
+  "install.moddb.challenge.console": "o ModDB quer confirmar que você é humano: clique na caixa da página do ModDB (no cartão da Instalação ou na janela que abriu)",
   "install.moddb.challenge.toast": "O ModDB quer confirmar que você é humano. Clique na caixa da página dele, no cartão da Instalação ou na janela que abriu; depois disso segue sozinho.",
   "install.moddb.card": "BAIXANDO DO MODDB",
   "install.moddb.by": "por {0}",
