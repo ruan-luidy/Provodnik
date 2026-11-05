@@ -110,7 +110,7 @@ namespace Provodnik.Wpf.Features.Mods
         return;
       }
       var details = string.Join("\n", old.Select(o => $"{o.Name}  ({ByteSize.Format(o.Size)})"));
-      if (!await DialogService.ConfirmAsync(L.T("mods.freeSpace.title"), L.T("mods.freeSpace.confirm", old.Count, ByteSize.Format(old.Sum(o => o.Size))), L.T("mods.freeSpace.delete"), details: details))
+      if (!await DialogService.ConfirmAsync(L.T("mods.freeSpace.title"), L.T("mods.freeSpace.confirm", old.Count, ByteSize.Format(old.Sum(o => o.Size))), L.T("mods.freeSpace.delete"), details: details, destructive: true))
         return;
 
       var result = await Task.Run(() => DownloadsCleaner.Delete(old));

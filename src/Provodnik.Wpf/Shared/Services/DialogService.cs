@@ -44,14 +44,14 @@ namespace Provodnik.Wpf.Shared.Services
       await ShowAsync(new AlertDialog(kind, title, message, L.T("shared.ok"), details: details));
     }
 
-    /// <summary>Dois botões: true no principal (confirmar), false no secundário ou no Esc.</summary>
-    public static async Task<bool> ConfirmAsync(string title, string message, string confirmText, string? cancelText = null, DialogKind kind = DialogKind.Warning, string? details = null)
+    /// <summary>Dois botões: true no principal (confirmar), false no secundário ou no Esc. <paramref name="destructive"/> pinta o principal de vermelho.</summary>
+    public static async Task<bool> ConfirmAsync(string title, string message, string confirmText, string? cancelText = null, DialogKind kind = DialogKind.Warning, string? details = null, bool destructive = false)
     {
       cancelText ??= L.T("shared.cancel");
       if (!CanShowOverlay())
         return System.Windows.MessageBox.Show(message, title, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
 
-      return await ShowAsync(new AlertDialog(kind, title, message, confirmText, cancelText, details));
+      return await ShowAsync(new AlertDialog(kind, title, message, confirmText, cancelText, details, destructive));
     }
 
     /// <summary>

@@ -840,7 +840,7 @@
     Tooltip no jeito do Windows 11: o cartão cinza dos menus (o do SelectField e do calendário) com a borda de luz
     fraca e a sombra curta numa borda atrás (no próprio cartão o Effect tiraria o ClearType), entrando num fade
     rápido. O texto quebra a linha em vez de sair numa tira comprida; com mais de uma linha, a primeira vira título
-    (TipText). Conteúdo que não é texto (a célula da comparação) vem com o próprio modelo.
+    (TipText). Conteúdo que não é texto vem com o próprio modelo.
   -->
   <Style TargetType="ToolTip">
     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />

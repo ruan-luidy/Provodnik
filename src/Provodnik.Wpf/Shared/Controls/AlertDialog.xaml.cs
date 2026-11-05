@@ -24,7 +24,7 @@ namespace Provodnik.Wpf.Shared.Controls
   {
     private readonly string? _details;
 
-    public AlertDialog(DialogKind kind, string title, string message, string primaryText, string? secondaryText = null, string? details = null)
+    public AlertDialog(DialogKind kind, string title, string message, string primaryText, string? secondaryText = null, string? details = null, bool destructive = false)
     {
       InitializeComponent();
 
@@ -53,7 +53,7 @@ namespace Provodnik.Wpf.Shared.Controls
       HeaderIcon.SetResourceReference(Shape.FillProperty, tone + ".TextBrush");
 
       // Confirmar o que não tem volta: o botão principal no vermelho
-      if (kind == DialogKind.Error && secondaryText is not null)
+      if (destructive)
         PrimaryButton.Style = (Style)FindResource("Action.Dialog.Danger");
 
       Loaded += OnLoaded;

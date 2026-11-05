@@ -5,8 +5,8 @@ namespace Provodnik.Wpf.Shared.Controls
 {
   /// <summary>
   /// O texto de um tooltip. Uma linha só: texto normal. Várias: a primeira vira o título (semibold) e as outras vêm
-  /// embaixo no cinza, uma por linha. Assim um "Enviada 05/11 14:30" fica simples e a célula da cotação ganha cabeçalho
-  /// sem cada tela montar o próprio tooltip.
+  /// embaixo no cinza, uma por linha. Assim um "Ver no ModDB" fica simples e o detalhe de um erro ganha cabeçalho, sem
+  /// cada tela montar o próprio tooltip.
   /// </summary>
   public sealed class TipText : StackPanel
   {
