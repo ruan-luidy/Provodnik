@@ -17,6 +17,9 @@ namespace Provodnik.Wpf.Features.Mods
     /// <summary>O grupo do "por autor": o nome, ou "—" pra quem não tem autor na lista.</summary>
     public string AuthorGroup => Author.Length > 0 ? Author : "—";
 
+    /// <summary>A ordem dos grupos: "andtheherois" e "Andtheherois" são a mesma pessoa.</summary>
+    public string AuthorKey => AuthorGroup.ToUpperInvariant();
+
     public string Source => Item.Entry.Kind switch
     {
       ModKind.ModDb => "ModDB",

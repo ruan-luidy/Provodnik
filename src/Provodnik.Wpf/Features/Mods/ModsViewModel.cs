@@ -93,9 +93,9 @@ namespace Provodnik.Wpf.Features.Mods
 
       // Por autor: um grupo por pessoa, na ordem do nome, e os mods dela na ordem da lista
       var view = CollectionViewSource.GetDefaultView(Items);
-      view.SortDescriptions.Add(new SortDescription(nameof(ModItemRow.AuthorGroup), ListSortDirection.Ascending));
+      view.SortDescriptions.Add(new SortDescription(nameof(ModItemRow.AuthorKey), ListSortDirection.Ascending));
       view.SortDescriptions.Add(new SortDescription(nameof(ModItemRow.Index), ListSortDirection.Ascending));
-      view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ModItemRow.AuthorGroup)));
+      view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ModItemRow.AuthorGroup), null, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>Ligar, desligar, ordenar e buscar é com o MO2: esta tela só diz se o addon foi baixado e extraído.</summary>
