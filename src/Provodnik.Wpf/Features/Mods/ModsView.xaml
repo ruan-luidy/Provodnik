@@ -55,7 +55,7 @@
       </controls:PageHeader.Actions>
     </controls:PageHeader>
 
-    <!--  Faixa de filtro: a caixa que filtra qualquer coluna e o "só os vazios"  -->
+    <!--  Faixa de filtro: a caixa que filtra qualquer coluna, o "só os vazios" e o "por autor"  -->
     <DockPanel Grid.Row="1" Margin="0,0,0,8">
       <hc:TextBox
         x:Name="Filter"
@@ -68,6 +68,12 @@
         VerticalAlignment="Center"
         Content="{loc:Tr mods.onlyEmpty}"
         IsChecked="{Binding OnlyMissing}" />
+      <CheckBox
+        Margin="16,0,0,0"
+        VerticalAlignment="Center"
+        Content="{loc:Tr mods.byAuthor}"
+        IsChecked="{Binding ByAuthor}"
+        ToolTip="{loc:Tr mods.byAuthor.tip}" />
     </DockPanel>
 
     <DataGrid
@@ -75,7 +81,23 @@
       behaviors:QuickFilter.Text="{Binding Text, ElementName=Filter}"
       ItemsSource="{Binding Items}"
       SelectedItem="{Binding Selected}"
-      Style="{StaticResource StandardDataGrid}">
+      Style="{StaticResource StandardDataGrid}"
+      VirtualizingPanel.IsVirtualizingWhenGrouping="True">
+      <!--  Por autor: o nome de quem fez e quantos mods são dele  -->
+      <DataGrid.GroupStyle>
+        <GroupStyle>
+          <GroupStyle.HeaderTemplate>
+            <DataTemplate>
+              <TextBlock Margin="12,12,0,4">
+                <Run
+                  FontWeight="SemiBold"
+                  Foreground="{DynamicResource PrimaryTextBrush}"
+                  Text="{Binding Name, Mode=OneWay}" /><Run Foreground="{DynamicResource SecondaryTextBrush}" Text="{Binding ItemCount, Mode=OneWay, StringFormat='  {0}'}" />
+              </TextBlock>
+            </DataTemplate>
+          </GroupStyle.HeaderTemplate>
+        </GroupStyle>
+      </DataGrid.GroupStyle>
       <DataGrid.Columns>
         <DataGridTextColumn
           Width="52"

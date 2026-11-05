@@ -13,6 +13,8 @@ namespace Provodnik.Wpf.Shared.Services
   ///   - AutoUpdateApp: procura e baixa sozinho a versão nova do próprio Проводник nos Releases do GitHub;
   ///   - Language: "pt", "en" ou "ru" (nulo: o do Windows);
   ///   - BootstrapFolder: onde a última instalação do zero pôs o GAMMA e o Anomaly (a pasta de cima dos dois);
+  ///   - ModsByAuthor: a tela Mods agrupada por autor;
+  ///   - ModDbPageOpen: a página do ModDB aberta no cartão da instalação (ela carrega igual, aberta ou não);
   ///   - o resto vira <see cref="InstallOptions"/>, com os padrões do launcher original.
   /// </summary>
   public sealed record AppSettings(
@@ -34,7 +36,9 @@ namespace Provodnik.Wpf.Shared.Services
     bool DarkTheme = true,
     bool AutoUpdateApp = true,
     string? Language = null,
-    string? BootstrapFolder = null)
+    string? BootstrapFolder = null,
+    bool ModsByAuthor = false,
+    bool ModDbPageOpen = false)
   {
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 

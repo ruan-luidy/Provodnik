@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Provodnik.Core.Text;
@@ -34,6 +36,7 @@ namespace Provodnik.Wpf.Features.Mods
     [NotifyPropertyChangedFor(nameof(Subtitle))]
     private int _missing;
     [ObservableProperty] private bool _onlyMissing;
+    [ObservableProperty] private bool _byAuthor;
 
     public ModsViewModel(GammaSession session, InstallService install, Navigator navigator, ElevationService elevation, SettingsStore settings)
     {
@@ -42,6 +45,9 @@ namespace Provodnik.Wpf.Features.Mods
       _navigator = navigator;
       _elevation = elevation;
       Install = install;
+      _byAuthor = settings.Current.ModsByAuthor;
+      // O "Ver mods por autor" do fim da instalação liga pelas configurações
+      settings.Changed += (_, _) => ByAuthor = settings.Current.ModsByAuthor;
       session.Reloaded += (_, _) => Stale = true;
       install.Finished += (_, _) => _ = RunAsync(LoadAsync);
     }
@@ -53,6 +59,13 @@ namespace Provodnik.Wpf.Features.Mods
     private IReadOnlyList<ModItemRow> _all = [];
 
     partial void OnOnlyMissingChanged(bool value) => ApplyFilter();
+
+    partial void OnByAuthorChanged(bool value)
+    {
+      if (_settings.Current.ModsByAuthor != value)
+        _settings.Update(s => s with { ModsByAuthor = value });
+      ApplyFilter();
+    }
 
     protected override async Task LoadAsync()
     {
@@ -72,8 +85,18 @@ namespace Provodnik.Wpf.Features.Mods
       ApplyFilter();
     }
 
-    private void ApplyFilter() =>
+    private void ApplyFilter()
+    {
       Items = new ObservableCollection<ModItemRow>(OnlyMissing ? _all.Where(r => r.IsMissing) : _all);
+      if (!ByAuthor)
+        return;
+
+      // Por autor: um grupo por pessoa, na ordem do nome, e os mods dela na ordem da lista
+      var view = CollectionViewSource.GetDefaultView(Items);
+      view.SortDescriptions.Add(new SortDescription(nameof(ModItemRow.AuthorGroup), ListSortDirection.Ascending));
+      view.SortDescriptions.Add(new SortDescription(nameof(ModItemRow.Index), ListSortDirection.Ascending));
+      view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ModItemRow.AuthorGroup)));
+    }
 
     /// <summary>Ligar, desligar, ordenar e buscar é com o MO2: esta tela só diz se o addon foi baixado e extraído.</summary>
     [RelayCommand]
