@@ -4,6 +4,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Provodnik.Core.Desktop;
+using Provodnik.Core.Downloads;
 using Provodnik.Core.Text;
 using Provodnik.Features.Verify;
 using Provodnik.Wpf.Shared;
@@ -22,6 +23,7 @@ namespace Provodnik.Wpf.Features.Install
     private readonly SettingsStore _settings;
     private readonly ISystemInfo _system;
     private readonly ElevationService _elevation;
+    private readonly Navigator _navigator;
     private ConsoleWindow? _consoleWindow;
 
     /// <summary>O "Force zip extraction" do original: reextrai todo mod mesmo sem mudança (conserta instalação quebrada).</summary>
@@ -31,7 +33,12 @@ namespace Provodnik.Wpf.Features.Install
 
     [ObservableProperty] private bool _showConsole;
 
-    public InstallViewModel(InstallService service, GammaSession session, SettingsStore settings, ToolConsole console, ISystemInfo system, ElevationService elevation)
+    /// <summary>A página do ModDB aberta no cartão. A escolha da pessoa fica nas configurações; o desafio do Cloudflare abre sem guardar.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PageToggleText))]
+    private bool _modDbPageOpen;
+
+    public InstallViewModel(InstallService service, GammaSession session, SettingsStore settings, ToolConsole console, ISystemInfo system, ElevationService elevation, Navigator navigator, IModDbResolver resolver)
     {
       Service = service;
       Console = console;
@@ -39,7 +46,10 @@ namespace Provodnik.Wpf.Features.Install
       _settings = settings;
       _system = system;
       _elevation = elevation;
+      _navigator = navigator;
+      Browser = resolver as ModDbBrowser;
       _showConsole = settings.Current.ShowConsole;
+      _modDbPageOpen = settings.Current.ModDbPageOpen;
       service.PropertyChanged += (_, e) =>
       {
         if (e.PropertyName is nameof(InstallService.IsRunning) or nameof(InstallService.LastReport))
@@ -48,6 +58,8 @@ namespace Provodnik.Wpf.Features.Install
           RetryCommand.NotifyCanExecuteChanged();
           OnPropertyChanged(nameof(HasFailures));
         }
+        if (e.PropertyName is nameof(InstallService.Credits))
+          OnPropertyChanged(nameof(CreditsText));
       };
       service.Failures.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasFailures));
       service.Finished += (_, _) => _ = RunAsync(LoadAsync);
@@ -57,6 +69,21 @@ namespace Provodnik.Wpf.Features.Install
     public InstallService Service { get; }
 
     public ToolConsole Console { get; }
+
+    /// <summary>O navegador do ModDB, pro cartão hospedar a página (nulo no modo de demonstração).</summary>
+    public ModDbBrowser? Browser { get; }
+
+    public string PageToggleText => L.T(ModDbPageOpen ? "install.moddb.hidePage" : "install.moddb.showPage");
+
+    /// <summary>"Você instalou 40 mods do ModDB, de 31 autores."</summary>
+    public string? CreditsText => Service.Credits switch
+    {
+      null => null,
+      { ThisRun: false } c => L.T("install.credits.all", c.Mods, c.Authors),
+      { Mods: 1 } => L.T("install.credits.single"),
+      { Authors: 1 } c => L.T("install.credits.oneAuthor", c.Mods),
+      { } c => L.T("install.credits", c.Mods, c.Authors),
+    };
 
     public bool HasFailures => Service.Failures.Count > 0 || Service.LastReport?.Failures.Count > 0;
 
@@ -141,6 +168,32 @@ namespace Provodnik.Wpf.Features.Install
 
     [RelayCommand]
     private void ClearConsole() => Console.Clear();
+
+    [RelayCommand]
+    private void OpenModDbPage() => FolderOpener.Browse(Service.CurrentModDb?.WebPage);
+
+    /// <summary>A mesma página, já nos comentários.</summary>
+    [RelayCommand]
+    private void CommentModDb()
+    {
+      if (Service.CurrentModDb?.WebPage is { } page)
+        FolderOpener.Browse(page + "#comments");
+    }
+
+    [RelayCommand]
+    private void ToggleModDbPage()
+    {
+      ModDbPageOpen = !ModDbPageOpen;
+      _settings.Update(s => s with { ModDbPageOpen = ModDbPageOpen });
+    }
+
+    /// <summary>O fim da instalação leva pra tela Mods agrupada por autor.</summary>
+    [RelayCommand]
+    private void ShowModsByAuthor()
+    {
+      _settings.Update(s => s with { ModsByAuthor = true });
+      _navigator.Open(Tab.Mods);
+    }
 
     [RelayCommand]
     private void OpenLog()

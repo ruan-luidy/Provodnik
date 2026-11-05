@@ -244,6 +244,132 @@
           </DockPanel>
         </Border>
 
+        <!--  O fim da instalação: quantos mods do ModDB e de quantos autores, e o atalho pra ver quem são  -->
+        <Border
+          Margin="0,16,0,0"
+          DockPanel.Dock="Top"
+          Style="{StaticResource SurfaceCard}"
+          Visibility="{Binding CreditsText, Converter={StaticResource String2VisibilityConverter}}">
+          <DockPanel>
+            <Button
+              Margin="12,0,0,0"
+              VerticalAlignment="Center"
+              hc:IconElement.Geometry="{icons:Phosphor UsersBold}"
+              Command="{Binding ShowModsByAuthorCommand}"
+              Content="{loc:Tr install.credits.byAuthor}"
+              DockPanel.Dock="Right"
+              Style="{StaticResource Action.Small}" />
+            <StackPanel VerticalAlignment="Center">
+              <TextBlock
+                FontWeight="SemiBold"
+                Foreground="{DynamicResource PrimaryTextBrush}"
+                Text="{Binding CreditsText}"
+                TextWrapping="Wrap" />
+              <TextBlock
+                Style="{StaticResource CaptionText}"
+                Text="{loc:Tr install.credits.thanks}"
+                TextTrimming="None"
+                TextWrapping="Wrap" />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+
+        <!--
+          O mod do ModDB da vez (a vaga é uma só): quem fez, o progresso, a página e os comentários dele. A página
+          aberta é o navegador que baixa (ModDbBrowser), hospedado aqui pelo código da tela.
+        -->
+        <Border
+          Margin="0,16,0,0"
+          DockPanel.Dock="Top"
+          Style="{StaticResource SurfaceCard}"
+          Visibility="{Binding Service.CurrentModDb, Converter={StaticResource Object2VisibilityConverter}}">
+          <StackPanel>
+            <DockPanel Margin="0,0,0,8">
+              <Button
+                hc:IconElement.Geometry="{icons:Phosphor CaretDownBold}"
+                Command="{Binding ToggleModDbPageCommand}"
+                Content="{Binding PageToggleText}"
+                DockPanel.Dock="Right"
+                ToolTip="{loc:Tr install.moddb.pageTip}">
+                <Button.Style>
+                  <Style BasedOn="{StaticResource Action.Small}" TargetType="Button">
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding ModDbPageOpen}" Value="True">
+                        <Setter Property="hc:IconElement.Geometry" Value="{icons:Phosphor CaretUpBold}" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </Button.Style>
+              </Button>
+              <TextBlock
+                VerticalAlignment="Center"
+                Style="{StaticResource StatLabel}"
+                Text="{loc:Tr install.moddb.card}" />
+            </DockPanel>
+
+            <Grid DataContext="{Binding Service.CurrentModDb}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="132" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="84" />
+              </Grid.ColumnDefinitions>
+              <TextBlock
+                VerticalAlignment="Center"
+                FontWeight="SemiBold"
+                Foreground="{DynamicResource PrimaryTextBrush}"
+                TextTrimming="CharacterEllipsis">
+                <Run Text="{Binding Title, Mode=OneWay}" /><Run
+                  FontWeight="Normal"
+                  Foreground="{DynamicResource SecondaryTextBrush}"
+                  Text="{Binding Byline, Mode=OneWay}" />
+              </TextBlock>
+              <Border
+                Grid.Column="1"
+                Margin="12,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Style="{StaticResource TonePill}">
+                <TextBlock Text="{Binding StatusText}" />
+              </Border>
+              <ProgressBar
+                Grid.Column="2"
+                Height="6"
+                VerticalAlignment="Center"
+                IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}"
+                Value="{Binding Percent, Mode=OneWay}" />
+              <TextBlock
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                FontFamily="{StaticResource FontFamily.Numbers}"
+                Foreground="{DynamicResource SecondaryTextBrush}"
+                Text="{Binding SpeedText}"
+                TextAlignment="Right" />
+            </Grid>
+
+            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+              <Button
+                Margin="0,0,8,0"
+                hc:IconElement.Geometry="{icons:Phosphor GlobeBold}"
+                Command="{Binding OpenModDbPageCommand}"
+                Content="{loc:Tr install.moddb.view}"
+                Style="{StaticResource Action.Small}" />
+              <Button
+                hc:IconElement.Geometry="{icons:Phosphor ChatCircleBold}"
+                Command="{Binding CommentModDbCommand}"
+                Content="{loc:Tr install.moddb.comment}"
+                Style="{StaticResource Action.Small}"
+                ToolTip="{loc:Tr install.moddb.commentTip}" />
+            </StackPanel>
+
+            <ContentControl
+              x:Name="ModDbPage"
+              Height="380"
+              Margin="0,12,0,0"
+              Visibility="{Binding ModDbPageOpen, Converter={StaticResource Boolean2VisibilityConverter}}" />
+          </StackPanel>
+        </Border>
+
         <Border Margin="0,16,0,0" Style="{StaticResource SurfaceCard}">
           <DockPanel>
             <!--  Parado: a checagem antes de instalar, com o conserto num botão  -->

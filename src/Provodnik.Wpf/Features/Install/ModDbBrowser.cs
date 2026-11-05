@@ -19,10 +19,11 @@ namespace Provodnik.Wpf.Features.Install
   /// comum (o ModDB pede que o site não seja contornado); quando a contagem acaba, o próprio ModDB redireciona pro CDN
   /// (fmtN.dl.dbolical.com), o navegador começa a baixar e aqui o download é cancelado e o link vai pro curl (que
   /// continua de onde parou e confere o md5). Da página só se lê o 429 e o "temporarily blocked", pra esfriar a fila.
-  /// A página aparece no card "Baixando do ModDB" da tela de Instalação (<see cref="Attach"/>); sem card na tela, ela
-  /// fica na janela própria, fora da vista. Os cookies ficam em %LocalAppData%\Provodnik\webview: o Cloudflare passa
-  /// uma vez e vale pros próximos. Desafio que pede clique ("confirme que é humano"): o card avisa (<see cref="Attention"/>)
-  /// ou, sem card, a janela aparece por cima pra pessoa clicar e some depois.
+  /// A página aparece no cartão "Baixando do ModDB" da tela de Instalação quando a pessoa abre ele (<see cref="Attach"/>);
+  /// fechado, ou sem cartão na tela, ela fica na janela própria, fora da vista (no cartão fechado o navegador acharia que
+  /// a página está escondida). Os cookies ficam em %LocalAppData%\Provodnik\webview: o Cloudflare passa uma vez e vale
+  /// pros próximos. Desafio que pede clique ("confirme que é humano"): o cartão abre a página (<see cref="Attention"/>)
+  /// ou, sem cartão, a janela aparece por cima pra pessoa clicar e some depois.
   /// Sem WebView2 instalado, usa o resolvedor de reserva (o dl-cli).
   ///
   /// Serve também pra instalação do zero: a página de start de um download do ModDB (o Anomaly), que segue o mesmo
@@ -47,8 +48,8 @@ namespace Provodnik.Wpf.Features.Install
     private bool _challenged;
     private bool? _available;
 
-    /// <summary>O desafio do Cloudflare pede um clique e a página está num card: quem hospeda mostra ela.</summary>
-    public event Action? Attention;
+    /// <summary>O desafio do Cloudflare pede um clique: o cartão na tela mostra a página e devolve true; sem ninguém, a janela aparece.</summary>
+    public Func<bool>? Attention { get; set; }
 
     /// <summary>Mostra a página do ModDB dentro de <paramref name="host"/> (no thread da interface).</summary>
     public void Attach(ContentControl host)
@@ -268,11 +269,8 @@ namespace Provodnik.Wpf.Features.Install
         return;
       console.Write("moddb", L.T("install.moddb.challenge.console"));
       ToastService.Warning(L.T("install.moddb.challenge.toast"), "ModDB");
-      if (_host is { IsVisible: true })
-      {
-        Attention?.Invoke();
+      if (Attention?.Invoke() == true)
         return;
-      }
       var area = SystemParameters.WorkArea;
       _window.Left = area.Left + (area.Width - _window.Width) / 2;
       _window.Top = area.Top + (area.Height - _window.Height) / 2;

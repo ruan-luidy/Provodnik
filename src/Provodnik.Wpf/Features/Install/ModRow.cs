@@ -30,6 +30,17 @@ namespace Provodnik.Wpf.Features.Install
 
     public string Author { get; } = entry?.Author ?? string.Empty;
 
+    /// <summary>" · por Fulano" depois do título (vazio sem autor).</summary>
+    public string Byline => Author.Length > 0 ? " · " + L.T("install.moddb.by", Author) : string.Empty;
+
+    /// <summary>A linha do mods.txt (nula numa falha que não veio de um mod da lista).</summary>
+    public ModEntry? Entry { get; } = entry;
+
+    public bool IsModDb => Entry?.Kind == ModKind.ModDb;
+
+    /// <summary>A página do mod (a do ModDB, onde o autor recebe comentário), nunca o link de download.</summary>
+    public string? WebPage => Entry?.WebPage;
+
     public string Source { get; } = entry?.Kind switch
     {
       ModKind.ModDb => "ModDB",

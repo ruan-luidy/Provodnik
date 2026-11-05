@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Provodnik.Core.Install;
 using Provodnik.Core.Text;
 using Provodnik.Features.Install;
+using Provodnik.Features.Mods;
 using Provodnik.Wpf.Shared.Services;
 
 namespace Provodnik.Wpf.Features.Install
@@ -45,6 +46,15 @@ namespace Provodnik.Wpf.Features.Install
 
     /// <summary>De 0 a 1, pra barra grande e pra barra de tarefas.</summary>
     [ObservableProperty] private double _overall;
+
+    /// <summary>
+    /// O mod do ModDB da vez, pro cartão "Baixando do ModDB" (a vaga é uma só, então é no máximo um). Fica o último até
+    /// outro começar, pro cartão não piscar no vão entre um e outro; some quando a rodada termina.
+    /// </summary>
+    [ObservableProperty] private ModRow? _currentModDb;
+
+    /// <summary>Quantos mods do ModDB e de quantos autores, no fim da rodada (nulo cancelada ou sem ModDB).</summary>
+    [ObservableProperty] private ModDbCredits? _credits;
 
     public InstallService(InstallPipeline pipeline, GammaSession session, LogBook log, SettingsStore settings, ToolConsole console, AppOptions options)
     {
@@ -154,6 +164,10 @@ namespace Provodnik.Wpf.Features.Install
         stage.Detail = report.Cancelled ? L.T("install.stage.cancelled") : stage.Detail;
       }
       Active.Clear();
+      CurrentModDb = null;
+      Credits = report.Cancelled
+        ? null
+        : ModDbCredits.From(_rows.Values.Where(r => r.Status == ModStatus.Installed && r.Entry is not null).Select(r => r.Entry!), _session.ModList?.Mods ?? []);
       Downloading = 0;
       Extracting = 0;
       SpeedText = "—";
@@ -188,6 +202,8 @@ namespace Provodnik.Wpf.Features.Install
       _pendingStages.Clear();
       Active.Clear();
       Failures.Clear();
+      CurrentModDb = null;
+      Credits = null;
       LastReport = null;
       Done = 0;
       Downloading = 0;
@@ -239,6 +255,9 @@ namespace Provodnik.Wpf.Features.Install
         if (row.Status == ModStatus.Failed && !Failures.Contains(row))
           Failures.Add(row);
       }
+
+      if (Active.FirstOrDefault(r => r.IsModDb && r.Status is ModStatus.Resolving or ModStatus.Downloading or ModStatus.Verifying) is { } moddb)
+        CurrentModDb = moddb;
 
       Done = _rows.Values.Count(r => r.IsFinished);
       Downloading = _rows.Values.Count(r => r.Status is ModStatus.Downloading);
