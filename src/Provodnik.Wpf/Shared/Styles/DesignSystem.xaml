@@ -576,9 +576,6 @@
               <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
               <Setter TargetName="Clear" Property="Visibility" Value="Collapsed" />
             </Trigger>
-            <Trigger Property="IsKeyboardFocusWithin" Value="True">
-              <Setter TargetName="Placeholder" Property="Visibility" Value="Collapsed" />
-            </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Box" Property="Background" Value="{DynamicResource Button.HoverBrush}" />
             </Trigger>
@@ -619,27 +616,24 @@
                 x:Name="Placeholder"
                 Margin="{TemplateBinding Padding}"
                 Padding="2,0,0,0"
-                VerticalAlignment="Center"
+                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                 Foreground="{DynamicResource SecondaryTextBrush}"
                 IsHitTestVisible="False"
                 Text="{TemplateBinding hc:InfoElement.Placeholder}"
                 TextTrimming="CharacterEllipsis"
                 Visibility="Collapsed" />
+              <!--  Alinhamento e barras de rolagem do próprio campo: o de várias linhas escreve do alto e rola  -->
               <ScrollViewer
                 x:Name="PART_ContentHost"
-                VerticalAlignment="Center"
+                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                 Focusable="False"
-                HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Hidden" />
+                HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" />
             </Grid>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="Text" Value="">
               <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
-            </Trigger>
-            <!--  Em foco o exemplo some, mesmo vazio: o cursor fica sozinho no campo  -->
-            <Trigger Property="IsKeyboardFocusWithin" Value="True">
-              <Setter TargetName="Placeholder" Property="Visibility" Value="Collapsed" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Box" Property="Background" Value="{DynamicResource Button.HoverBrush}" />

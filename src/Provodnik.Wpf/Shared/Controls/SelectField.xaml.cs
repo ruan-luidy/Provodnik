@@ -94,7 +94,8 @@ namespace Provodnik.Wpf.Shared.Controls
 
       var chosen = SelectedItem is not null;
       Label.Text = chosen ? SelectedItem!.ToString() : Placeholder;
-      Toggle.Foreground = (Brush)FindResource(chosen ? "PrimaryTextBrush" : "SecondaryTextBrush");
+      // Por referência: o pincel pego uma vez ficava no tema da hora (voltando pro escuro, o texto ficava preto)
+      Toggle.SetResourceReference(ForegroundProperty, chosen ? "PrimaryTextBrush" : "SecondaryTextBrush");
     }
 
     /// <summary>O zoom e o fade do menu de botão direito (o ContextMenu do Components.xaml), a cada vez que abre.</summary>

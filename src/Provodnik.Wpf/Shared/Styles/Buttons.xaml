@@ -863,4 +863,12 @@
     <Setter Property="MinWidth" Value="96" />
   </Style>
 
+  <!--  O principal de um diálogo que apaga ou cancela de vez: vermelho  -->
+  <Style
+    x:Key="Action.Dialog.Danger"
+    BasedOn="{StaticResource Action.Danger}"
+    TargetType="Button">
+    <Setter Property="MinWidth" Value="96" />
+  </Style>
+
 </ResourceDictionary>

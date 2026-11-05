@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using MahApps.Metro.IconPacks;
 using Provodnik.Core.Text;
@@ -40,15 +40,21 @@ namespace Provodnik.Wpf.Shared.Controls
         SecondaryButton.Visibility = Visibility.Visible;
       }
 
-      var (icon, brush) = kind switch
+      // O quadradinho no tom do aviso: o fundo suave e o desenho na cor cheia
+      var (icon, tone) = kind switch
       {
-        DialogKind.Success => (PackIconPhosphorIconsKind.CheckCircleFill, "SuccessBrush"),
-        DialogKind.Warning => (PackIconPhosphorIconsKind.WarningFill, "WarningBrush"),
-        DialogKind.Error => (PackIconPhosphorIconsKind.XCircleFill, "DangerBrush"),
-        _ => (PackIconPhosphorIconsKind.InfoFill, "PrimaryBrush"),
+        DialogKind.Success => (PackIconPhosphorIconsKind.CheckCircleBold, "Success"),
+        DialogKind.Warning => (PackIconPhosphorIconsKind.WarningBold, "Warning"),
+        DialogKind.Error => (PackIconPhosphorIconsKind.WarningOctagonBold, "Danger"),
+        _ => (PackIconPhosphorIconsKind.InfoBold, "Accent"),
       };
       HeaderIcon.Data = PhosphorExtension.Get(icon);
-      HeaderIcon.Fill = TryFindResource(brush) as Brush ?? Brushes.SteelBlue;
+      IconTile.SetResourceReference(Border.BackgroundProperty, tone + ".SoftBrush");
+      HeaderIcon.SetResourceReference(Shape.FillProperty, tone + ".TextBrush");
+
+      // Confirmar o que não tem volta: o botão principal no vermelho
+      if (kind == DialogKind.Error && secondaryText is not null)
+        PrimaryButton.Style = (Style)FindResource("Action.Dialog.Danger");
 
       Loaded += OnLoaded;
       PreviewKeyDown += OnPreviewKeyDown;
@@ -85,11 +91,11 @@ namespace Provodnik.Wpf.Shared.Controls
     /// <summary>"ver detalhes": o texto técnico aparece ali mesmo, e o cartão alarga pra caber.</summary>
     private void DetailsLink_Click(object sender, RoutedEventArgs e)
     {
-      var open = DetailsBox.Visibility != Visibility.Visible;
-      DetailsBox.Text = _details;
-      DetailsBox.Visibility = CopyButton.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
+      var open = DetailsCard.Visibility != Visibility.Visible;
+      DetailsText.Text = _details;
+      DetailsCard.Visibility = CopyButton.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
       DetailsLinkText.Text = L.T(open ? "shared.details.hide" : "shared.details.show");
-      Width = open ? 560 : 380;
+      Width = open ? 560 : 420;
     }
 
     private void CopyButton_Click(object sender, RoutedEventArgs e)

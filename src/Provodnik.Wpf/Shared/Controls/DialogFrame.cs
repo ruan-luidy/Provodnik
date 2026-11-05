@@ -2,12 +2,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Provodnik.Wpf.Shared.Controls
 {
   /// <summary>
-  /// A moldura de todo diálogo do app (o DialogFrame do rnzNegativeObserver): cartão com a animação de entrada,
-  /// cabeçalho cinza com título, subtítulo e o X de fechar, o corpo, e o rodapé cinza com os botões.
+  /// A moldura de todo diálogo do app: cartão com a animação de entrada, título (com o ícone, se tiver), subtítulo e
+  /// o X de fechar, o corpo, e o rodapé com os botões.
   /// <para>Uso: <c>&lt;controls:DialogFrame Title="..." Subtitle="..." CloseClick="Cancel_Click"&gt;corpo
   /// &lt;controls:DialogFrame.Footer&gt;botões&lt;/controls:DialogFrame.Footer&gt;&lt;/controls:DialogFrame&gt;</c>.
   /// Sem <see cref="Footer"/>, o rodapé some; com <see cref="ShowClose"/> falso, o X some.</para>
@@ -46,11 +47,21 @@ namespace Provodnik.Wpf.Shared.Controls
     public static readonly DependencyProperty FooterProperty =
       DependencyProperty.Register(nameof(Footer), typeof(object), typeof(DialogFrame), new PropertyMetadata(null));
 
-    /// <summary>Conteúdo do rodapé cinza (os botões). Nulo = sem rodapé.</summary>
+    /// <summary>Conteúdo do rodapé (os botões). Nulo = sem rodapé.</summary>
     public object? Footer
     {
       get => GetValue(FooterProperty);
       set => SetValue(FooterProperty, value);
+    }
+
+    public static readonly DependencyProperty IconProperty =
+      DependencyProperty.Register(nameof(Icon), typeof(Geometry), typeof(DialogFrame), new PropertyMetadata(null));
+
+    /// <summary>O desenho do quadradinho do lado do título (Phosphor). Nulo = sem ícone.</summary>
+    public Geometry? Icon
+    {
+      get => (Geometry?)GetValue(IconProperty);
+      set => SetValue(IconProperty, value);
     }
 
     public static readonly DependencyProperty ShowCloseProperty =
@@ -64,7 +75,7 @@ namespace Provodnik.Wpf.Shared.Controls
     }
 
     public static readonly DependencyProperty BodyPaddingProperty =
-      DependencyProperty.Register(nameof(BodyPadding), typeof(Thickness), typeof(DialogFrame), new PropertyMetadata(new Thickness(20, 16, 20, 16)));
+      DependencyProperty.Register(nameof(BodyPadding), typeof(Thickness), typeof(DialogFrame), new PropertyMetadata(new Thickness(24, 18, 24, 22)));
 
     /// <summary>Respiro do corpo. Lista ou grade que encosta nas bordas usa 0.</summary>
     public Thickness BodyPadding

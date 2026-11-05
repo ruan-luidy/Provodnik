@@ -19,7 +19,7 @@
     links. Os grupos são os cartões das Configurações.
   -->
   <controls:DialogFrame
-    BodyPadding="20,0,20,16"
+    BodyPadding="24,0,24,18"
     CloseClick="Close_Click"
     Subtitle="{loc:Tr about.subtitle}"
     Title="{loc:Tr about.title}">

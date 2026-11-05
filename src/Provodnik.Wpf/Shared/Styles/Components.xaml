@@ -287,29 +287,7 @@
     <ContentPresenter Margin="10,6,10,6" ContentSource="Header" />
   </ControlTemplate>
 
-  <!--  Tooltip: cartão escuro, sem sombra do Windows  -->
-  <Style TargetType="ToolTip">
-    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-    <Setter Property="FontSize" Value="{StaticResource FontSize.Sm}" />
-    <Setter Property="Padding" Value="8,5" />
-    <Setter Property="HasDropShadow" Value="False" />
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="ToolTip">
-          <Border
-            MaxWidth="460"
-            Padding="{TemplateBinding Padding}"
-            Background="{DynamicResource RegionBrush}"
-            BorderBrush="{DynamicResource BorderBrush}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource Radius.Sm}"
-            Effect="{StaticResource Shadow.Card}">
-            <ContentPresenter TextBlock.TextAlignment="Left" />
-          </Border>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>
+  <!--  O tooltip mora no último dicionário: usa o cartão e a sombra dos menus, que vêm depois deste  -->
 
   <!--  Item de lista suspensa (combo): o item do menu da conta, como o SelectField  -->
   <Style TargetType="ComboBoxItem">

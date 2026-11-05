@@ -96,7 +96,7 @@
               Height="16"
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
-              CornerRadius="2" />
+              CornerRadius="4" />
             <ContentPresenter
               x:Name="contentPresenter"
               Grid.Column="1"
@@ -113,7 +113,7 @@
               <Setter TargetName="contentPresenter" Property="Visibility" Value="Visible" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="true">
-              <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBorderBrush}" />
+              <Setter Property="BorderBrush" Value="{DynamicResource CheckBox.HoverBorderBrush}" />
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -157,8 +157,16 @@
   </Style>
 
   <!--  Todo CheckBox do app: o do Negativo, à esquerda (o de lá centraliza, porque mora em célula de grade)  -->
+  <!--
+    A caixa desmarcada em branco translúcido: a borda do HandyControl (#3F3F46) sumia nos cartões e nas camadas
+    translúcidas. Marcada, o azul cheio cobre a borda.
+  -->
+  <SolidColorBrush x:Key="CheckBox.BorderBrush" Color="#73FFFFFF" />
+  <SolidColorBrush x:Key="CheckBox.HoverBorderBrush" Color="#B3FFFFFF" />
+
   <Style BasedOn="{StaticResource CustomCheckBoxStyle}" TargetType="CheckBox">
     <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CheckBox.BorderBrush}" />
     <!--  O estilo do Negativo não define a cor do texto; sem isto o rótulo saía no cinza apagado do sistema  -->
     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
   </Style>

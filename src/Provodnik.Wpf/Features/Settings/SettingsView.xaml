@@ -40,8 +40,9 @@
 
   <!--  O corpo vai até a borda da direita: a barra de rolagem corre no canto do diálogo, longe dos cartões  -->
   <controls:DialogFrame
-    BodyPadding="20,0,4,0"
+    BodyPadding="24,0,4,0"
     CloseClick="Done_Click"
+    Icon="{icons:Phosphor GearSixBold}"
     Subtitle="{loc:Tr settings.subtitle}"
     Title="{loc:Tr settings.title}">
     <Grid>

@@ -7,8 +7,58 @@
   xmlns:loc="clr-namespace:Provodnik.Wpf.Shared.Localization">
 
   <!--
-    DialogFrame: a moldura única dos diálogos, como no rnzNegativeObserver. Cartão com a animação de entrada,
-    cabeçalho cinza com título, subtítulo e X, corpo, e rodapé cinza com os botões. Ver DialogFrame.cs.
+    Os diálogos no jeito do diálogo do Windows 11: um cartão só, no cinza dos menus (o mesmo do SelectField e do
+    calendário), o título com o ícone num quadradinho, o corpo no mesmo fundo e o rodapé um tom mais escuro com a
+    linha fina em cima. Nada de faixa cinza no cabeçalho nem do corpo mais escuro que o resto.
+  -->
+
+  <!--  O rodapé: o cartão com um véu escuro por cima (um degrau abaixo, como o do diálogo do Windows)  -->
+  <SolidColorBrush x:Key="Dialog.FooterBrush" Color="#33000000" />
+
+  <!--  A sombra do cartão, numa borda atrás dele: no próprio cartão o Effect tiraria o ClearType do texto  -->
+  <DropShadowEffect
+    x:Key="Shadow.Dialog"
+    BlurRadius="32"
+    Direction="270"
+    Opacity="0.55"
+    ShadowDepth="8"
+    Color="Black" />
+
+  <!--  O cartão: fundo dos menus, borda de luz fraca, raio grande  -->
+  <Style x:Key="DialogCard" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource Flyout.BackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Flyout.BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource Radius.XL}" />
+  </Style>
+
+  <Style x:Key="DialogShadow" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource Flyout.BackgroundBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource Radius.XL}" />
+    <Setter Property="Effect" Value="{StaticResource Shadow.Dialog}" />
+  </Style>
+
+  <!--  O rodapé dos botões, colado embaixo do cartão  -->
+  <Style x:Key="DialogFooter" TargetType="Border">
+    <Setter Property="Padding" Value="24,14" />
+    <Setter Property="Background" Value="{DynamicResource Dialog.FooterBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Divider.Brush}" />
+    <Setter Property="BorderThickness" Value="0,1,0,0" />
+    <Setter Property="CornerRadius" Value="0,0,11,11" />
+  </Style>
+
+  <!--  O ícone do título: quadradinho arredondado no azul suave, o desenho no azul claro  -->
+  <Style x:Key="DialogIconTile" TargetType="Border">
+    <Setter Property="Width" Value="36" />
+    <Setter Property="Height" Value="36" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Background" Value="{DynamicResource Accent.SoftBrush}" />
+    <Setter Property="TextElement.Foreground" Value="{DynamicResource Accent.TextBrush}" />
+  </Style>
+
+  <!--
+    DialogFrame: a moldura única dos diálogos. Cartão com a animação de entrada, título (com o ícone, se tiver),
+    subtítulo e X, o corpo e o rodapé com os botões. Ver DialogFrame.cs.
   -->
   <Style TargetType="controls:DialogFrame">
     <Setter Property="Focusable" Value="False" />
@@ -16,69 +66,90 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="controls:DialogFrame">
-          <Border
-            Background="{DynamicResource RegionBrush}"
-            BorderBrush="{DynamicResource BorderBrush}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource Radius.Lg}"
-            Style="{StaticResource DialogBorderAnimated}">
+          <Border Background="Transparent" Style="{StaticResource DialogBorderAnimated}">
             <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-              </Grid.RowDefinitions>
+              <Border Style="{StaticResource DialogShadow}" />
+              <Border Style="{StaticResource DialogCard}">
+                <Grid>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
 
-              <Border
-                Padding="20,14"
-                Background="{DynamicResource SecondaryRegionBrush}"
-                BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="0,0,0,1"
-                CornerRadius="7,7,0,0">
-                <DockPanel>
-                  <Button
-                    x:Name="PART_Close"
-                    VerticalAlignment="Top"
-                    hc:IconElement.Geometry="{icons:Phosphor XBold}"
-                    DockPanel.Dock="Right"
-                    Style="{StaticResource Action.Icon.Close}"
-                    ToolTip="{loc:Tr shared.close}"
-                    Visibility="{TemplateBinding ShowClose, Converter={StaticResource Boolean2VisibilityConverter}}" />
-                  <StackPanel VerticalAlignment="Center">
-                    <ContentPresenter
-                      Content="{TemplateBinding Title}"
-                      TextElement.FontSize="{StaticResource FontSize.Md}"
-                      TextElement.FontWeight="SemiBold"
-                      TextElement.Foreground="{DynamicResource PrimaryTextBrush}" />
-                    <ContentPresenter
-                      x:Name="Subtitle"
-                      Margin="0,3,0,0"
-                      Content="{TemplateBinding Subtitle}"
-                      TextElement.FontSize="{StaticResource FontSize.Sm}"
-                      TextElement.Foreground="{DynamicResource SecondaryTextBrush}" />
-                  </StackPanel>
-                </DockPanel>
-              </Border>
+                  <!--  Título: ícone, título e subtítulo; o X no canto  -->
+                  <Grid Margin="24,20,14,0">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border
+                      x:Name="IconTile"
+                      Margin="0,0,14,0"
+                      VerticalAlignment="Center"
+                      Style="{StaticResource DialogIconTile}">
+                      <Path
+                        Width="17"
+                        Height="17"
+                        Data="{TemplateBinding Icon}"
+                        Fill="{DynamicResource Accent.TextBrush}"
+                        Stretch="Uniform" />
+                    </Border>
+                    <StackPanel
+                      Grid.Column="1"
+                      Margin="0,0,0,2"
+                      VerticalAlignment="Center">
+                      <ContentPresenter
+                        Content="{TemplateBinding Title}"
+                        TextElement.FontSize="{StaticResource FontSize.Lg}"
+                        TextElement.FontWeight="SemiBold"
+                        TextElement.Foreground="{DynamicResource PrimaryTextBrush}" />
+                      <!--  O subtítulo comprido quebra a linha em vez de cortar  -->
+                      <ContentPresenter
+                        x:Name="Subtitle"
+                        Margin="0,2,0,0"
+                        Content="{TemplateBinding Subtitle}"
+                        TextElement.FontSize="{StaticResource FontSize.Sm}"
+                        TextElement.Foreground="{DynamicResource SecondaryTextBrush}">
+                        <ContentPresenter.Resources>
+                          <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                          </Style>
+                        </ContentPresenter.Resources>
+                      </ContentPresenter>
+                    </StackPanel>
+                    <Button
+                      x:Name="PART_Close"
+                      Grid.Column="2"
+                      Margin="12,-6,0,0"
+                      VerticalAlignment="Top"
+                      hc:IconElement.Geometry="{icons:Phosphor XBold}"
+                      Style="{StaticResource Action.Icon.Close}"
+                      ToolTip="{loc:Tr shared.close}"
+                      Visibility="{TemplateBinding ShowClose, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                  </Grid>
 
-              <ContentPresenter
-                Grid.Row="1"
-                Margin="{TemplateBinding BodyPadding}"
-                Content="{TemplateBinding Content}"
-                ContentTemplate="{TemplateBinding ContentTemplate}" />
+                  <ContentPresenter
+                    Grid.Row="1"
+                    Margin="{TemplateBinding BodyPadding}"
+                    Content="{TemplateBinding Content}"
+                    ContentTemplate="{TemplateBinding ContentTemplate}" />
 
-              <Border
-                x:Name="Footer"
-                Grid.Row="2"
-                Padding="20,12"
-                Background="{DynamicResource SecondaryRegionBrush}"
-                BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="0,1,0,0"
-                CornerRadius="0,0,7,7">
-                <ContentPresenter Content="{TemplateBinding Footer}" />
+                  <Border
+                    x:Name="Footer"
+                    Grid.Row="2"
+                    Style="{StaticResource DialogFooter}">
+                    <ContentPresenter Content="{TemplateBinding Footer}" />
+                  </Border>
+                </Grid>
               </Border>
             </Grid>
           </Border>
           <ControlTemplate.Triggers>
+            <Trigger Property="Icon" Value="{x:Null}">
+              <Setter TargetName="IconTile" Property="Visibility" Value="Collapsed" />
+            </Trigger>
             <Trigger Property="Subtitle" Value="{x:Null}">
               <Setter TargetName="Subtitle" Property="Visibility" Value="Collapsed" />
             </Trigger>
@@ -101,6 +172,14 @@
     <Setter Property="Spacing" Value="8" />
   </Style>
 
+  <!--  O recado do lado esquerdo do rodapé ("2 selecionados")  -->
+  <Style x:Key="DialogFooterNote" TargetType="TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="FontSize" Value="{StaticResource FontSize.Sm}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
   <!--  Rótulo de campo dentro do diálogo (em cima do controle)  -->
   <Style x:Key="DialogFieldLabel" TargetType="TextBlock">
     <Setter Property="Margin" Value="0,0,0,6" />
@@ -108,10 +187,10 @@
     <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
   </Style>
 
-  <!--  Faixa cinza de informação dentro do diálogo (o item, o resumo)  -->
+  <!--  Cartão de dentro do diálogo (a lista, a prévia, a chave): uma camada clara sobre o cinza  -->
   <Style x:Key="DialogInfoCard" TargetType="Border">
     <Setter Property="Padding" Value="12,10" />
-    <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+    <Setter Property="Background" Value="{DynamicResource Card.BackgroundBrush}" />
     <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
   </Style>
 
