@@ -87,7 +87,7 @@
   "mods.filter": "Filtrar por nome, autor, arquivo",
   "mods.onlyEmpty": "Só os vazios",
   "mods.byAuthor": "Por autor",
-  "mods.byAuthor.tip": "Agrupa os mods por quem fez. Os do ModDB vivem de comentário: o globo abre a página de cada um.",
+  "mods.byAuthor.tip": "Agrupa os mods por quem fez. Os do ModDB vivem de comentário: o logo do ModDB abre a página de cada um.",
   "mods.column.mod": "Mod",
   "mods.column.source": "Origem",
   "mods.column.archive": "Arquivo",

@@ -106,7 +106,9 @@
             <Button
               Margin="12,0,0,0"
               VerticalAlignment="Center"
-              hc:IconElement.Geometry="{icons:Phosphor GlobeBold}"
+              hc:IconElement.Geometry="{icons:Brand ModDb}"
+              hc:IconElement.Height="{StaticResource Icon.Size.Small}"
+              hc:IconElement.Width="{StaticResource Icon.Brand.Width}"
               Command="{Binding OpenModDbCommand}"
               Content="{loc:Tr about.mods.open}"
               DockPanel.Dock="Right"

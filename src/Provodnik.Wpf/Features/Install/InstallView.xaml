@@ -364,7 +364,8 @@
                 Orientation="Horizontal">
                 <Button
                   Margin="0,0,8,0"
-                  hc:IconElement.Geometry="{icons:Phosphor GlobeBold}"
+                  hc:IconElement.Geometry="{icons:Brand ModDb}"
+                  hc:IconElement.Width="{StaticResource Icon.Brand.Width}"
                   Command="{Binding OpenModDbPageCommand}"
                   Content="{loc:Tr install.moddb.view}"
                   Style="{StaticResource Action.Small}" />

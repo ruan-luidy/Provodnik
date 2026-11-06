@@ -146,12 +146,25 @@
             <DataTemplate DataType="{x:Type mods:ModItemRow}">
               <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button
-                  hc:IconElement.Geometry="{icons:Phosphor GlobeBold}"
                   Command="{Binding DataContext.OpenPageCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                   CommandParameter="{Binding}"
-                  Style="{StaticResource Action.Icon.Small}"
                   ToolTip="{Binding PageTip}"
-                  Visibility="{Binding WebPage, Converter={StaticResource String2VisibilityConverter}}" />
+                  Visibility="{Binding WebPage, Converter={StaticResource String2VisibilityConverter}}">
+                  <!--  A página no ModDB leva o logo dele; as outras, o globo  -->
+                  <Button.Style>
+                    <Style BasedOn="{StaticResource Action.Icon.Small}" TargetType="Button">
+                      <Setter Property="hc:IconElement.Geometry" Value="{icons:Phosphor GlobeBold}" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsModDb}" Value="True">
+                          <Setter Property="Width" Value="34" />
+                          <Setter Property="hc:IconElement.Geometry" Value="{icons:Brand ModDb}" />
+                          <Setter Property="hc:IconElement.Width" Value="{StaticResource Icon.Brand.Width}" />
+                          <Setter Property="hc:IconElement.Height" Value="{StaticResource Icon.Size.Small}" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                </Button>
                 <Button
                   hc:IconElement.Geometry="{icons:Phosphor FolderOpenBold}"
                   Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"

@@ -87,7 +87,7 @@
   "mods.filter": "Filter by name, author, archive",
   "mods.onlyEmpty": "Only empty",
   "mods.byAuthor": "By author",
-  "mods.byAuthor.tip": "Groups the mods by who made them. ModDB authors live on comments: the globe opens each mod's page.",
+  "mods.byAuthor.tip": "Groups the mods by who made them. ModDB authors live on comments: the ModDB logo opens each mod's page.",
   "mods.column.mod": "Mod",
   "mods.column.source": "Source",
   "mods.column.archive": "Archive",

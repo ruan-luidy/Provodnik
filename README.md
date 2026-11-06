@@ -81,10 +81,10 @@ Windows 10/11 x64, everything bundled. A first install downloads around 45 GB an
 
 ![Every addon, its archive and its folder](docs/images/mods.png)
 
-Every addon with its archive and folder, a filter, "only empty", grouping by author and one click to redo a single
-mod. The globe opens the mod's ModDB page. Enabling, disabling and ordering mods is still MO2's job: **Play** opens MO2
-straight into the executable you pick (DX11-AVX, DX11, DX9...), and into the MO2 profile you pick when you have more
-than one.
+Every addon with its archive and folder, a filter, "only empty", grouping by author and one click to redo a single mod.
+The ModDB logo button opens the mod's ModDB page. Enabling, disabling and ordering mods is still MO2's job: **Play**
+opens MO2 straight into the executable you pick (DX11-AVX, DX11, DX9...), and into the MO2 profile you pick when you
+have more than one.
 
 ## ModDB
 

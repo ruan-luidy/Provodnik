@@ -53,7 +53,8 @@
       - Control.Height.Small (24): o que mora dentro de outra coisa - cabeçalho de seção, faixa de status, barra do
         filtro da tabela, dentro de uma caixa de campo (os chips de número).
     Ícone (sempre num quadrado, como o PackIcon do Negativo): Icon.Size (14) nos botões normais, Icon.Size.Small (13)
-    nos .Small, Icon.Size.Inline (9) no X de chip e de tag, Icon.Size.Nav (16) no painel lateral.
+    nos .Small, Icon.Size.Inline (9) no X de chip e de tag, Icon.Size.Nav (16) no painel lateral. Logo de site
+    ({icons:Brand}) é duas vezes mais largo: Icon.Brand.Width (26) na largura, a altura do ícone do botão.
     Os botões por papel (Action, Action.Small... no fim do Buttons.xaml) já vêm com altura, padding, fonte e ícone.
   -->
   <system:Double x:Key="Control.Height">28</system:Double>
@@ -63,6 +64,7 @@
   <system:Double x:Key="Icon.Size.Small">13</system:Double>
   <system:Double x:Key="Icon.Size.Inline">9</system:Double>
   <system:Double x:Key="Icon.Size.Nav">16</system:Double>
+  <system:Double x:Key="Icon.Brand.Width">26</system:Double>
 
   <!--  O nome que os estilos vindos do Терминал (DesignSystem.xaml) usam pra Control.Height.Small  -->
   <system:Double x:Key="Toolbar.ControlHeight">24</system:Double>

@@ -75,8 +75,9 @@ extraídos dão uns 150 GB); depois, as atualizações só trazem o que mudou.
 ![Cada addon, o arquivo e a pasta](images/pt/mods.png)
 
 Cada addon com o arquivo e a pasta, filtro, "só os vazios", agrupamento por autor e um clique pra refazer um mod só. O
-globo abre a página do mod no ModDB. Ligar, desligar e ordenar continua sendo com o MO2: o **Jogar** abre o MO2 direto no
-executável escolhido (DX11-AVX, DX11, DX9...) e no perfil do MO2 escolhido, quando você tem mais de um.
+botão com o logo do ModDB abre a página do mod no ModDB. Ligar, desligar e ordenar continua sendo com o MO2: o **Jogar**
+abre o MO2 direto no executável escolhido (DX11-AVX, DX11, DX9...) e no perfil do MO2 escolhido, quando você tem mais de
+um.
 
 ## ModDB
 
